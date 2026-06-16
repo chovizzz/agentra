@@ -14,10 +14,10 @@
 //
 
 import { MeasureContext } from '@hcengineering/core'
+import { isBlockedHost } from '@hcengineering/server-core'
 import * as cheerio from 'cheerio'
 import { imageSize } from 'image-size'
 import oembedProviders from 'oembed-providers'
-import net from 'node:net'
 
 // ============================================================================
 // Types and Interfaces
@@ -109,100 +109,8 @@ export class LinkPreviewError extends Error {
 // URL Validation
 // ============================================================================
 
-function normalizeHostnameForChecks (hostname: string): string {
-  // URL.hostname is already punycode-normalized by WHATWG URL for IDNs.
-  // Keep it lowercase for comparisons.
-  const trimmed = hostname.trim().toLowerCase().replace(/\.+$/, '')
-  if (trimmed.startsWith('[') && trimmed.endsWith(']')) return trimmed.slice(1, -1)
-  return trimmed
-}
-
-function parseIpv6MappedIpv4 (ipv6: string): string | undefined {
-  const host = ipv6.toLowerCase()
-
-  // Common form: ::ffff:127.0.0.1
-  const dotted = host.match(/(?:^|:)ffff:(\d{1,3}(?:\.\d{1,3}){3})$/)
-  if (dotted?.[1] !== undefined) return dotted[1]
-
-  // Hex form used in the report: ::ffff:7f00:1  (=> 127.0.0.1)
-  const hex = host.match(/(?:^|:)ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/)
-  if (hex?.[1] === undefined || hex?.[2] === undefined) return undefined
-
-  const hi = Number.parseInt(hex[1], 16)
-  const lo = Number.parseInt(hex[2], 16)
-  if (!Number.isFinite(hi) || !Number.isFinite(lo)) return undefined
-
-  const a = (hi >> 8) & 0xff
-  const b = hi & 0xff
-  const c = (lo >> 8) & 0xff
-  const d = lo & 0xff
-  return `${a}.${b}.${c}.${d}`
-}
-
-function isBlockedIpv4 (ipv4: string): boolean {
-  const parts = ipv4.split('.').map((p) => Number.parseInt(p, 10))
-  if (parts.length !== 4 || parts.some((n) => !Number.isFinite(n) || n < 0 || n > 255)) return true
-
-  const [a, b] = parts
-
-  // 0.0.0.0/8
-  if (a === 0) return true
-  // 127.0.0.0/8 loopback
-  if (a === 127) return true
-  // 10.0.0.0/8
-  if (a === 10) return true
-  // 172.16.0.0/12
-  if (a === 172 && b >= 16 && b <= 31) return true
-  // 192.168.0.0/16
-  if (a === 192 && b === 168) return true
-  // 169.254.0.0/16 link-local
-  if (a === 169 && b === 254) return true
-
-  return false
-}
-
-function isBlockedIpv6 (ipv6: string): boolean {
-  const host = ipv6.toLowerCase()
-  // unspecified / loopback (compressed or expanded)
-  if (host === '::' || host === '0:0:0:0:0:0:0:0') return true
-  if (host === '::1' || host === '0:0:0:0:0:0:0:1') return true
-  if (host.startsWith('fc') || host.startsWith('fd')) return true // unique-local fc00::/7 (coarse but safe)
-  if (
-    host.startsWith('fe80:') ||
-    host.startsWith('fe8') ||
-    host.startsWith('fe9') ||
-    host.startsWith('fea') ||
-    host.startsWith('feb')
-  ) {
-    // link-local fe80::/10 (coarse but safe)
-    return true
-  }
-
-  const mapped = parseIpv6MappedIpv4(host)
-  if (mapped !== undefined) return isBlockedIpv4(mapped)
-
-  return false
-}
-
-function isBlockedHost (hostname: string): boolean {
-  const host = normalizeHostnameForChecks(hostname)
-  if (host === 'localhost') return true
-
-  const ipType = net.isIP(host)
-  if (ipType === 4) return isBlockedIpv4(host)
-  if (ipType === 6) return isBlockedIpv6(host)
-
-  // Some Node versions are stricter about IPv6 parsing. If it still looks like an IPv6 literal,
-  // apply our IPv6 checks anyway (covers IPv6-mapped IPv4 forms like ::ffff:7f00:1).
-  if (host.includes(':') && isBlockedIpv6(host)) return true
-
-  // Hostname is not an IP literal. Keep legacy explicit localhost-ish blocks.
-  // (We intentionally do not attempt DNS resolution here.)
-  if (host.endsWith('.localhost')) return true
-
-  return false
-}
-
+// SSRF host/IP blocking (loopback, private, link-local, unique-local, IPv6-mapped
+// IPv4) is shared with the other server-side fetchers via `@hcengineering/server-core`.
 function validateUrl (urlString: string): URL {
   let url: URL
   try {

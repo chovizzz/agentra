@@ -19,6 +19,7 @@ import { MeasureContext, Blob as PlatformBlob, WorkspaceIds, metricsAggregate, t
 import platform, { PlatformError } from '@hcengineering/platform'
 import { TokenError, decodeToken } from '@hcengineering/server-token'
 import { StorageAdapter } from '@hcengineering/storage'
+import { SsrfError, createPinnedLookup, resolveSafeAddress, validateFetchUrl } from '@hcengineering/server-core'
 import bp from 'body-parser'
 import cors from 'cors'
 import express, { Request, Response } from 'express'
@@ -676,6 +677,25 @@ export function start (
     }
   }
 
+  const buildSafeImportOptions = async (
+    res: Response,
+    url: string,
+    cookie: string | undefined
+  ): Promise<https.RequestOptions | undefined> => {
+    try {
+      const parsed = validateFetchUrl(url, { allowedProtocols: ['https:'] })
+      const lookup = createPinnedLookup(await resolveSafeAddress(parsed.hostname))
+      return cookie !== undefined ? { lookup, headers: { Cookie: cookie } } : { lookup }
+    } catch (err) {
+      if (err instanceof SsrfError) {
+        ctx.warn('import blocked', { code: err.code, url })
+        res.status(400).send(err.message)
+        return undefined
+      }
+      throw err
+    }
+  }
+
   const handleImportGet = async (req: Request, res: Response): Promise<void> => {
     try {
       const authHeader = req.headers.authorization
@@ -697,17 +717,10 @@ export function start (
         return
       }
 
-      console.log('importing from', url)
-      console.log('cookie', cookie)
-
-      const options =
-        cookie !== undefined
-          ? {
-              headers: {
-                Cookie: cookie
-              }
-            }
-          : {}
+      const options = await buildSafeImportOptions(res, url, cookie)
+      if (options === undefined) {
+        return
+      }
 
       https
         .get(url, options, (response) => {
@@ -783,17 +796,10 @@ export function start (
         return
       }
 
-      console.log('importing from', url)
-      console.log('cookie', cookie)
-
-      const options =
-        cookie !== undefined
-          ? {
-              headers: {
-                Cookie: cookie
-              }
-            }
-          : {}
+      const options = await buildSafeImportOptions(res, url, cookie)
+      if (options === undefined) {
+        return
+      }
 
       https.get(url, options, (response) => {
         console.log('status', response.statusCode)
