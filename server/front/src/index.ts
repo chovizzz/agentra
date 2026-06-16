@@ -688,8 +688,11 @@ export function start (
       return cookie !== undefined ? { lookup, headers: { Cookie: cookie } } : { lookup }
     } catch (err) {
       if (err instanceof SsrfError) {
+        // Log the detail (incl. the offending url) server-side, but never reflect it
+        // back: res.send(string) is served as text/html, so echoing err.message would
+        // be a reflected-XSS / info-leak sink. err.code is a fixed enum, safe to return.
         ctx.warn('import blocked', { code: err.code, url })
-        res.status(400).send(err.message)
+        res.status(400).send(`Import URL rejected: ${err.code}`)
         return undefined
       }
       throw err

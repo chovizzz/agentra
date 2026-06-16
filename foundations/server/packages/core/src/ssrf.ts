@@ -62,9 +62,14 @@ const DEFAULT_ALLOWED_PROTOCOLS = ['http:', 'https:']
 function normalizeHostnameForChecks (hostname: string): string {
   // URL.hostname is already punycode-normalized by WHATWG URL for IDNs.
   // Keep it lowercase for comparisons.
-  const trimmed = hostname.trim().toLowerCase().replace(/\.+$/, '')
-  if (trimmed.startsWith('[') && trimmed.endsWith(']')) return trimmed.slice(1, -1)
-  return trimmed
+  let host = hostname.trim().toLowerCase()
+  // Strip trailing dots with a linear scan rather than /\.+$/, which backtracks
+  // in polynomial time on hostile input (e.g. many '.' followed by a non-dot).
+  let end = host.length
+  while (end > 0 && host.charCodeAt(end - 1) === 0x2e /* '.' */) end--
+  host = host.slice(0, end)
+  if (host.startsWith('[') && host.endsWith(']')) return host.slice(1, -1)
+  return host
 }
 
 // Expands an IPv6 literal (possibly compressed, zone-suffixed, or carrying an

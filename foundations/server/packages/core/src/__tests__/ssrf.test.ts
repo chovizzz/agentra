@@ -98,6 +98,16 @@ describe('isBlockedHost', () => {
   it('handles bracketed and trailing-dot hostnames', () => {
     expect(isBlockedHost('[::1]')).toBe(true)
     expect(isBlockedHost('localhost.')).toBe(true)
+    expect(isBlockedHost('localhost...')).toBe(true)
+    expect(isBlockedHost('127.0.0.1.')).toBe(true)
+    expect(isBlockedHost('example.com.')).toBe(false)
+  })
+
+  it('strips trailing dots in linear time on hostile input (ReDoS regression)', () => {
+    const hostile = '.'.repeat(100000) + 'x'
+    const start = Date.now()
+    expect(isBlockedHost(hostile)).toBe(false)
+    expect(Date.now() - start).toBeLessThan(1000)
   })
 })
 
