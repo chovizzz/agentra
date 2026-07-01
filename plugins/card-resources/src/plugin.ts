@@ -28,6 +28,7 @@ export default mergeIds(cardId, card, {
     ManageMasterTagsTools: '' as AnyComponent,
     MasterTags: '' as AnyComponent,
     CreateTag: '' as AnyComponent,
+    DuplicateCard: '' as AnyComponent,
     CardPresenter: '' as AnyComponent,
     CardsPresenter: '' as AnyComponent,
     FavoriteCardPresenter: '' as AnyComponent,
@@ -173,6 +174,8 @@ export default mergeIds(cardId, card, {
     MyCards: '' as IntlString,
     GotoMyCards: '' as IntlString,
     SingleColumn: '' as IntlString,
+    BaseType: '' as IntlString,
+    BaseTypeDescription: '' as IntlString,
     TwoColumns: '' as IntlString,
     LayoutAuto: '' as IntlString
   }

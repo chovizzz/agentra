@@ -72,6 +72,7 @@ import {
   LockField,
   LockSection,
   MatchCardCheck,
+  RequiredFieldsFilledCheck,
   RequestApproval,
   RunSubProcess,
   UnlockCard,
@@ -107,6 +108,7 @@ import {
   LastValue,
   LowerCase,
   MarkupFromString,
+  StringFromIdentifier,
   Max,
   Min,
   Modulo,
@@ -587,7 +589,11 @@ export async function OnCardUpdate (txes: Tx[], control: TriggerControl): Promis
     const ops = isUpdateTx(cudTx) ? cudTx.operations : cudTx.attributes
     await putEventToQueue(
       {
-        event: [process.trigger.OnCardUpdate, process.trigger.WhenFieldChanges],
+        event: [
+          process.trigger.OnCardUpdate,
+          process.trigger.WhenFieldChanges,
+          process.trigger.WhenRequiredFieldsFilled
+        ],
         card: cudTx.objectId,
         createdOn: tx.modifiedOn,
         _id: tx._id,
@@ -730,6 +736,7 @@ export default async () => ({
     CheckToDoCancelled,
     FieldChangedCheck,
     MatchCardCheck,
+    RequiredFieldsFilledCheck,
     CheckSubProcessesDone,
     CheckSubProcessMatch,
     CheckTime,
@@ -800,6 +807,7 @@ export default async () => ({
     Max,
     StringFromMarkup,
     MarkupFromString,
+    StringFromIdentifier,
     StringFromEnum,
     EnumFromString
   },
