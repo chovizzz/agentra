@@ -72,6 +72,7 @@
     PopupPosAlignment,
     PopupResult,
     popupstore,
+    printModeStore,
     pushRootBarComponent,
     resizeObserver,
     ResolvedLocation,
@@ -259,6 +260,8 @@
   onMount(() => {
     pushRootBarComponent('right', view.component.SearchSelector)
     pushRootBarComponent('left', workbench.component.WorkbenchTabs, 30)
+    // Always-visible hosting shutdown notice in the header so every user sees it.
+    pushRootBarComponent('right', workbench.component.ShutdownNotice, 1)
     void getResource(login.function.GetWorkspaces).then(async (getWorkspaceFn) => {
       $workspacesStore = await getWorkspaceFn()
       await updateWindowTitle(getLocation())
@@ -1119,7 +1122,7 @@
   <Dock />
   <div bind:this={cover} class="cover" />
   <TooltipInstance />
-  <PanelInstance bind:this={panelInstance} contentPanel={elementPanel}>
+  <PanelInstance bind:this={panelInstance} contentPanel={elementPanel} readonly={$printModeStore}>
     <svelte:fragment slot="panel-header">
       <ActionContext context={{ mode: 'panel' }} />
     </svelte:fragment>
