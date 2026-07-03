@@ -75,7 +75,7 @@
     display: flex;
     flex-direction: column;
     min-width: 20rem;
-    max-width: 26rem;
+    max-width: 33rem;
     background: var(--theme-popup-color);
     border: 1px solid var(--theme-popup-divider);
     border-radius: var(--small-BorderRadius);
@@ -114,8 +114,14 @@
 
     .footer {
       display: flex;
+      flex-wrap: wrap;
       justify-content: flex-end;
       gap: 0.5rem;
+
+      :global(.button) {
+        flex: 0 1 auto;
+        min-width: 0;
+      }
     }
   }
 </style>
