@@ -1,6 +1,6 @@
 {
   "name": "@hcengineering/pod-backup",
-  "version": "0.7.426",
+  "version": "0.7.432",
   "main": "lib/index.js",
   "svelte": "src/index.ts",
   "types": "types/index.d.ts",
@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "cross-env": "~7.0.3",
-    "@hcengineering/platform-rig": "workspace:^0.7.426",
+    "@hcengineering/platform-rig": "workspace:^0.7.432",
     "@types/node": "^22.18.1",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "eslint-plugin-import": "^2.26.0",
@@ -47,21 +47,21 @@
     "jest": "^29.7.0",
     "ts-jest": "^29.1.1",
     "@types/jest": "^29.5.5",
-    "@hcengineering/model-all": "workspace:^0.7.426"
+    "@hcengineering/model-all": "workspace:^0.7.432"
   },
   "dependencies": {
-    "@hcengineering/platform": "workspace:^0.7.426",
-    "@hcengineering/server-token": "workspace:^0.7.426",
-    "@hcengineering/server-core": "workspace:^0.7.426",
-    "@hcengineering/server-pipeline": "workspace:^0.7.426",
-    "@hcengineering/client": "workspace:^0.7.426",
-    "@hcengineering/client-resources": "workspace:^0.7.426",
-    "@hcengineering/core": "workspace:^0.7.426",
+    "@hcengineering/platform": "workspace:^0.7.432",
+    "@hcengineering/server-token": "workspace:^0.7.432",
+    "@hcengineering/server-core": "workspace:^0.7.432",
+    "@hcengineering/server-pipeline": "workspace:^0.7.432",
+    "@hcengineering/client": "workspace:^0.7.432",
+    "@hcengineering/client-resources": "workspace:^0.7.432",
+    "@hcengineering/core": "workspace:^0.7.432",
     "dotenv": "^16.4.5",
-    "@hcengineering/backup-service": "workspace:^0.7.426",
-    "@hcengineering/analytics": "workspace:^0.7.426",
-    "@hcengineering/analytics-service": "workspace:^0.7.426",
-    "@hcengineering/mongo": "workspace:^0.7.426",
-    "@hcengineering/postgres": "workspace:^0.7.426"
+    "@hcengineering/backup-service": "workspace:^0.7.432",
+    "@hcengineering/analytics": "workspace:^0.7.432",
+    "@hcengineering/analytics-service": "workspace:^0.7.432",
+    "@hcengineering/mongo": "workspace:^0.7.432",
+    "@hcengineering/postgres": "workspace:^0.7.432"
   }
 }

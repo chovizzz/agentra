@@ -1,6 +1,6 @@
 {
   "name": "@hcengineering/model-bitrix",
-  "version": "0.7.426",
+  "version": "0.7.432",
   "main": "lib/index.js",
   "svelte": "src/index.ts",
   "types": "types/index.d.ts",
@@ -18,7 +18,7 @@
     "test": "jest --passWithNoTests --silent --forceExit"
   },
   "devDependencies": {
-    "@hcengineering/platform-rig": "workspace:^0.7.426",
+    "@hcengineering/platform-rig": "workspace:^0.7.432",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-promise": "^6.1.1",
@@ -34,21 +34,21 @@
     "ts-jest": "^29.1.1"
   },
   "dependencies": {
-    "@hcengineering/activity": "workspace:^0.7.426",
-    "@hcengineering/model": "workspace:^0.7.426",
-    "@hcengineering/core": "workspace:^0.7.426",
-    "@hcengineering/platform": "workspace:^0.7.426",
-    "@hcengineering/model-core": "workspace:^0.7.426",
-    "@hcengineering/model-attachment": "workspace:^0.7.426",
-    "@hcengineering/model-contact": "workspace:^0.7.426",
-    "@hcengineering/view": "workspace:^0.7.426",
-    "@hcengineering/model-view": "workspace:^0.7.426",
-    "@hcengineering/contact": "workspace:^0.7.426",
-    "@hcengineering/bitrix": "workspace:^0.7.426",
-    "@hcengineering/bitrix-resources": "workspace:^0.7.426",
-    "@hcengineering/preference": "workspace:^0.7.426",
-    "@hcengineering/model-preference": "workspace:^0.7.426",
-    "@hcengineering/setting": "workspace:^0.7.426",
-    "@hcengineering/ui": "workspace:^0.7.426"
+    "@hcengineering/activity": "workspace:^0.7.432",
+    "@hcengineering/model": "workspace:^0.7.432",
+    "@hcengineering/core": "workspace:^0.7.432",
+    "@hcengineering/platform": "workspace:^0.7.432",
+    "@hcengineering/model-core": "workspace:^0.7.432",
+    "@hcengineering/model-attachment": "workspace:^0.7.432",
+    "@hcengineering/model-contact": "workspace:^0.7.432",
+    "@hcengineering/view": "workspace:^0.7.432",
+    "@hcengineering/model-view": "workspace:^0.7.432",
+    "@hcengineering/contact": "workspace:^0.7.432",
+    "@hcengineering/bitrix": "workspace:^0.7.432",
+    "@hcengineering/bitrix-resources": "workspace:^0.7.432",
+    "@hcengineering/preference": "workspace:^0.7.432",
+    "@hcengineering/model-preference": "workspace:^0.7.432",
+    "@hcengineering/setting": "workspace:^0.7.432",
+    "@hcengineering/ui": "workspace:^0.7.432"
   }
 }
