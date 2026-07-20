@@ -75,7 +75,6 @@ import { RatingCalculator, ratingEvents, type QueueRatingMessage } from '@hcengi
 
 import core, {
   AccountRole,
-  generateId,
   isArchivingMode,
   isDeletingMode,
   MeasureMetricsContext,
@@ -92,7 +91,6 @@ import core, {
   type PersonId,
   type PersonUuid,
   type Ref,
-  type Space,
   type Tx,
   type Version,
   type WorkspaceDataId,
@@ -1136,8 +1134,7 @@ export function devTool (
     .command('validate-workspace <workspace>')
     .description('Validate a (restored) workspace: connect as system, check model, data counts and blob download')
     .option('--blobs <blobs>', 'Number of sample blobs to download-check (0 to skip)', '5')
-    .option('--write', 'Run a write smoke-test (creates and removes a temporary space; use on clones only)', false)
-    .action(async (workspace: string, cmd: { blobs: string, write: boolean }) => {
+    .action(async (workspace: string, cmd: { blobs: string }) => {
       await withAccountDatabase(async (db) => {
         const ws = await getWorkspace(db, workspace)
         if (ws === null) {
@@ -1248,40 +1245,6 @@ export function devTool (
                 }
               } catch (err: any) {
                 fail(`blob download check failed: ${emsg(err)}`)
-              }
-            }
-          }
-
-          // 5. Optional write smoke-test (mutating — clones only)
-          if (cmd.write) {
-            const spaceId = generateId<Space>()
-            try {
-              await ops.createDoc(
-                core.class.Space,
-                core.space.Space,
-                {
-                  name: `__validate_${spaceId}`,
-                  description: 'temporary workspace validation space',
-                  private: true,
-                  archived: false,
-                  members: []
-                },
-                spaceId
-              )
-              const readBack = await ops.findOne(core.class.Space, { _id: spaceId })
-              if (readBack !== undefined) {
-                pass('write smoke-test: created and read back a temporary space')
-              } else {
-                fail('write smoke-test: created space not found on read-back')
-              }
-            } catch (err: any) {
-              fail(`write smoke-test (create) failed: ${emsg(err)}`)
-            } finally {
-              try {
-                await ops.removeDoc(core.class.Space, core.space.Space, spaceId)
-                pass('write smoke-test: removed temporary space')
-              } catch (err: any) {
-                fail(`write smoke-test (cleanup) failed, temporary space ${spaceId} may remain: ${emsg(err)}`)
               }
             }
           }
