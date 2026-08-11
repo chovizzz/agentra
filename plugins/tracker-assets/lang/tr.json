@@ -274,7 +274,18 @@
     "IssueStatus": "Durum",
     "Extensions": "Uzantılar",
     "UnsetParentIssue": "Üst sorunu kaldır",
-    "AllowCreatingIssues": "Sorun oluşturmaya izin ver"
+    "AllowCreatingIssues": "Sorun oluşturmaya izin ver",
+    "ModeSelectorDisabledByFilter": "Durum, aktif bir filtre tarafından denetleniyor. Bu kısayolu kullanmak için durum filtresini kaldırın.",
+    "ShowQuickModeSelector": "Hızlı filtre: Tümü / Aktif / Backlog",
+    "SearchScopeLabel": "Şurada ara…",
+    "SearchScopeTitle": "Yalnızca başlık",
+    "SearchScopeTitleDescription": "Başlık + açıklama",
+    "SearchScopeAll": "Başlık + açıklama + yorumlar",
+    "SearchHighlight": "Arama eşleşmelerini vurgula",
+    "SearchEmptyTitle": "\"{query}\" için sorun bulunamadı",
+    "SearchEmptyActiveFilters": "Aktif filtreler: {filters}",
+    "SearchEmptyClearFilters": "Filtresiz ara",
+    "SearchEmptyAllProjects": "Tüm projelerde ara"
   },
   "status": {}
 }

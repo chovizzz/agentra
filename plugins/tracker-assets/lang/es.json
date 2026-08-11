@@ -276,7 +276,18 @@
     "UnsetParentIssue": "Unset parent issue",
     "ForbidCreateProjectPermission": "Prohibir crear proyecto",
     "ForbidCreateProjectPermissionDescription": "Prohíbe a los usuarios crear nuevos proyectos",
-    "AllowCreatingIssues": "Permitir crear incidencias"
+    "AllowCreatingIssues": "Permitir crear incidencias",
+    "ModeSelectorDisabledByFilter": "El estado está controlado por un filtro activo. Elimina el filtro de estado para usar este atajo.",
+    "ShowQuickModeSelector": "Filtro rápido: Todos / Activos / Atrasados",
+    "SearchScopeLabel": "Buscar en…",
+    "SearchScopeTitle": "Solo título",
+    "SearchScopeTitleDescription": "Título + descripción",
+    "SearchScopeAll": "Título + descripción + comentarios",
+    "SearchHighlight": "Resaltar coincidencias de búsqueda",
+    "SearchEmptyTitle": "No se encontraron tareas para \"{query}\"",
+    "SearchEmptyActiveFilters": "Filtros activos: {filters}",
+    "SearchEmptyClearFilters": "Buscar sin filtros",
+    "SearchEmptyAllProjects": "Buscar en todos los proyectos"
   },
   "status": {}
 }

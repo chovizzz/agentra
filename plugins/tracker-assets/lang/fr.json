@@ -276,7 +276,18 @@
     "UnsetParentIssue": "Désélectionner l'issue parent",
     "ForbidCreateProjectPermission": "Interdire la création de projet",
     "ForbidCreateProjectPermissionDescription": "Interdit aux utilisateurs de créer de nouveaux projets",
-    "AllowCreatingIssues": "Autoriser la création d'issues"
+    "AllowCreatingIssues": "Autoriser la création d'issues",
+    "ModeSelectorDisabledByFilter": "Le statut est contrôlé par un filtre actif. Supprimez le filtre de statut pour utiliser ce raccourci.",
+    "ShowQuickModeSelector": "Filtre rapide : Tous / Actif / Backlog",
+    "SearchScopeLabel": "Rechercher dans…",
+    "SearchScopeTitle": "Titre uniquement",
+    "SearchScopeTitleDescription": "Titre + description",
+    "SearchScopeAll": "Titre + description + commentaires",
+    "SearchHighlight": "Surligner les correspondances de recherche",
+    "SearchEmptyTitle": "Aucun problème trouvé pour \"{query}\"",
+    "SearchEmptyActiveFilters": "Filtres actifs : {filters}",
+    "SearchEmptyClearFilters": "Rechercher sans filtres",
+    "SearchEmptyAllProjects": "Rechercher dans tous les projets"
   },
   "status": {}
 }
