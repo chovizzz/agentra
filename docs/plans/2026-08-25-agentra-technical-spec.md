@@ -1,10 +1,11 @@
-# Huly CRM-ALM Technical Spec
+# Agentra Technical Spec
 
 | 项目 | 内容 |
 | --- | --- |
 | 状态 | Final |
 | 版本 | 1.0 |
 | 日期 | 2026-08-25 |
+| 产品品牌 | Agentra |
 | 目标仓库 | Huly Platform fork |
 | 基线 | `upstream/develop`；生产版本固定到经过验证的 commit/tag |
 
@@ -31,7 +32,7 @@ upstream  -> https://github.com/hcengineering/platform.git
 - `feat/*`：单一垂直切片；
 - `docs/*`：PRD、Spec 和计划。
 
-部署仓库单独维护 `platform` 镜像引用和环境配置，不将生产 Secret 写入此仓库。
+部署仓库单独维护 `platform` 镜像引用和环境配置，不将生产 Secret 写入此仓库。用户界面使用 Agentra 品牌；包名、功能开关和测试目录继续使用稳定的领域命名，不与品牌名耦合。
 
 ## 3. 模块规划
 

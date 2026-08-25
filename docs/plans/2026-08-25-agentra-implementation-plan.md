@@ -1,8 +1,8 @@
-# Huly CRM-ALM V1 Implementation Plan
+# Agentra V1 Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** 在 Huly fork 中交付飞书登录、轻量 CRM、版本化需求、项目周期、专业测试、GitHub 交付和产品发布的自托管闭环。
+**Goal:** 在 Huly fork 中交付 Agentra：支持飞书登录、轻量 CRM、版本化需求、项目周期、专业测试、GitHub 交付和产品发布的自托管闭环。
 
 **Architecture:** 复用 Huly Contact、Card、Tracker、Products、Test Management 和 GitHub 模块；新增 CRM、Requirements、Traceability 与 Cycle 插件，并通过服务端幂等 Command 完成跨对象转换。认证在现有 `pods/authProviders` 中增加飞书 Provider，部署配置进入独立 `huly-selfhost` fork。
 
@@ -1081,7 +1081,7 @@ cd ../tests/sanity
 rushx dev-uitest -g 'CRM ALM'
 ```
 
-验收必须逐项映射 [QA Test Plan](./2026-08-25-huly-crm-alm-qa-test-plan.md)；任何未运行项标记为“未验证”，不得以代码审查代替运行结果。
+验收必须逐项映射 [QA Test Plan](./2026-08-25-agentra-qa-test-plan.md)；任何未运行项标记为“未验证”，不得以代码审查代替运行结果。
 
 ## V1.1 / V1.2 后续计划入口
 

@@ -1,16 +1,21 @@
-# Huly CRM-ALM 一体化平台设计
+# Agentra 一体化平台设计
 
 | 项目 | 内容 |
 | --- | --- |
 | 状态 | Final |
 | 版本 | 1.0 |
 | 日期 | 2026-08-25 |
+| 产品定位 | AI 原生业务与研发操作系统 |
+| 英文定位 | The Agentic Work OS |
+| Slogan | From signal to shipped. |
 | 上游 | `hcengineering/platform`，默认分支 `develop` |
 | 部署 | 完全自托管；核心代码与部署配置分仓管理 |
 
 ## 1. 决策摘要
 
-本项目直接 fork [Huly Platform](https://github.com/hcengineering/platform)，在保持上游可合并的前提下，将客户线索、产品需求、项目执行、测试验证、代码交付和版本发布连接成一个对象图。
+Agentra 直接 fork [Huly Platform](https://github.com/hcengineering/platform)，在保持上游可合并的前提下，将客户线索、产品需求、项目执行、测试验证、代码交付和版本发布连接成一个对象图。
+
+`Agentra` 是面向用户的产品品牌；`Huly Platform` 是上游技术基座；`crm-alm` 继续作为内部部署、测试和功能分组命名。品牌名不进入底层插件标识，避免未来品牌调整扩大迁移范围。
 
 核心代码以 `platform` fork 为主；Docker Compose、域名、密钥、备份及镜像编排由 [huly-selfhost](https://github.com/hcengineering/huly-selfhost) 的独立 fork 或部署覆盖层维护。
 
@@ -176,7 +181,7 @@ Product Version 达到发布门禁后变为 Released。系统汇总关联需求�
 1. 产品内的测试管理能力：Suite、Case、Plan、Run、Result、Coverage、Defect；
 2. fork 自身的工程质量：单元、模型迁移、服务集成、OAuth 合同、GitHub 合同、E2E、权限、安全、性能、备份恢复和上游升级冒烟。
 
-详细测试策略和可执行用例见 [QA Test Plan](./2026-08-25-huly-crm-alm-qa-test-plan.md)。
+详细测试策略和可执行用例见 [QA Test Plan](./2026-08-25-agentra-qa-test-plan.md)。
 
 ## 10. 交付分期
 
@@ -184,4 +189,4 @@ Product Version 达到发布门禁后变为 Released。系统汇总关联需求�
 - V1.1：自定义字段、多视图、表单、Lookup/公式和自动化规则；
 - V1.2：仪表盘设计器、高级行级权限、项目组合、资源容量和自动化测试结果接入。
 
-详细范围见 [PRD](./2026-08-25-huly-crm-alm-prd.md)，工程约束见 [Technical Spec](./2026-08-25-huly-crm-alm-technical-spec.md)。
+详细范围见 [PRD](./2026-08-25-agentra-prd.md)，工程约束见 [Technical Spec](./2026-08-25-agentra-technical-spec.md)。

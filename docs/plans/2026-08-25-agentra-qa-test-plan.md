@@ -1,10 +1,11 @@
-# Huly CRM-ALM QA Test Plan & Test Cases
+# Agentra QA Test Plan & Test Cases
 
 | 项目 | 内容 |
 | --- | --- |
 | 状态 | Final |
 | 版本 | 1.0 |
 | 日期 | 2026-08-25 |
+| 被测产品 | Agentra |
 | 范围 | 产品测试管理能力 + fork 自身工程验证 |
 
 ## 1. 目标
