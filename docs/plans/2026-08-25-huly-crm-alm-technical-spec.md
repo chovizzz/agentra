@@ -44,6 +44,7 @@ plugins/crm-lite
 plugins/crm-lite-resources
 plugins/crm-lite-assets
 models/crm-lite
+models/server-crm-lite
 server-plugins/crm-lite
 server-plugins/crm-lite-resources
 ```
@@ -62,6 +63,7 @@ Lead 采用 Card 扩展类型，继承 Card 的版本、内容、附件、评论
 plugins/traceability
 plugins/traceability-resources
 models/traceability
+models/server-traceability
 server-plugins/traceability
 ```
 
@@ -113,6 +115,18 @@ Requirement/WorkItem/Bug --delivered-in--> ProductVersion
 反向导航由索引查询派生，禁止为同一语义双写反向 Link。
 
 ### 3.3 Requirement
+
+新增独立模块，避免产品需求生命周期与 CRM 耦合：
+
+```text
+plugins/requirements
+plugins/requirements-resources
+plugins/requirements-assets
+models/requirements
+models/server-requirements
+server-plugins/requirements
+server-plugins/requirements-resources
+```
 
 Requirement 采用版本化 Card 类型，业务 mixin 至少包含：
 
@@ -210,6 +224,8 @@ Failed Result 创建 Bug 时复制：标题、Case/Step、预期、实际、Buil
 ### 3.6 Products 和 Release
 
 复用 Product/ProductVersion 的语义版本字段。新增状态 mixin 或兼容扩展，使 UI 支持 Planning、Active、ReleaseCandidate、Released、Archived；不得破坏上游 Active/Released 数据迁移。
+
+发布门禁服务放在新增 `server-plugins/products` 中，并由现有 `models/server-products` 注册所需 server resource/mixin，避免把跨对象聚合逻辑放入 Svelte 客户端。
 
 Release Readiness 是查询模型，聚合：
 

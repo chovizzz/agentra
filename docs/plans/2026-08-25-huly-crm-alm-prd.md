@@ -262,4 +262,3 @@ V1 类型：Requirement、Story、Task、Bug、Spike。支持自定义工作流�
 高级仪表盘设计器、行级权限、项目组合、资源容量、更多自动化测试平台和外部 API。
 
 每个版本进入发布候选必须满足 [QA Test Plan](./2026-08-25-huly-crm-alm-qa-test-plan.md) 的退出标准。
-

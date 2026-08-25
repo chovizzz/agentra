@@ -84,6 +84,7 @@ flowchart LR
 ### 4.2 新增或扩展
 
 - 新增 `crm-lite`：Lead、Pipeline、Source、下一步动作和转换；
+- 新增 `requirements`：版本化 Requirement、验收标准、评审和交付摘要；
 - 新增 `traceability`：跨模块关系、覆盖率查询和闭环时间线；
 - 新增 Feishu OAuth Provider：飞书登录、租户限制、身份绑定；
 - 扩展 Tracker：Cycle、Work Item 类型、需求交付视图；
