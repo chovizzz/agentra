@@ -1,0 +1,20 @@
+{
+  "extends": "./node_modules/@hcengineering/platform-rig/profiles/default/tsconfig.json",
+
+  "compilerOptions": {
+    // ⚠️ WIDENED FROM THE RIG'S `["jest"]`. `traceLinkMetadata.test.ts` reads
+    // this package's own sources to prove every `metadata:` write goes through
+    // the builder, so it needs `fs` — and eslint
+    // (`@typescript-eslint/triple-slash-reference`) forbids pulling the types
+    // in file-locally. `@types/node` is already a devDependency here; this adds
+    // no package, only the global type set the rig's `node` profile already
+    // uses.
+    "types": ["jest", "node"],
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "declarationDir": "./types",
+    "tsBuildInfoFile": ".build/build.tsbuildinfo"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "lib", "dist", "types", "bundle"]
+}

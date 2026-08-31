@@ -1,0 +1,18 @@
+{
+  "string": {
+    "AgentraCore": "Agentra 核心",
+    "AgentraCorePlaceholder": "Agentra 核心已加载",
+    "ConfigLabel": "Agentra 核心",
+    "ConfigDescription": "Agentra 各模块的公共基础",
+    "Archived": "已归档",
+    "ArchivedOn": "归档时间",
+    "ArchivedBy": "归档人",
+    "ArchiveGeneration": "归档轮次",
+    "Archive": "归档",
+    "Restore": "恢复",
+    "ShowArchived": "显示已归档",
+    "ArchiveConfirmation": "确定归档该对象？追溯关系将完整保留，管理员可随时恢复。",
+    "RestoreConfirmation": "确定恢复该已归档对象？",
+    "ArchiveInsteadOfDelete": "该对象存在追溯关系引用，无法物理删除，请改为归档。"
+  }
+}

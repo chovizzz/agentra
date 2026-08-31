@@ -1,0 +1,18 @@
+{
+  "string": {
+    "AgentraCore": "Agentra Core",
+    "AgentraCorePlaceholder": "Agentra Core загружен",
+    "ConfigLabel": "Agentra Core",
+    "ConfigDescription": "Общая основа для модулей Agentra",
+    "Archived": "В архиве",
+    "ArchivedOn": "Дата архивации",
+    "ArchivedBy": "Кто архивировал",
+    "ArchiveGeneration": "Поколение архивации",
+    "Archive": "Архивировать",
+    "Restore": "Восстановить",
+    "ShowArchived": "Показать архив",
+    "ArchiveConfirmation": "Архивировать объект? Трассируемость сохраняется, администратор сможет его восстановить.",
+    "RestoreConfirmation": "Восстановить объект из архива?",
+    "ArchiveInsteadOfDelete": "На объект ссылаются связи трассируемости, удалить его нельзя. Архивируйте его."
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "string": {
+    "AgentraCore": "Agentra Core",
+    "AgentraCorePlaceholder": "Agentra Core is loaded",
+    "ConfigLabel": "Agentra Core",
+    "ConfigDescription": "Shared foundation for Agentra modules",
+    "Archived": "Archived",
+    "ArchivedOn": "Archived on",
+    "ArchivedBy": "Archived by",
+    "ArchiveGeneration": "Archive generation",
+    "Archive": "Archive",
+    "Restore": "Restore",
+    "ShowArchived": "Show archived",
+    "ArchiveConfirmation": "Archive this object? It stays fully traceable and an administrator can restore it.",
+    "RestoreConfirmation": "Restore this archived object?",
+    "ArchiveInsteadOfDelete": "This object is referenced by traceability links and cannot be deleted. Archive it instead."
+  }
+}
