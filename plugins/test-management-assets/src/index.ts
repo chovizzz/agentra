@@ -42,6 +42,12 @@ loadMetadata(testManagement.icon, {
   StatusBlocked: `${icons}#status-blocked`,
   StatusPassed: `${icons}#status-passed`,
   StatusFailed: `${icons}#status-failed`,
+  StatusSkipped: `${icons}#status-skipped`,
   Run: `${icons}#run`,
-  TestPlans: `${icons}#testPlan`
+  TestPlans: `${icons}#testPlan`,
+  // No bespoke glyphs for these yet — they reuse existing symbols rather than
+  // resolving to `undefined`, which renders as an empty square.
+  TestStep: `${icons}#document`,
+  Build: `${icons}#run`,
+  TestEnvironment: `${icons}#project`
 })

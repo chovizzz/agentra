@@ -23,8 +23,10 @@
     TestProject,
     TestPlan,
     TestCase,
+    TestCaseSnapshot,
     TestPlanItem,
-    TestManagementEvents
+    TestManagementEvents,
+    ensureTestCaseSnapshot
   } from '@hcengineering/test-management'
   import { Panel } from '@hcengineering/panel'
   import { ModernButton, EditBox, Label } from '@hcengineering/ui'
@@ -66,16 +68,30 @@
 
   async function onSave (): Promise<void> {
     try {
+      const testCasesArray = testCases instanceof Array ? testCases : [testCases]
+
+      // 🔴 BEFORE the apply block, on the PLAIN client. `ensureTestCaseSnapshot`
+      // opens its own `apply().notMatch(...)` to deduplicate, and
+      // `ApplyOperations.apply()` returns `this` — nesting it inside `applyOp`
+      // would silently merge its precondition into the plan's own batch and
+      // make the whole plan creation fail whenever the snapshot already
+      // existed. Freezing here is also what makes the pin LAZY: a case is
+      // snapshotted the first time something references it, not on every edit.
+      const snapshots = new Map<Ref<TestCase>, Ref<TestCaseSnapshot>>()
+      for (const testCase of testCasesArray) {
+        snapshots.set(testCase._id, await ensureTestCaseSnapshot(client, testCase))
+      }
+
       const applyOp = client.apply()
       await applyOp.createDoc(testManagement.class.TestPlan, space, object, id)
       await descriptionBox.createAttachments(id, applyOp)
-      const testCasesArray = testCases instanceof Array ? testCases : [testCases]
       const createPromises = testCasesArray.map(async (testCase) => {
         const testPlanItemId: Ref<TestPlanItem> = generateId()
         const testPlanItemData: Data<TestPlanItem> = {
           attachedTo: id,
           attachedToClass: testManagement.class.TestPlan,
           testCase: testCase._id,
+          snapshot: snapshots.get(testCase._id),
           testSuite: testCase.attachedTo,
           assignee: defaultAssignee,
           collection: 'items'

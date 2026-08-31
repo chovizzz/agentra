@@ -25,12 +25,13 @@
   import { ActionContext, MessageViewer, createQuery, getClient } from '@hcengineering/presentation'
   import { Button, IconMixin, IconMoreH } from '@hcengineering/ui'
   import { DocAttributeBar, getDocMixins, showMenu } from '@hcengineering/view-resources'
-  import type { ProductVersion } from '@hcengineering/products'
+  import { isFrozenProductVersionState, type ProductVersion } from '@hcengineering/products'
   import { createEventDispatcher, onDestroy, onMount } from 'svelte'
 
   import products from '../../plugin'
   import ProductPresenter from '../product/ProductPresenter.svelte'
   import ProductVersionStatePresenter from './ProductVersionStatePresenter.svelte'
+  import ReleaseNotesEditor from './ReleaseNotesEditor.svelte'
 
   export let _id: Ref<ProductVersion>
   export let _class: Ref<Class<ProductVersion>>
@@ -80,8 +81,15 @@
     dispatch('open', { ignoreKeys: ['description'] })
   })
 
+  // ⚠️ THE FROZEN CHECK BELONGS HERE TOO, not only in `canEditProductVersion`.
+  // That helper gates the ACTION; this panel renders the attribute bar, and
+  // without the state test a `Released` or `Archived` version's description and
+  // other attributes stayed editable — a shipped version is a record, and an
+  // archived one has already had its documents copied forward to its child.
   $: canEdit =
     !readonly &&
+    object !== undefined &&
+    !isFrozenProductVersionState(object.state) &&
     object?.$lookup?.space !== undefined &&
     ((object?.$lookup?.space.owners ?? []).includes(getCurrentAccount().uuid) ||
       checkMyPermission(core.permission.UpdateSpace, object.space, $permissionsStore) ||
@@ -133,6 +141,13 @@
       {/if}
     </div>
 
+    <!-- REL-005 / PRD §7.5: the release page must show the release notes.
+         `readonly` is `!canEdit`, which already folds in the frozen check, so a
+         `Released` or `Archived` version's notes render as a record. -->
+    <div class="w-full mt-6">
+      <ReleaseNotesEditor {object} readonly={!canEdit} />
+    </div>
+
     <svelte:fragment slot="utils">
       <Button
         icon={IconMoreH}
@@ -154,7 +169,16 @@
     </svelte:fragment>
 
     <svelte:fragment slot="custom-attributes">
-      <DocAttributeBar {object} {mixins} readonly={!canEdit} ignoreKeys={['name', 'description']} />
+      <!-- `releaseNotes` is rendered by `ReleaseNotesEditor` above; leaving it
+           in the attribute bar too would show the body twice, and the second
+           copy would be a plain markup box with no generate button and no
+           overwrite confirmation. -->
+      <DocAttributeBar
+        {object}
+        {mixins}
+        readonly={!canEdit}
+        ignoreKeys={['name', 'description', 'releaseNotes', 'releaseNotesGeneratedOn']}
+      />
     </svelte:fragment>
   </Panel>
 {/if}

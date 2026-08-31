@@ -17,6 +17,7 @@ import {
   Mixin,
   type Class,
   type Doc,
+  type Permission,
   type Ref,
   Type,
   type Status,
@@ -30,8 +31,11 @@ import { type AnyComponent, type Location, type ResolvedLocation } from '@hcengi
 
 import { Action, ActionCategory, ViewAction, Viewlet } from '@hcengineering/view'
 import {
+  Build,
   TestSuite,
   TestCase,
+  TestCaseSnapshot,
+  TestEnvironment,
   TestProject,
   TestCaseType,
   TestCasePriority,
@@ -40,7 +44,9 @@ import {
   TestRunStatus,
   TestResult,
   TestPlan,
-  TestPlanItem
+  TestPlanItem,
+  TestStep,
+  TestEnvironmentVariable
 } from './types'
 
 /** @public */
@@ -56,12 +62,14 @@ export const testManagementPlugin = plugin(testManagementId, {
     CreateChildTestSuite: '' as Ref<Action>,
     EditTestSuite: '' as Ref<Action>,
     RunSelectedTests: '' as Ref<Action>,
+    LinkVerifies: '' as Ref<Action>,
     EditProject: '' as Ref<Action>
   },
   actionImpl: {
     CreateChildTestSuite: '' as ViewAction,
     EditTestSuite: '' as ViewAction,
     RunSelectedTests: '' as ViewAction,
+    LinkVerifies: '' as ViewAction,
     EditProject: '' as ViewAction
   },
   icon: {
@@ -89,8 +97,12 @@ export const testManagementPlugin = plugin(testManagementId, {
     StatusBlocked: '' as Asset,
     StatusPassed: '' as Asset,
     StatusFailed: '' as Asset,
+    StatusSkipped: '' as Asset,
     Run: '' as Asset,
-    TestPlans: '' as Asset
+    TestPlans: '' as Asset,
+    TestStep: '' as Asset,
+    Build: '' as Asset,
+    TestEnvironment: '' as Asset
   },
   class: {
     TestCase: '' as Ref<Class<TestCase>>,
@@ -103,10 +115,18 @@ export const testManagementPlugin = plugin(testManagementId, {
     TypeTestRunStatus: '' as Ref<Class<Type<TestRunStatus>>>,
     TestResult: '' as Ref<Class<TestResult>>,
     TestPlan: '' as Ref<Class<TestPlan>>,
-    TestPlanItem: '' as Ref<Class<TestPlanItem>>
+    TestPlanItem: '' as Ref<Class<TestPlanItem>>,
+    TestStep: '' as Ref<Class<TestStep>>,
+    TestCaseSnapshot: '' as Ref<Class<TestCaseSnapshot>>,
+    TestEnvironment: '' as Ref<Class<TestEnvironment>>,
+    TypeTestEnvironmentVariables: '' as Ref<Class<Type<TestEnvironmentVariable[]>>>,
+    Build: '' as Ref<Class<Build>>
   },
   descriptors: {
     ProjectType: '' as Ref<SpaceTypeDescriptor>
+  },
+  permission: {
+    ManageTestAssets: '' as Ref<Permission>
   },
   mixin: {
     TestCaseTypeData: '' as Ref<Mixin<TestCase>>,
@@ -182,6 +202,9 @@ export const testManagementPlugin = plugin(testManagementId, {
     TestResult: '' as IntlString,
     StatusNonTested: '' as IntlString,
     StatusBlocked: '' as IntlString,
+    BlockedReason: '' as IntlString,
+    BlockedReasonRequired: '' as IntlString,
+    BlockedReasonPlaceholder: '' as IntlString,
     StatusPassed: '' as IntlString,
     StatusFailed: '' as IntlString,
     SelectTestCase: '' as IntlString,
@@ -205,7 +228,48 @@ export const testManagementPlugin = plugin(testManagementId, {
     SelectedTestCases: '' as IntlString,
     DefaultAssignee: '' as IntlString,
     TestPlanTitle: '' as IntlString,
-    RunAssistant: '' as IntlString
+    RunAssistant: '' as IntlString,
+    StatusSkipped: '' as IntlString,
+    TestStep: '' as IntlString,
+    Steps: '' as IntlString,
+    StepAction: '' as IntlString,
+    StepTestData: '' as IntlString,
+    StepExpectedResult: '' as IntlString,
+    AddStep: '' as IntlString,
+    RemoveStep: '' as IntlString,
+    MoveStepUp: '' as IntlString,
+    MoveStepDown: '' as IntlString,
+    NoSteps: '' as IntlString,
+    StepActionPlaceholder: '' as IntlString,
+    StepTestDataPlaceholder: '' as IntlString,
+    StepExpectedResultPlaceholder: '' as IntlString,
+    Preconditions: '' as IntlString,
+    AutomationKey: '' as IntlString,
+    Version: '' as IntlString,
+    Snapshots: '' as IntlString,
+    TestCaseSnapshot: '' as IntlString,
+    Build: '' as IntlString,
+    Builds: '' as IntlString,
+    BuildName: '' as IntlString,
+    ExternalKey: '' as IntlString,
+    CommitSha: '' as IntlString,
+    CiUrl: '' as IntlString,
+    ProductVersion: '' as IntlString,
+    TestEnvironment: '' as IntlString,
+    TestEnvironments: '' as IntlString,
+    EnvironmentName: '' as IntlString,
+    EnvironmentVariables: '' as IntlString,
+    Archived: '' as IntlString,
+    Cycle: '' as IntlString,
+    ExecutedBy: '' as IntlString,
+    StartedOn: '' as IntlString,
+    FinishedOn: '' as IntlString,
+    ExternalRunId: '' as IntlString,
+    ApprovedCaseEditWarning: '' as IntlString,
+    ApprovedCaseReadonly: '' as IntlString,
+    ApprovedCaseReadonlyHint: '' as IntlString,
+    ManageTestAssetsPermission: '' as IntlString,
+    ManageTestAssetsDescription: '' as IntlString
   },
   category: {
     TestManagement: '' as Ref<ActionCategory>
@@ -227,7 +291,14 @@ export const testManagementPlugin = plugin(testManagementId, {
     TestResultHeader: '' as AnyComponent,
     TestRunner: '' as AnyComponent,
     NewTestRunPanel: '' as AnyComponent,
-    NewTestPlanPanel: '' as AnyComponent
+    NewTestPlanPanel: '' as AnyComponent,
+    TestSteps: '' as AnyComponent,
+    TestStepPresenter: '' as AnyComponent,
+    EnvironmentVariablesPresenter: '' as AnyComponent,
+    TestEnvironmentPresenter: '' as AnyComponent,
+    TestEnvironmentRefPresenter: '' as AnyComponent,
+    BuildPresenter: '' as AnyComponent,
+    BuildRefPresenter: '' as AnyComponent
   },
   ids: {
     NoParent: '' as Ref<TestSuite>,
@@ -261,7 +332,10 @@ export const testManagementPlugin = plugin(testManagementId, {
     TestResultList: '' as Ref<Viewlet>,
     TableTestResult: '' as Ref<Viewlet>,
     TestPlanItemsList: '' as Ref<Viewlet>,
-    TableTestPlanItems: '' as Ref<Viewlet>
+    TableTestPlanItems: '' as Ref<Viewlet>,
+    TableTestRun: '' as Ref<Viewlet>,
+    TableTestEnvironment: '' as Ref<Viewlet>,
+    TableBuild: '' as Ref<Viewlet>
   },
   testCaseTypeStatus: {
     Draft: '' as Ref<Status>,

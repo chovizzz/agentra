@@ -13,7 +13,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { ProductVersionState, productVersionStates } from '@hcengineering/products'
+  import { ProductVersionState, userSelectableProductVersionStates } from '@hcengineering/products'
   import { Button, ButtonKind, ButtonSize, SelectPopup, eventToHTMLElement, showPopup } from '@hcengineering/ui'
   import { createEventDispatcher } from 'svelte'
   import products from '../../plugin'
@@ -31,7 +31,12 @@
 
   const dispatch = createEventDispatcher()
 
-  $: statesInfo = productVersionStates.map((p) => {
+  // 🔴 `userSelectableProductVersionStates`, which omits `Released`. This
+  // dropdown is the registered `AttributeEditor` for the state attribute, so
+  // offering `Released` here let anyone with write access ship a version
+  // without the readiness gate, the approval or the audit record —
+  // the same bypass as the one fixed in `CreateProductVersion.svelte`.
+  $: statesInfo = userSelectableProductVersionStates.map((p) => {
     return {
       id: p,
       label: productVersionStateLabels[p],

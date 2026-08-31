@@ -14,7 +14,14 @@
 //
 import { type Ref } from '@hcengineering/core'
 import { getClient } from '@hcengineering/presentation'
-import testManagement, { type TestRun, type TestCase, TestRunStatus } from '@hcengineering/test-management'
+import testManagement, {
+  collectTestRunStats,
+  type TestRun,
+  type TestCase,
+  type TestRunStats
+} from '@hcengineering/test-management'
+
+export type { TestRunStats }
 
 export async function getTestCases (objectId: Ref<TestRun>): Promise<TestCase[]> {
   if (objectId === undefined) {
@@ -26,40 +33,17 @@ export async function getTestCases (objectId: Ref<TestRun>): Promise<TestCase[]>
   return await client.findAll(testManagement.class.TestCase, { _id: { $in: testCaseIds } })
 }
 
-export interface TestRunStats {
-  readonly done: number
-  readonly untested: number
-  readonly blocked: number
-  readonly completed: number
-  readonly failed: number
-}
-
-async function getTestResultCount (objectId: Ref<TestRun>, status: TestRunStatus): Promise<number> {
-  const client = getClient()
-  const testResults = await client.findAll(
-    testManagement.class.TestResult,
-    {
-      attachedTo: objectId,
-      status
-    },
-    { limit: 0, total: true }
-  )
-  return testResults.total > 0 ? testResults.total : 0
-}
-
+/**
+ * Per-status counts for a test run.
+ *
+ * 🔴 THE ARITHMETIC MOVED OUT OF THIS FILE ON PURPOSE. What used to live here
+ * was four literal queries (Untested / Blocked / Passed / Failed) whose sum was
+ * the total — so a run whose results were all `Skipped` reported `total = 0`,
+ * `done = 0%`, and raised nothing at all. `collectTestRunStats` in
+ * `@hcengineering/test-management` drives both the buckets and the total off
+ * `testRunStatuses`, and is unit tested against exactly that all-skipped case.
+ * This wrapper exists only to supply the ambient UI client.
+ */
 export async function getTestRunStats (objectId: Ref<TestRun>): Promise<TestRunStats> {
-  const untested = await getTestResultCount(objectId, TestRunStatus.Untested)
-  const blocked = await getTestResultCount(objectId, TestRunStatus.Blocked)
-  const completed = await getTestResultCount(objectId, TestRunStatus.Passed)
-  const failed = await getTestResultCount(objectId, TestRunStatus.Failed)
-  const total = untested + blocked + completed + failed
-
-  const done = total > 0 ? ((total - untested) * 100) / total : 0
-  return {
-    done,
-    untested,
-    blocked,
-    completed,
-    failed
-  }
+  return await collectTestRunStats(getClient(), objectId)
 }

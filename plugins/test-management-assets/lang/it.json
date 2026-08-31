@@ -90,6 +90,11 @@
     "SelectedTestCases": "{count, plural, =0 {Casi di test non selezionati} one {# caso di test selezionato} few {# casi di test selezionati} other {# casi di test selezionati}}",
     "DefaultAssignee": "Assegnatario predefinito",
     "TestPlanTitle": "Titolo",
-    "RunAssistant": "Eseguire l'assistente"
+    "RunAssistant": "Eseguire l'assistente",
+    "BlockedReason": "Blocked reason",
+    "BlockedReasonRequired": "A blocked result must state why",
+    "BlockedReasonPlaceholder": "What is blocking this test?",
+    "ManageTestAssetsPermission": "Manage test assets",
+    "ManageTestAssetsDescription": "Create, edit and delete test suites, cases, plans, runs and results"
   }
 }

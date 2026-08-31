@@ -18,7 +18,15 @@ import { type IntlString } from '@hcengineering/platform'
 
 import products from './plugin'
 
+/**
+ * ⚠️ EXHAUSTIVE BY TYPE. `Record<ProductVersionState, IntlString>` is what makes
+ * appending a state to the enum a COMPILE error here rather than an
+ * `undefined` label rendered as a blank chip at runtime. Keep it a `Record`.
+ */
 export const productVersionStateLabels: Record<ProductVersionState, IntlString> = {
+  [ProductVersionState.Planning]: products.string.ProductVersionStatePlanning,
   [ProductVersionState.Active]: products.string.ProductVersionStateActive,
-  [ProductVersionState.Released]: products.string.ProductVersionStateReleased
+  [ProductVersionState.ReleaseCandidate]: products.string.ProductVersionStateReleaseCandidate,
+  [ProductVersionState.Released]: products.string.ProductVersionStateReleased,
+  [ProductVersionState.Archived]: products.string.ProductVersionStateArchived
 }

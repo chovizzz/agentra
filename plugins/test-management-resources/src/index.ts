@@ -44,8 +44,21 @@ import TestPlanPresenter from './components/test-plan/TestPlanPresenter.svelte'
 import TestPlanItemPresenter from './components/test-plan/TestPlanItemPresenter.svelte'
 import CreateTestRunButton from './components/test-run/CreateTestRunButton.svelte'
 import RunTestPlanButton from './components/test-plan/RunTestPlanButton.svelte'
+import TestSteps from './components/test-case/TestSteps.svelte'
+import TestStepPresenter from './components/test-case/TestStepPresenter.svelte'
+import EnvironmentVariablesPresenter from './components/environment/EnvironmentVariablesPresenter.svelte'
+import TestEnvironmentPresenter from './components/environment/TestEnvironmentPresenter.svelte'
+import BuildPresenter from './components/build/BuildPresenter.svelte'
+import BuildRefPresenter from './components/build/BuildRefPresenter.svelte'
+import TestEnvironmentRefPresenter from './components/environment/TestEnvironmentRefPresenter.svelte'
 
-import { CreateChildTestSuiteAction, EditTestSuiteAction, RunSelectedTestsAction, EditProjectAction } from './utils'
+import {
+  CreateChildTestSuiteAction,
+  EditTestSuiteAction,
+  LinkVerifiesAction,
+  RunSelectedTestsAction,
+  EditProjectAction
+} from './utils'
 import { resolveLocation, getAttachedObjectLink } from './navigation'
 
 export default async (): Promise<Resources> => ({
@@ -79,7 +92,14 @@ export default async (): Promise<Resources> => ({
     TestPlanPresenter,
     TestPlanItemPresenter,
     CreateTestRunButton,
-    RunTestPlanButton
+    RunTestPlanButton,
+    TestSteps,
+    TestStepPresenter,
+    EnvironmentVariablesPresenter,
+    TestEnvironmentPresenter,
+    TestEnvironmentRefPresenter,
+    BuildPresenter,
+    BuildRefPresenter
   },
   function: {
     GetTestSuiteLink: getAttachedObjectLink,
@@ -93,6 +113,7 @@ export default async (): Promise<Resources> => ({
     CreateChildTestSuite: CreateChildTestSuiteAction,
     EditTestSuite: EditTestSuiteAction,
     RunSelectedTests: RunSelectedTestsAction,
+    LinkVerifies: LinkVerifiesAction,
     EditProject: EditProjectAction
   }
 })

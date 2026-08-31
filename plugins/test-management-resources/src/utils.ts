@@ -15,6 +15,9 @@
 
 import { Analytics } from '@hcengineering/analytics'
 import type { DocumentQuery, Ref } from '@hcengineering/core'
+import requirements from '@hcengineering/requirements'
+import traceability from '@hcengineering/traceability'
+import { LinkVerifiesPopup } from '@hcengineering/traceability-resources'
 import { showPopup, showPanel } from '@hcengineering/ui'
 import testManagement, {
   type TestProject,
@@ -127,6 +130,36 @@ export async function RunSelectedTestsAction (docs: TestCase[] | TestCase): Prom
   } else {
     console.error('No test cases selected')
   }
+}
+
+/**
+ * `verifies` ENTRY POINT 3 — bulk link from a test case selection.
+ *
+ * 🔴 SAME COMMAND, SAME KEYS. The popup ends in `linkVerifiesPairs`, which calls
+ * the ONE `linkVerifies` command once per (case, requirement) pair on that
+ * pair's own derived idempotency key. A dedicated "bulk" write path would have
+ * to reproduce the server matrix check, the pair claim and the two activity
+ * records, and would drift from them the first time any of the three changed.
+ *
+ * ⚠️ Because the keys are per pair rather than per batch, an interrupted bulk
+ * run is simply repeated: the pairs that landed replay, the rest are created.
+ *
+ * @public
+ */
+export async function LinkVerifiesAction (docs: TestCase[] | TestCase): Promise<void> {
+  const testCases = Array.isArray(docs) ? docs : [docs]
+  if (testCases.length === 0) {
+    console.error('No test cases selected')
+    return
+  }
+  showPopup(LinkVerifiesPopup, {
+    pick: 'requirement',
+    pickClass: requirements.masterTag.Requirement,
+    fixed: testCases.map((it) => it._id),
+    // Requirements are Cards: their display field is `title`, not `name`.
+    searchField: 'title',
+    placeholder: traceability.string.LinkVerifiesToRequirement
+  })
 }
 
 export async function EditProjectAction (project: TestProject | undefined): Promise<void> {

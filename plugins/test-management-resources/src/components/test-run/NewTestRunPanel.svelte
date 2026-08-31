@@ -23,11 +23,13 @@
     TestProject,
     TestRun,
     TestCase,
+    TestCaseSnapshot,
     TestResult,
     TestRunStatus,
     TestManagementEvents,
     TestPlan,
-    TestPlanItem
+    TestPlanItem,
+    ensureTestCaseSnapshot
   } from '@hcengineering/test-management'
   import { Panel } from '@hcengineering/panel'
   import { EditBox, ModernButton, Label, navigate } from '@hcengineering/ui'
@@ -76,7 +78,13 @@
   const object: Data<TestRun> = {
     name: '' as IntlString,
     description: null,
-    dueDate: undefined
+    dueDate: undefined,
+    // Flat context: the plan this run was launched from. Recorded here rather
+    // than derived later, because the store is cleared as soon as the panel
+    // closes and there is no other trace of the origin.
+    testPlan,
+    startedOn: Date.now(),
+    executedBy: undefined
   }
   const newDoc: TestRun = {
     ...object,
@@ -95,9 +103,21 @@
 
   async function onSave (): Promise<void> {
     try {
+      const testCasesArray = testCases instanceof Array ? testCases : [testCases]
+
+      // 🔴 On the PLAIN client, before the apply block — see the same note in
+      // NewTestPlanPanel: `ensureTestCaseSnapshot` opens its own
+      // `apply().notMatch(...)`, and `ApplyOperations.apply()` returns `this`,
+      // so nesting it would fold its precondition into this batch. Pinning the
+      // snapshot here is what stops a historical run from silently re-reading
+      // today's version of the case.
+      const snapshots = new Map<Ref<TestCase>, Ref<TestCaseSnapshot>>()
+      for (const testCase of testCasesArray) {
+        snapshots.set(testCase._id, await ensureTestCaseSnapshot(client, testCase))
+      }
+
       const applyOp = client.apply()
       await applyOp.createDoc(testManagement.class.TestRun, space, object, id)
-      const testCasesArray = testCases instanceof Array ? testCases : [testCases]
       const createPromises = testCasesArray.map(async (testCase) => {
         const descriptionRef = isEmptyMarkup(description)
           ? null
@@ -109,6 +129,7 @@
           attachedToClass: testManagement.class.TestRun,
           name: testCase.name,
           testCase: testCase._id,
+          snapshot: snapshots.get(testCase._id),
           testSuite: testCase.attachedTo,
           collection: 'results',
           description: descriptionRef,
