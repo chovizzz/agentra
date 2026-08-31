@@ -64,6 +64,15 @@ jspm_packages/
 
 # dotenv environment variables file
 # .env
+#
+# 🔴 `.env` IS DELIBERATELY NOT IGNORED — `dev/.env` is TRACKED and holds the local
+# docker stack's connection strings, which upstream ships on purpose. That makes it
+# the wrong place for a real secret: anything added there is committed.
+#
+# Put per-deployment secrets (Feishu app credentials, tokens) in `*.env.local`
+# instead — ignored below, read via `docker compose --env-file .env --env-file .env.local`.
+.env.local
+*.env.local
 
 # next.js build output
 .next

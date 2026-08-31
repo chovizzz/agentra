@@ -1,16 +1,16 @@
 {
-  "huly.local:8080": {
+  "agentra.local:8080": {
     "key": "huly-dev",
     "title": "Huly",
     "protocol": "http",
     "language": "en",
     "lastNameFirst": "true"
   },
-  "huly.local:8087": {
-    "key": "huly",
-    "title": "Huly",
+  "agentra.local:8087": {
+    "key": "agentra",
+    "title": "Agentra",
     "protocol": "http",
-    "language": "en",
+    "language": "zh",
     "lastNameFirst": "true"
   },
   "host.docker.internal:8087": {
@@ -20,13 +20,13 @@
     "language": "en",
     "lastNameFirst": "true"
   },
-  "huly.local:8081": {
+  "agentra.local:8081": {
     "key": "tracex-dev",
     "title": "TraceX",
     "protocol": "http",
     "language": "en"
   },
-  "huly.local:8088": {
+  "agentra.local:8088": {
     "key": "tracex",
     "title": "TraceX",
     "protocol": "http",

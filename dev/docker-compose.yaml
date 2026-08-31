@@ -2,10 +2,10 @@ services:
   stream:
     image: 'hardcoreeng/stream'
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     container_name: stream
     environment:
-      - STREAM_ENDPOINT_URL=datalake://huly.local:4030
+      - STREAM_ENDPOINT_URL=datalake://agentra.local:4030
       - STREAM_INSECURE=true
       - STREAM_SERVER_SECRET=secret
       - STREAM_MAX_PARALLEL_SCALING_COUNT=6
@@ -20,10 +20,10 @@ services:
   media:
     image: 'hardcoreeng/media'
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     container_name: media
     environment:
-      - ACCOUNTS_URL=http://huly.local:3000
+      - ACCOUNTS_URL=http://agentra.local:3000
       - SECRET=secret
       - REGION=cockroach
       - QUEUE_CONFIG=${QUEUE_CONFIG}
@@ -31,7 +31,7 @@ services:
   preview:
     image: 'hardcoreeng/preview'
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     container_name: preview
     environment:
       - SECRET=secret
@@ -43,7 +43,7 @@ services:
   link-preview:
     image: 'hardcoreeng/link-preview'
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     container_name: link-preview
     environment:
       - SECRET=secret
@@ -54,7 +54,7 @@ services:
   cockroach:
     image: cockroachdb/cockroach:latest-v24.3
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     ports:
       - '26257:26257'
       - '8089:8080'
@@ -65,7 +65,7 @@ services:
   redpanda:
     image: docker.redpanda.com/redpandadata/redpanda:v24.3.6
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     command:
       - redpanda
       - start
@@ -97,7 +97,7 @@ services:
   redpanda_console:
     image: docker.redpanda.com/redpandadata/console:v2.8.3
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     entrypoint: /bin/sh
     command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
     environment:
@@ -121,7 +121,7 @@ services:
     image: 'minio/minio'
     command: server /data --address ":9000" --console-address ":9001"
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     expose:
       - 9000
       - 9001
@@ -140,7 +140,7 @@ services:
     expose:
       - 9200
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     volumes:
       - elastic:/usr/share/elasticsearch/data
     ports:
@@ -168,7 +168,7 @@ services:
   account:
     image: hardcoreeng/account
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     links:
       - stats
     ports:
@@ -180,29 +180,82 @@ services:
       - QUEUE_CONFIG=${QUEUE_CONFIG}
       - SERVER_SECRET=secret
       - ADMIN_EMAILS=admin,${PLATFORM_ADMIN_EMAILS}
-      - STATS_URL=http://huly.local:4900
+      - STATS_URL=http://agentra.local:4900
       - WORKSPACE_LIMIT_PER_USER=10000
       - DB_URL=${DB_CR_URL}
       # - DB_NS=account-2
       # Pass only one region to disallow selection for new workspaces.
       - REGION_INFO=cockroach|CockroachDB
-      - TRANSACTOR_URL=ws://huly.local:3332;;cockroach,
+      - TRANSACTOR_URL=ws://agentra.local:3332;;cockroach,
       - MAIL_URL=
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - FRONT_URL=http://huly.local:8087
+      - FRONT_URL=http://agentra.local:8087
       - LAST_NAME_FIRST=true
       # - WS_LIVENESS_DAYS=1
-      - ACCOUNTS_URL=http://huly.local:3000
+      - ACCOUNTS_URL=http://agentra.local:3000
       - BRANDING_PATH=/var/cfg/branding.json
       # - DISABLE_SIGNUP=true
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces
       - MAILBOX_DOMAINS=huly.dev.local
       - MAILBOX_MAX_COUNT_PER_ACCOUNT=2
+      #
+      # Feishu (Lark) OAuth — AUTH-001/004/006.
+      #
+      # 🔴 THE PROVIDER IS OFF UNTIL CLIENT_ID, CLIENT_SECRET *AND*
+      # ALLOWED_TENANT_KEYS ARE ALL SET. `registerFeishu` returns `undefined`
+      # when any of the three is missing, so the account service reports no
+      # `feishu` provider and the login page shows no button at all — the
+      # symptom of a missing secret is a silently absent button, not an error.
+      #
+      # Values come from a Feishu app (open.feishu.cn) and are per-deployment,
+      # so they are read from the shell/`.env` rather than baked in here.
+      #
+      # ⚠️ BARE NAMES, NOT `- FOO=${FOO}`. The `=${...}` form injects the EMPTY
+      # STRING when the host has not set the variable, and an empty string is not
+      # an absent one. The bare form passes a variable through only if it exists,
+      # which is what makes "unset" reach the code as `undefined`. (`feishu.ts`
+      # also normalises blanks via `envOrUndefined`, so this is belt and braces —
+      # but the two layers fail differently and both are cheap.)
+      - FEISHU_CLIENT_ID
+      - FEISHU_CLIENT_SECRET
+      # Comma-separated tenant allow-list. Enforced BEFORE any account row is
+      # written, so a disallowed tenant leaves no person/account/social id.
+      - FEISHU_ALLOWED_TENANT_KEYS
+      # Optional. Shown on the login button; set to 飞书 for a Chinese UI.
+      # Defaults to "Feishu" in `providers/Feishu.svelte` when unset.
+      - FEISHU_DISPLAY_NAME
+      # Optional. Derived from ACCOUNTS_URL + /auth/feishu/callback when unset;
+      # must match the redirect URI registered on the Feishu app exactly.
+      - FEISHU_REDIRECT_URL
+      #
+      # Tenant -> workspace -> default role (technical-spec D3, 2026-08-26).
+      # Syntax: tenantKey:workspaceSlug[:ROLE] , comma separated. ROLE defaults
+      # to USER; ADMIN is deliberately REFUSED here — a typo in an env var must
+      # not be able to hand a whole tenant platform-level privilege.
+      # ⚠️ workspaceSlug is the workspace `url` column, NOT an http URL.
+      # ⚠️ A malformed value REFUSES to register the provider rather than
+      # degrading to "no mapping" — otherwise one typo becomes "everyone
+      # authenticates, nobody can get in", visible only in production.
+      # ⚠️ Unset = workspace assignment is OFF entirely (login still works, the
+      # account just lands with no workspace).
+      - FEISHU_TENANT_WORKSPACE_MAP
+      # Strict booleans: only "true"/"false" (any case). BOTH DEFAULT TO FALSE —
+      # granting workspace membership and rewriting someone's profile are
+      # privileged, so they are opt-in. An illegal value refuses registration.
+      # With AUTO_PROVISION=false an unmapped-but-allowed user is refused and an
+      # `feishu_workspace_approval_required` row is written to `account_events`
+      # for an admin to pick up via the existing invite flow.
+      - FEISHU_AUTO_PROVISION
+      - FEISHU_SYNC_PROFILE
+      # Optional dedicated key for signing the OAuth state. Falls back to
+      # SERVER_SECRET when unset — rotating to a dedicated key invalidates
+      # in-flight logins signed with the old one, which is intended.
+      - FEISHU_STATE_HMAC_SECRET
     restart: unless-stopped
   stats:
     image: hardcoreeng/stats
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     ports:
       - 4900:4900
     environment:
@@ -213,7 +266,7 @@ services:
   workspace_cockroach:
     image: hardcoreeng/workspace
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     links:
       - cockroach
       - minio
@@ -229,9 +282,9 @@ services:
       - SERVER_SECRET=secret
       - QUEUE_CONFIG=${QUEUE_CONFIG}
       - DB_URL=${DB_CR_URL}
-      - STATS_URL=http://huly.local:4900
+      - STATS_URL=http://agentra.local:4900
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - ACCOUNTS_URL=http://huly.local:3000
+      - ACCOUNTS_URL=http://agentra.local:3000
       - ACCOUNTS_DB_URL=${DB_CR_URL}
       - BRANDING_PATH=/var/cfg/branding.json
       - BACKUP_STORAGE=${BACKUP_STORAGE_CONFIG}
@@ -243,7 +296,7 @@ services:
   collaborator:
     image: hardcoreeng/collaborator
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     links:
       - minio
       - transactor_cockroach
@@ -253,15 +306,58 @@ services:
     environment:
       - COLLABORATOR_PORT=3078
       - SECRET=secret
-      - ACCOUNTS_URL=http://huly.local:3000
+      - ACCOUNTS_URL=http://agentra.local:3000
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - STATS_URL=http://huly.local:4900
+      - STATS_URL=http://agentra.local:4900
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces
+    restart: unless-stopped
+  # ── GitHub 集成（Agentra 新增；上游未把它放进本地开发栈）
+  #
+  # 🔴 需要一个 GITHUB APP，不是 Personal Access Token。PAT 拿不到 webhook，也签不出
+  # installation token；`pod-github` 的必填项里 APP_ID / CLIENT_ID / CLIENT_SECRET /
+  # PRIVATE_KEY 全部只有 App 才有。建 App 的步骤见 docs/engineering/github-integration.md。
+  #
+  # ⚠️ 缺任一必填项时 pod-github 直接 `throw Error('Missing env variables: ...')` 退出，
+  # 不会降级运行 —— 容器起不来就去看它的日志，第一行就写着缺哪个。
+  #
+  # ⚠️ PRIVATE_KEY 必须写成单行、换行转义成字面量 \n。config.ts 会做
+  # `.replace(/\\n/g, '\n')` 还原；直接贴多行 PEM 会让 YAML 和 dotenv 都解析失败。
+  github:
+    image: hardcoreeng/github
+    extra_hosts:
+      - 'agentra.local:host-gateway'
+    links:
+      - account
+      - transactor_cockroach
+      - collaborator
+    ports:
+      - 3500:3500
+    environment:
+      - PORT=3500
+      - SERVICE_ID=github-service
+      - SERVER_SECRET=secret
+      - ACCOUNTS_URL=http://agentra.local:3000
+      - FRONT_URL=http://agentra.local:8087
+      - COLLABORATOR_URL=http://agentra.local:3078
+      - STATS_URL=http://agentra.local:4900
+      # ⚠️ 必需。缺它 pod-github 起来后会反复重启并打印
+      # `Required MINIO_ENDPOINT env to be configured` —— 那条消息有误导性：
+      # 真正缺的是 STORAGE_CONFIG，MINIO_ENDPOINT 只是它解析失败后的兜底提示。
+      - STORAGE_CONFIG=${STORAGE_CONFIG}
+      # 裸传：宿主没设就不注入，避免空串被当成「已配置」。
+      - APP_ID
+      - CLIENT_ID
+      - CLIENT_SECRET
+      - PRIVATE_KEY
+      - WEBHOOK_SECRET
+      - BOT_NAME
+      # 限定哪些工作区可用；`*` 为全部。
+      - ALLOWED_WORKSPACES=${ALLOWED_WORKSPACES:-*}
     restart: unless-stopped
   front:
     image: hardcoreeng/front
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     links:
       - stats
     ports:
@@ -270,43 +366,55 @@ services:
     environment:
       - SERVER_PORT=8080
       - SERVER_SECRET=secret
-      - ACCOUNTS_URL=http://huly.local:3000
-      - STATS_URL=http://huly.local:4900
-      - FILES_URL=http://huly.local:4030/blob/:workspace/:blobId/:filename
+      # 🔴 127.0.0.1 NOT agentra.local — THE FEISHU STATE COOKIE FORCES THIS.
+      # The OAuth state cookie is host-only (no `domain`, path=/auth/feishu), so
+      # the browser only returns it to the host that SET it. Feishu will not accept
+      # a `.local` redirect, so the callback must land on 127.0.0.1 — which means
+      # the flow must also START there, i.e. this URL. Point it at agentra.local and
+      # the callback fails with "state not bound to this browser".
+      - ACCOUNTS_URL=http://127.0.0.1:3000
+      - STATS_URL=http://agentra.local:4900
+      - FILES_URL=http://agentra.local:4030/blob/:workspace/:blobId/:filename
       - UPLOAD_URL=/files
-      - PREVIEW_URL=http://huly.local:4040
-      - GMAIL_URL=http://huly.local:8093
-      - CALENDAR_URL=http://huly.local:8095
-      - TELEGRAM_URL=http://huly.local:8086
-      - REKONI_URL=http://huly.local:4004
-      - COLLABORATOR_URL=ws://huly.local:3078
+      - PREVIEW_URL=http://agentra.local:4040
+      - GMAIL_URL=http://agentra.local:8093
+      - CALENDAR_URL=http://agentra.local:8095
+      - TELEGRAM_URL=http://agentra.local:8086
+      - REKONI_URL=http://agentra.local:4004
+      - COLLABORATOR_URL=ws://agentra.local:3078
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - GITHUB_URL=http://huly.local:3500
-      - PRINT_URL=http://huly.local:4005
-      - SIGN_URL=http://huly.local:4006
-      #      - ANALYTICS_COLLECTOR_URL=http://huly.local:4017
+      - GITHUB_URL=http://agentra.local:3500
+      # front 从环境变量生成 config.json（pods/front/src/__start.ts:30-31）。
+      # 不传这两个，界面上的「连接 GitHub」会指向上游示例 App（uberflow-dev），
+      # 授权跳转会落到别人的 App 上 —— 静态 dev/prod/public/config.json 里那两个
+      # 写死值只是开发兜底，容器里以环境变量为准。裸传：没设就不注入。
+      - GITHUB_APP
+      - GITHUB_CLIENTID
+      - PRINT_URL=http://agentra.local:4005
+      - SIGN_URL=http://agentra.local:4006
+      #      - ANALYTICS_COLLECTOR_URL=http://agentra.local:4017
       - DESKTOP_UPDATES_URL=https://dist.huly.io
       - DESKTOP_UPDATES_CHANNEL=dev
       - DESKTOP_UPDATES_CHANNELS=dev;tracex:dev-tracex
-      - BRANDING_URL=http://huly.local:8087/branding.json
-      - STREAM_URL=http://huly.local:1080/recording
-      - PAYMENT_URL=http://huly.local:3040
+      - BRANDING_URL=http://agentra.local:8087/branding.json
+      - STREAM_URL=http://agentra.local:1080/recording
+      - PAYMENT_URL=http://agentra.local:3040
       - COMMUNICATION_API_ENABLED=true
-      - BACKUP_URL=http://huly.local:4039/api/backup,
+      - BACKUP_URL=http://agentra.local:4039/api/backup,
       - EXCLUDED_APPLICATIONS_FOR_ANONYMOUS=[]
       - DISABLED_FEATURES=auto-translate,mailboxes
       # - DISABLE_SIGNUP=true
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces
-      - PULSE_URL=ws://huly.local:8099/ws
-      - DATALAKE_URL=http://huly.local:4030
-      - HULYLAKE_URL=http://huly.local:8096
-      - EXPORT_URL=http://huly.local:4009
-      - LINK_PREVIEW_URL=http://huly.local:4041
+      - PULSE_URL=ws://agentra.local:8099/ws
+      - DATALAKE_URL=http://agentra.local:4030
+      - HULYLAKE_URL=http://agentra.local:8096
+      - EXPORT_URL=http://agentra.local:4009
+      - LINK_PREVIEW_URL=http://agentra.local:4041
     restart: unless-stopped
   transactor_cockroach:
     image: hardcoreeng/transactor
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     links:
       - cockroach
       - minio
@@ -325,40 +433,40 @@ services:
       - REGION=cockroach
       - SERVER_SECRET=secret
       - ENABLE_COMPRESSION=true
-      - FULLTEXT_URL=http://huly.local:4702
-      - STATS_URL=http://huly.local:4900
+      - FULLTEXT_URL=http://agentra.local:4702
+      - STATS_URL=http://agentra.local:4900
       - DB_URL=${DB_CR_URL}
       - METRICS_CONSOLE=false
       - METRICS_FILE=metrics.txt
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - FRONT_URL=http://huly.local:8087
+      - FRONT_URL=http://agentra.local:8087
       - MAIL_URL=''
-      - ACCOUNTS_URL=http://huly.local:3000
+      - ACCOUNTS_URL=http://agentra.local:3000
       - LAST_NAME_FIRST=true
       - BRANDING_PATH=/var/cfg/branding.json
-      - AI_BOT_URL=http://huly.local:4010
+      - AI_BOT_URL=http://agentra.local:4010
       - COMMUNICATION_TIME_LOGGING_ENABLED=true
       - RATE_LIMIT_MAX=250 # 250 requests per 30 seconds
       - RATE_LIMIT_WINDOW=30000
-      - FILES_URL=http://huly.local:4030/blob/:workspace/:blobId/:filename
+      - FILES_URL=http://agentra.local:4030/blob/:workspace/:blobId/:filename
       - COMMUNICATION_API_ENABLED=true
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces
-      - HYLYLAKE_URL=http://huly.local:8096
+      - HYLYLAKE_URL=http://agentra.local:8096
     restart: unless-stopped
   rekoni:
     image: hardcoreeng/rekoni-service
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     restart: unless-stopped
     ports:
       - 4004:4004
     environment:
-      - STATS_URL=http://huly.local:4901
+      - STATS_URL=http://agentra.local:4901
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces
   fulltext_cockroach:
     image: hardcoreeng/fulltext
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     depends_on:
       elastic:
         condition: service_healthy
@@ -375,19 +483,19 @@ services:
       - SERVER_SECRET=secret
       - QUEUE_CONFIG=${QUEUE_CONFIG}
       - DB_URL=${DB_CR_URL}
-      - FULLTEXT_DB_URL=http://huly.local:9200
+      - FULLTEXT_DB_URL=http://agentra.local:9200
       - ELASTIC_INDEX_NAME=local_storage_index # Same index for simplicity
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - STATS_URL=http://huly.local:4900
-      - REKONI_URL=http://huly.local:4004
-      - ACCOUNTS_URL=http://huly.local:3000
+      - STATS_URL=http://agentra.local:4900
+      - REKONI_URL=http://agentra.local:4004
+      - ACCOUNTS_URL=http://agentra.local:3000
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces
-      - HULYLAKE_URL=http://huly.local:8096
+      - HULYLAKE_URL=http://agentra.local:8096
       - COMMUNICATION_API_ENABLED=true
   print:
     image: hardcoreeng/print
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     restart: unless-stopped
     ports:
       - 4005:4005
@@ -396,14 +504,14 @@ services:
       - REGION=cockroach
       - QUEUE_CONFIG=${QUEUE_CONFIG}
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - STATS_URL=http://huly.local:4900
-      - ACCOUNTS_URL=http://huly.local:3000
+      - STATS_URL=http://agentra.local:4900
+      - ACCOUNTS_URL=http://agentra.local:3000
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces
-      - FRONT_URL=http://huly.local:8087
+      - FRONT_URL=http://agentra.local:8087
   sign:
     image: hardcoreeng/sign
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     restart: unless-stopped
     ports:
       - 4006:4006
@@ -416,37 +524,37 @@ services:
       - REGION=cockroach
       - QUEUE_CONFIG=${QUEUE_CONFIG}
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - ACCOUNTS_URL=http://huly.local:3000
+      - ACCOUNTS_URL=http://agentra.local:3000
       - CERTIFICATE_PATH=/var/cfg/certificate.p12
       - SERVICE_ID=sign-service
       - BRANDING_PATH=/var/cfg/branding.json
-      - STATS_URL=http://huly.local:4900
+      - STATS_URL=http://agentra.local:4900
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces
   # aiBot:
   #   image: hardcoreeng/ai-bot
   #   ports:
   #     - 4010:4010
   #   extra_hosts:
-  #     - 'huly.local:host-gateway'
+  #     - 'agentra.local:host-gateway'
   #   restart: unless-stopped
   #   environment:
   #     - SERVER_SECRET=secret
   #     - DB_URL=${DB_CR_URL}
   #     - QUEUE_CONFIG=${QUEUE_CONFIG}
-  #     - ACCOUNTS_URL=http://huly.local:3000
+  #     - ACCOUNTS_URL=http://agentra.local:3000
   #     - STORAGE_CONFIG=${STORAGE_CONFIG}
   #     - FIRST_NAME=Jolie
   #     - LAST_NAME=AI
   #     - PASSWORD=password
   #     - AVATAR_PATH=./avatar.png
   #     - AVATAR_CONTENT_TYPE=.png
-  #     - STATS_URL=http://huly.local:4900
-  # #      - LOVE_ENDPOINT=http://huly.local:8096
+  #     - STATS_URL=http://agentra.local:4900
+  # #      - LOVE_ENDPOINT=http://agentra.local:8096
   # #      - OPENAI_API_KEY=token
   analytics:
     image: hardcoreeng/analytics-collector
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     restart: unless-stopped
     ports:
       - 4017:4017
@@ -454,8 +562,8 @@ services:
       - SECRET=secret
       - PORT=4017
       - SERVICE_ID=analytics-collector-service
-      - ACCOUNTS_URL=http://huly.local:3000
-      - STATS_URL=http://huly.local:4900
+      - ACCOUNTS_URL=http://agentra.local:3000
+      - STATS_URL=http://agentra.local:4900
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces
       # - POSTHOG_HOST=${POSTHOG_HOST}
       # - POSTHOG_API_KEY=${POSTHOG_API_KEY}
@@ -463,7 +571,7 @@ services:
   export:
     image: hardcoreeng/export
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     links:
       - minio
       - stats
@@ -474,15 +582,15 @@ services:
       - SECRET=secret
       - SERVICE_ID=export-service
       - DB_URL=${DB_CR_URL}
-      - STATS_URL=http://huly.local:4900
+      - STATS_URL=http://agentra.local:4900
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - ACCOUNTS_URL=http://huly.local:3000
+      - ACCOUNTS_URL=http://agentra.local:3000
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces
     restart: unless-stopped
   datalake:
     image: hardcoreeng/datalake
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     depends_on:
       minio:
         condition: service_healthy
@@ -497,8 +605,8 @@ services:
     environment:
       - PORT=4030
       - SECRET=secret
-      - ACCOUNTS_URL=http://huly.local:3000
-      - STATS_URL=http://huly.local:4900
+      - ACCOUNTS_URL=http://agentra.local:3000
+      - STATS_URL=http://agentra.local:4900
       - DB_URL=${DB_CR_URL}
       - BUCKETS=blobs,eu|http://minio:9000?accessKey=minioadmin&secretKey=minioadmin
       - REGION=cockroach
@@ -508,7 +616,7 @@ services:
   hulylake:
     image: hardcoreeng/hulylake
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     depends_on:
       minio:
         condition: service_healthy
@@ -530,7 +638,7 @@ services:
       cockroach:
         condition: service_started
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     ports:
       - 8094:8094
     environment:
@@ -545,12 +653,12 @@ services:
       account:
         condition: service_started
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     environment:
       - HULY_LOG=debug
       - HULY_KAFKA_BOOTSTRAP=redpanda:9092
       - HULY_TOKEN_SECRET=secret
-      - HULY_ACCOUNT_SERVICE=http://huly.local:3000
+      - HULY_ACCOUNT_SERVICE=http://agentra.local:3000
     restart: unless-stopped
   hulypulse:
     image: hardcoreeng/hulypulse
@@ -567,7 +675,7 @@ services:
   process-service:
     image: hardcoreeng/process
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     depends_on:
       redpanda:
         condition: service_started
@@ -575,14 +683,14 @@ services:
         condition: service_started
     environment:
       - SECRET=secret
-      - ACCOUNTS_URL=http://huly.local:3000
+      - ACCOUNTS_URL=http://agentra.local:3000
       - QUEUE_CONFIG=${QUEUE_CONFIG}
       - QUEUE_REGION=cockroach
     restart: unless-stopped
   time-machine:
     image: hardcoreeng/worker
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     depends_on:
       redpanda:
         condition: service_started
@@ -598,7 +706,7 @@ services:
   events-processor:
     image: hardcoreeng/events-processor
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     depends_on:
       redpanda:
         condition: service_started
@@ -608,7 +716,7 @@ services:
       - SERVICE_ID=events-processor
       - LOG_LEVEL=debug
       - SECRET=secret
-      - ACCOUNTS_URL=http://huly.local:3000
+      - ACCOUNTS_URL=http://agentra.local:3000
       - QUEUE_CONFIG=${QUEUE_CONFIG}
       - QUEUE_REGION=cockroach
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces
@@ -616,7 +724,7 @@ services:
   #  translate:
   #    image: hardcoreeng/translate
   #    extra_hosts:
-  #      - 'huly.local:host-gateway'
+  #      - 'agentra.local:host-gateway'
   #    depends_on:
   #      redpanda:
   #        condition: service_started
@@ -624,8 +732,8 @@ services:
   #        condition: service_started
   #    environment:
   #      - SECRET=secret
-  #      - ACCOUNTS_URL=http://huly.local:3000
-  #      - HULYLAKE_URL=http://huly.local:8096
+  #      - ACCOUNTS_URL=http://agentra.local:3000
+  #      - HULYLAKE_URL=http://agentra.local:8096
   #      - QUEUE_CONFIG=${QUEUE_CONFIG}
   #      - QUEUE_REGION=cockroach
   #      - OPENAI_API_KEY=
@@ -633,7 +741,7 @@ services:
   backup-cockroach:
     image: hardcoreeng/backup
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     depends_on:
       minio:
         condition: service_healthy
@@ -645,9 +753,9 @@ services:
         condition: service_started
     environment:
       - SECRET=secret
-      - ACCOUNTS_URL=http://huly.local:3000
+      - ACCOUNTS_URL=http://agentra.local:3000
       - ACCOUNTS_DB_URL=${DB_CR_URL}
-      - STATS_URL=http://huly.local:4900
+      - STATS_URL=http://agentra.local:4900
       - DB_URL=${DB_CR_URL}
       - REGION=cockroach
       - BUCKET_NAME=backups
@@ -661,7 +769,7 @@ services:
   backup-api:
     image: hardcoreeng/backup-api
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     depends_on:
       minio:
         condition: service_healthy
@@ -674,8 +782,8 @@ services:
     environment:
       - PORT=4039
       - SECRET=secret
-      - ACCOUNTS_URL=http://huly.local:3000
-      - STATS_URL=http://huly.local:4900
+      - ACCOUNTS_URL=http://agentra.local:3000
+      - STATS_URL=http://agentra.local:4900
       - BUCKET_NAME=backups
       - STORAGE=minio|minio?accessKey=minioadmin&secretKey=minioadmin
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces
@@ -684,7 +792,7 @@ services:
   rating_cockroach:
     image: hardcoreeng/rating
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     links:
       - cockroach
       - minio
@@ -697,19 +805,19 @@ services:
       - QUEUE_CONFIG=${QUEUE_CONFIG}
       - REGION=cockroach
       - SERVER_SECRET=secret
-      - STATS_URL=http://huly.local:4900
+      - STATS_URL=http://agentra.local:4900
       - DB_URL=${DB_CR_URL}
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - ACCOUNTS_URL=http://huly.local:3000
+      - ACCOUNTS_URL=http://agentra.local:3000
       - COMMUNICATION_TIME_LOGGING_ENABLED=true
       - COMMUNICATION_API_ENABLED=true
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces
-      - HYLYLAKE_URL=http://huly.local:8096
+      - HYLYLAKE_URL=http://agentra.local:8096
     restart: unless-stopped
   jaeger:
     image: jaegertracing/all-in-one:latest
     extra_hosts:
-      - 'huly.local:host-gateway'
+      - 'agentra.local:host-gateway'
     ports:
       - 16686:16686 # Web UI
       - 4317:4317

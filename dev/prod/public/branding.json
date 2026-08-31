@@ -1,5 +1,5 @@
 {
-  "huly.local:8080": {
+  "agentra.local:8080": {
     "title": "Huly",
     "languages": "en,ru,pl,pt,pt-br,es,zh,fr,de,ja,ko,tr",
     "defaultLanguage": "en",
@@ -28,10 +28,10 @@
       }
     ]
   },
-  "huly.local:8087": {
-    "title": "Huly",
+  "agentra.local:8087": {
+    "title": "Agentra",
     "languages": "en,ru,pl,pt,pt-br,es,zh,fr,de,ja,ko,tr",
-    "defaultLanguage": "en",
+    "defaultLanguage": "zh",
     "defaultApplication": "tracker",
     "defaultSpace": "tracker:project:DefaultProject",
     "defaultSpecial": "issues",
@@ -57,7 +57,7 @@
       }
     ]
   },
-  "huly.local:8081": {
+  "agentra.local:8081": {
     "title": "TraceX",
     "languages": "en",
     "defaultLanguage": "en",
@@ -97,7 +97,7 @@
       }
     ]
   },
-  "huly.local:8088": {
+  "agentra.local:8088": {
     "title": "TraceX",
     "languages": "en",
     "defaultLanguage": "en",
