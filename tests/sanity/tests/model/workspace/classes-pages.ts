@@ -28,7 +28,13 @@ export class ClassesPage {
   lead = (): Locator => this.page.getByRole('button', { name: 'Lead' })
   issue = (): Locator => this.page.getByRole('button', { name: 'Issue' })
   card = (): Locator => this.page.getByRole('button', { name: 'Card' })
-  product = (): Locator => this.page.getByRole('button', { name: 'Product' })
+  // ⚠️ `exact` IS LOAD BEARING. Agentra enables the `products` module (upstream
+  // ships it disabled — see the `enabled: true` decision on `productsModel` in
+  // `models/all/src/index.ts`), which adds a "Default Products Products" space
+  // type button to this very page. A substring match then resolves to two
+  // elements and Playwright fails on strict mode, not on a missing class.
+  // The assertion means "the Product CLASS is listed", so it must match exactly.
+  product = (): Locator => this.page.getByRole('button', { name: 'Product', exact: true })
 
   async checkIfClassesExists (): Promise<void> {
     await expect(this.member()).toBeVisible()

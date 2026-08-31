@@ -18,6 +18,8 @@ export * from './clickup/clickup'
 export * from './notion/notion'
 export * from './docx/docx'
 export * from './docx/preprocessors'
+export * from './testManagement/types'
+export * from './testManagement/testManagement'
 
 export * from './importer/uploader'
 export * from './importer/storageUploader'

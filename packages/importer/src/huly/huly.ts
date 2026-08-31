@@ -70,6 +70,15 @@ export interface HulyIssueHeader {
   class: 'tracker:class:Issue'
   title: string
   status: string
+  /**
+   * Task type name within the project's project type, e.g. 任务 / 缺陷.
+   *
+   * ⚠️ REQUIRED WHENEVER THE PROJECT TYPE HAS MORE THAN ONE TASK TYPE. Omitting it
+   * takes the project type's first task type, so an issue whose `status` belongs to a
+   * different flow is created with a status that is not in its own kind's status list —
+   * silently, with no import error.
+   */
+  taskType?: string
   assignee?: string
   priority?: string
   estimation?: number // in hours
@@ -411,6 +420,7 @@ export class HulyFormatImporter {
           number: parseInt(issueNumber ?? 'NaN'),
           descrProvider: () => Promise.resolve(this.parser.readMarkdownContent(issuePath)),
           status: { name: issueHeader.status },
+          taskType: issueHeader.taskType,
           priority: issueHeader.priority,
           estimation: issueHeader.estimation,
           remainingTime: issueHeader.remainingTime,
@@ -623,6 +633,14 @@ export class HulyFormatImporter {
       archived: data.archived ?? false,
       description: data.description,
       emoji: data.emoji,
+      // 🔴 WAS SILENTLY DROPPED. `HulyProjectSettings.projectType` is declared and
+      // documented, and `Importer.createProject` / `updateProject` both consume
+      // `ImportProject.projectType` (importer.ts) — but this mapper never filled it
+      // in, so a `projectType:` in the YAML did nothing and every imported project
+      // landed on `tracker:ids:ClassingProjectType`. The visible symptom is not an
+      // error: it is `defaultIssueStatus` falling back to `tracker:status:Backlog`
+      // because the custom type's statuses do not exist on the default type.
+      projectType: data.projectType !== undefined ? { name: data.projectType } : undefined,
       defaultIssueStatus: data.defaultIssueStatus !== undefined ? { name: data.defaultIssueStatus } : undefined,
       owners: data.owners !== undefined ? data.owners.map((name) => this.findAccountByName(name)) : [],
       members: data.members !== undefined ? data.members.map((name) => this.findAccountByName(name)) : [],
