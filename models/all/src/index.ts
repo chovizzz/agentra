@@ -16,6 +16,7 @@
 import core, { coreId, type Data, type PluginConfiguration, type Ref, type Tx, type Version } from '@hcengineering/core'
 
 import { Builder } from '@hcengineering/model'
+import agentraCore, { agentraCoreId, createModel as agentraCoreModel } from '@hcengineering/model-agentra-core'
 import { activityId, createModel as activityModel } from '@hcengineering/model-activity'
 import { aiBotId, createModel as aiBotModel } from '@hcengineering/model-ai-bot'
 import { attachmentId, createModel as attachmentModel } from '@hcengineering/model-attachment'
@@ -42,6 +43,12 @@ import rating, { ratingId, createModel as ratingModel } from '@hcengineering/mod
 import { recorderId, createModel as recorderModel } from '@hcengineering/model-recorder'
 import recruit, { recruitId, createModel as recruitModel } from '@hcengineering/model-recruit'
 import { requestId, createModel as requestModel } from '@hcengineering/model-request'
+import crmLite, { crmLiteId, createModel as crmLiteModel } from '@hcengineering/model-crm-lite'
+import cycle, { cycleId, createModel as cycleModel } from '@hcengineering/model-cycle'
+import requirements, { requirementsId, createModel as requirementsModel } from '@hcengineering/model-requirements'
+import traceability, { traceabilityId, createModel as traceabilityModel } from '@hcengineering/model-traceability'
+import { serverAgentraCoreId, createModel as serverAgentraCoreModel } from '@hcengineering/model-server-agentra-core'
+import { serverTraceabilityId, createModel as serverTraceabilityModel } from '@hcengineering/model-server-traceability'
 import { serverActivityId, createModel as serverActivityModel } from '@hcengineering/model-server-activity'
 import { serverAiBotId, createModel as serverAiBotModel } from '@hcengineering/model-server-ai-bot'
 import { serverAttachmentId, createModel as serverAttachmentModel } from '@hcengineering/model-server-attachment'
@@ -175,6 +182,49 @@ export default function buildModel (): Builder {
     [tagsModel, tagsId],
     [viewModel, viewId],
     [workbenchModel, workbenchId],
+    // Agentra foundation. Every Agentra module is registered after this entry.
+    //
+    // `enabled` is deliberately true and `classFilter` is deliberately set.
+    // `pluginFilterTx` (foundations/core/packages/core/src/utils.ts:832-870) drops
+    // a disabled plugin's txes as follows:
+    //   - with a `classFilter`: only CUD txes whose `objectClass` is IN the filter.
+    //     There is no special exemption for class-definition txes — they survive
+    //     only because `defaultFilter` lists presentation-level classes and does
+    //     not list `core.class.Class`. Widen `defaultFilter` and they would go too.
+    //   - with NO `classFilter`: EVERY tx of the plugin, class definitions included.
+    // Disabling a foundation package without a `classFilter` would therefore leave
+    // dangling class refs in every module that depends on it, so a foundation must
+    // either stay enabled or always carry a presentation-only `classFilter`.
+    [
+      agentraCoreModel,
+      agentraCoreId,
+      {
+        label: agentraCore.string.ConfigLabel,
+        description: agentraCore.string.ConfigDescription,
+        enabled: true,
+        beta: true,
+        icon: agentraCore.icon.AgentraCore,
+        classFilter: defaultFilter
+      }
+    ],
+    // Traceability. Model-only for now (no `-resources` package yet), but it
+    // MUST stay `enabled: true` with a `classFilter`: other Agentra modules
+    // reference `traceability.class.TraceLink`, and a disabled plugin without a
+    // classFilter loses even its class-definition txes, leaving those refs
+    // dangling. Omitting the config object entirely would be the same trap —
+    // the builder loop defaults a missing config to hidden/disabled.
+    [
+      traceabilityModel,
+      traceabilityId,
+      {
+        label: traceability.string.ConfigLabel,
+        description: traceability.string.ConfigDescription,
+        enabled: true,
+        beta: true,
+        icon: traceability.icon.Traceability,
+        classFilter: defaultFilter
+      }
+    ],
     [
       cardModel,
       cardId,
@@ -262,6 +312,27 @@ export default function buildModel (): Builder {
         classFilter: defaultFilter
       }
     ],
+    // Agentra CRM Lite. Ordered AFTER card / contact / task / view: the builder
+    // emits transactions in array order and this module's MasterTag extends
+    // `card.class.Card`, its attributes point at `contact.*`, and its viewlet
+    // reuses `task.viewlet.Kanban`.
+    //
+    // `enabled: true` + `classFilter` is deliberate. `pluginFilterTx`
+    // (foundations/core/packages/core/src/utils.ts) drops EVERY tx of a disabled
+    // plugin that has no `classFilter` — the class definitions included — so a
+    // module whose classes are referenced elsewhere must keep a filter.
+    [
+      crmLiteModel,
+      crmLiteId,
+      {
+        label: crmLite.string.ConfigLabel,
+        description: crmLite.string.ConfigDescription,
+        enabled: true,
+        beta: true,
+        icon: crmLite.icon.CrmLite,
+        classFilter: defaultFilter
+      }
+    ],
     [
       gmailModel,
       gmailId,
@@ -316,6 +387,23 @@ export default function buildModel (): Builder {
         enabled: true,
         beta: false,
         icon: tracker.icon.TrackerApplication,
+        classFilter: defaultFilter
+      }
+    ],
+    // Agentra Cycle. Ordered immediately AFTER tracker and never before it:
+    // `cycle.mixin.CycleIssue` is a mixin on `tracker.class.Issue` and a Cycle's
+    // `space` is a `tracker.class.Project`, so both classes must already be in
+    // the model when these transactions are generated (the builder emits tx in
+    // array order).
+    [
+      cycleModel,
+      cycleId,
+      {
+        label: cycle.string.ConfigLabel,
+        description: cycle.string.ConfigDescription,
+        enabled: true,
+        beta: true,
+        icon: cycle.icon.Cycles,
         classFilter: defaultFilter
       }
     ],
@@ -456,9 +544,37 @@ export default function buildModel (): Builder {
       {
         label: products.string.ConfigLabel,
         description: products.string.ConfigDescription,
-        enabled: false,
+        // 🔴 `true` FOR AGENTRA (decision D7, 2026-08-26). Upstream ships this
+        // module disabled; Agentra's release loop is built on Product /
+        // ProductVersion, so with `enabled: false` the whole Release area is
+        // absent from navigation and every REL-* requirement is unreachable —
+        // silently, because nothing fails to compile.
+        enabled: true,
         beta: false,
         icon: products.icon.ProductsApplication,
+        classFilter: defaultFilter
+      }
+    ],
+    // Agentra Requirements. Ordered AFTER card / contact / view (its MasterTag
+    // extends `card.class.Card` and its attributes point at `contact.*`) and
+    // AFTER products: `product` / `targetVersion` are `TypeRef` attributes
+    // pointing at `products.class.Product` / `products.class.ProductVersion`.
+    //
+    // ℹ️ `products` above is `enabled: true` (decision D7). Even were it not,
+    // the two referenced class definitions would still reach the model: it
+    // keeps a `classFilter`, and `pluginFilterTx` only strips a disabled plugin
+    // whole when it has none.
+    //
+    // `enabled: true` + `classFilter` is deliberate, same reasoning as CRM Lite.
+    [
+      requirementsModel,
+      requirementsId,
+      {
+        label: requirements.string.ConfigLabel,
+        description: requirements.string.ConfigDescription,
+        enabled: true,
+        beta: true,
+        icon: requirements.icon.Requirements,
         classFilter: defaultFilter
       }
     ],
@@ -567,7 +683,9 @@ export default function buildModel (): Builder {
     [serverTrainingModel, serverTrainingId],
     [serverDocumentsModel, serverDocumentsId],
     [serverAiBotModel, serverAiBotId],
-    [serverProcessModel, serverProcessId]
+    [serverProcessModel, serverProcessId],
+    [serverAgentraCoreModel, serverAgentraCoreId],
+    [serverTraceabilityModel, serverTraceabilityId]
   ]
 
   for (const [b, id, config] of builders) {

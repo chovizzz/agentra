@@ -30,6 +30,15 @@ importers:
       '@hcengineering/activity-resources':
         specifier: workspace:^0.7.0
         version: link:../plugins/activity-resources
+      '@hcengineering/agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/agentra-core
+      '@hcengineering/agentra-core-assets':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/agentra-core-assets
+      '@hcengineering/agentra-core-resources':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/agentra-core-resources
       '@hcengineering/ai-assistant':
         specifier: workspace:^0.7.0
         version: link:../plugins/ai-assistant
@@ -174,6 +183,24 @@ importers:
       '@hcengineering/core':
         specifier: workspace:^0.7.26
         version: link:../foundations/core/packages/core
+      '@hcengineering/crm-lite':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/crm-lite
+      '@hcengineering/crm-lite-assets':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/crm-lite-assets
+      '@hcengineering/crm-lite-resources':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/crm-lite-resources
+      '@hcengineering/cycle':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/cycle
+      '@hcengineering/cycle-assets':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/cycle-assets
+      '@hcengineering/cycle-resources':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/cycle-resources
       '@hcengineering/desktop-downloads':
         specifier: workspace:^0.7.0
         version: link:../plugins/desktop-downloads
@@ -468,6 +495,15 @@ importers:
       '@hcengineering/request-resources':
         specifier: workspace:^0.7.0
         version: link:../plugins/request-resources
+      '@hcengineering/requirements':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/requirements
+      '@hcengineering/requirements-assets':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/requirements-assets
+      '@hcengineering/requirements-resources':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/requirements-resources
       '@hcengineering/server-backup':
         specifier: workspace:^0.7.0
         version: link:../server/backup
@@ -573,6 +609,15 @@ importers:
       '@hcengineering/time-resources':
         specifier: workspace:^0.7.0
         version: link:../plugins/time-resources
+      '@hcengineering/traceability':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/traceability
+      '@hcengineering/traceability-assets':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/traceability-assets
+      '@hcengineering/traceability-resources':
+        specifier: workspace:^0.7.0
+        version: link:../plugins/traceability-resources
       '@hcengineering/tracker':
         specifier: workspace:^0.7.0
         version: link:../plugins/tracker
@@ -1087,6 +1132,15 @@ importers:
       '@hcengineering/activity-resources':
         specifier: workspace:^0.7.0
         version: link:../../plugins/activity-resources
+      '@hcengineering/agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/agentra-core
+      '@hcengineering/agentra-core-assets':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/agentra-core-assets
+      '@hcengineering/agentra-core-resources':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/agentra-core-resources
       '@hcengineering/ai-assistant':
         specifier: workspace:^0.7.0
         version: link:../../plugins/ai-assistant
@@ -1231,6 +1285,24 @@ importers:
       '@hcengineering/core':
         specifier: workspace:^0.7.26
         version: link:../../foundations/core/packages/core
+      '@hcengineering/crm-lite':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/crm-lite
+      '@hcengineering/crm-lite-assets':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/crm-lite-assets
+      '@hcengineering/crm-lite-resources':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/crm-lite-resources
+      '@hcengineering/cycle':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/cycle
+      '@hcengineering/cycle-assets':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/cycle-assets
+      '@hcengineering/cycle-resources':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/cycle-resources
       '@hcengineering/desktop-preferences':
         specifier: workspace:^0.7.0
         version: link:../../plugins/desktop-preferences
@@ -1522,6 +1594,15 @@ importers:
       '@hcengineering/request-resources':
         specifier: workspace:^0.7.0
         version: link:../../plugins/request-resources
+      '@hcengineering/requirements':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/requirements
+      '@hcengineering/requirements-assets':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/requirements-assets
+      '@hcengineering/requirements-resources':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/requirements-resources
       '@hcengineering/server-activity':
         specifier: workspace:^0.7.0
         version: link:../../server-plugins/activity
@@ -1738,6 +1819,15 @@ importers:
       '@hcengineering/time-resources':
         specifier: workspace:^0.7.0
         version: link:../../plugins/time-resources
+      '@hcengineering/traceability':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/traceability
+      '@hcengineering/traceability-assets':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/traceability-assets
+      '@hcengineering/traceability-resources':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/traceability-resources
       '@hcengineering/tracker':
         specifier: workspace:^0.7.0
         version: link:../../plugins/tracker
@@ -2045,6 +2135,12 @@ importers:
       '@hcengineering/server-activity-resources':
         specifier: workspace:^0.7.0
         version: link:../../server-plugins/activity-resources
+      '@hcengineering/server-agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/agentra-core
+      '@hcengineering/server-agentra-core-resources':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/agentra-core-resources
       '@hcengineering/server-ai-bot':
         specifier: workspace:^0.7.0
         version: link:../../server-plugins/ai-bot
@@ -2198,6 +2294,12 @@ importers:
       '@hcengineering/server-tool':
         specifier: workspace:^0.7.0
         version: link:../../server/tool
+      '@hcengineering/server-traceability':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/traceability
+      '@hcengineering/server-traceability-resources':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/traceability-resources
       '@hcengineering/server-tracker':
         specifier: workspace:^0.7.0
         version: link:../../server-plugins/tracker
@@ -5793,6 +5895,73 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  ../../models/agentra-core:
+    dependencies:
+      '@hcengineering/agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/agentra-core
+      '@hcengineering/agentra-core-resources':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/agentra-core-resources
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/model':
+        specifier: workspace:^0.7.17
+        version: link:../../foundations/core/packages/model
+      '@hcengineering/model-core':
+        specifier: workspace:^0.7.0
+        version: link:../core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/ui':
+        specifier: workspace:^0.7.0
+        version: link:../../packages/ui
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   ../../models/ai-assistant:
     dependencies:
       '@hcengineering/ai-assistant':
@@ -5941,6 +6110,9 @@ importers:
       '@hcengineering/model-activity':
         specifier: workspace:^0.7.0
         version: link:../activity
+      '@hcengineering/model-agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../agentra-core
       '@hcengineering/model-ai-assistant':
         specifier: workspace:^0.7.0
         version: link:../ai-assistant
@@ -5989,6 +6161,12 @@ importers:
       '@hcengineering/model-core':
         specifier: workspace:^0.7.0
         version: link:../core
+      '@hcengineering/model-crm-lite':
+        specifier: workspace:^0.7.0
+        version: link:../crm-lite
+      '@hcengineering/model-cycle':
+        specifier: workspace:^0.7.0
+        version: link:../cycle
       '@hcengineering/model-desktop-downloads':
         specifier: workspace:^0.7.0
         version: link:../desktop-downloads
@@ -6076,9 +6254,15 @@ importers:
       '@hcengineering/model-request':
         specifier: workspace:^0.7.0
         version: link:../request
+      '@hcengineering/model-requirements':
+        specifier: workspace:^0.7.0
+        version: link:../requirements
       '@hcengineering/model-server-activity':
         specifier: workspace:^0.7.0
         version: link:../server-activity
+      '@hcengineering/model-server-agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../server-agentra-core
       '@hcengineering/model-server-ai-bot':
         specifier: workspace:^0.7.0
         version: link:../server-ai-bot
@@ -6163,6 +6347,9 @@ importers:
       '@hcengineering/model-server-time':
         specifier: workspace:^0.7.0
         version: link:../server-time
+      '@hcengineering/model-server-traceability':
+        specifier: workspace:^0.7.0
+        version: link:../server-traceability
       '@hcengineering/model-server-tracker':
         specifier: workspace:^0.7.0
         version: link:../server-tracker
@@ -6202,6 +6389,9 @@ importers:
       '@hcengineering/model-time':
         specifier: workspace:^0.7.0
         version: link:../time
+      '@hcengineering/model-traceability':
+        specifier: workspace:^0.7.0
+        version: link:../traceability
       '@hcengineering/model-tracker':
         specifier: workspace:^0.7.0
         version: link:../tracker
@@ -7584,6 +7774,179 @@ importers:
       '@hcengineering/text':
         specifier: workspace:^0.7.19
         version: link:../../foundations/core/packages/text
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../models/crm-lite:
+    dependencies:
+      '@hcengineering/card':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/card
+      '@hcengineering/contact':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/contact
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/crm-lite':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/crm-lite
+      '@hcengineering/crm-lite-resources':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/crm-lite-resources
+      '@hcengineering/model':
+        specifier: workspace:^0.7.17
+        version: link:../../foundations/core/packages/model
+      '@hcengineering/model-card':
+        specifier: workspace:^0.7.0
+        version: link:../card
+      '@hcengineering/model-contact':
+        specifier: workspace:^0.7.0
+        version: link:../contact
+      '@hcengineering/model-core':
+        specifier: workspace:^0.7.0
+        version: link:../core
+      '@hcengineering/model-task':
+        specifier: workspace:^0.7.0
+        version: link:../task
+      '@hcengineering/model-view':
+        specifier: workspace:^0.7.0
+        version: link:../view
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/task':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/task
+      '@hcengineering/ui':
+        specifier: workspace:^0.7.0
+        version: link:../../packages/ui
+      '@hcengineering/view':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/view
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../models/cycle:
+    dependencies:
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/cycle':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/cycle
+      '@hcengineering/cycle-resources':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/cycle-resources
+      '@hcengineering/model':
+        specifier: workspace:^0.7.17
+        version: link:../../foundations/core/packages/model
+      '@hcengineering/model-activity':
+        specifier: workspace:^0.7.0
+        version: link:../activity
+      '@hcengineering/model-core':
+        specifier: workspace:^0.7.0
+        version: link:../core
+      '@hcengineering/model-tracker':
+        specifier: workspace:^0.7.0
+        version: link:../tracker
+      '@hcengineering/model-view':
+        specifier: workspace:^0.7.0
+        version: link:../view
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/tracker':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/tracker
+      '@hcengineering/ui':
+        specifier: workspace:^0.7.0
+        version: link:../../packages/ui
+      '@hcengineering/view':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/view
     devDependencies:
       '@hcengineering/platform-rig':
         specifier: workspace:^0.7.21
@@ -10107,6 +10470,94 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  ../../models/requirements:
+    dependencies:
+      '@hcengineering/card':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/card
+      '@hcengineering/contact':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/contact
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/model':
+        specifier: workspace:^0.7.17
+        version: link:../../foundations/core/packages/model
+      '@hcengineering/model-activity':
+        specifier: workspace:^0.7.0
+        version: link:../activity
+      '@hcengineering/model-card':
+        specifier: workspace:^0.7.0
+        version: link:../card
+      '@hcengineering/model-core':
+        specifier: workspace:^0.7.0
+        version: link:../core
+      '@hcengineering/model-view':
+        specifier: workspace:^0.7.0
+        version: link:../view
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/products':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/products
+      '@hcengineering/requirements':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/requirements
+      '@hcengineering/requirements-resources':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/requirements-resources
+      '@hcengineering/ui':
+        specifier: workspace:^0.7.0
+        version: link:../../packages/ui
+      '@hcengineering/view':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/view
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   ../../models/server-activity:
     dependencies:
       '@hcengineering/activity':
@@ -10142,6 +10593,76 @@ importers:
       '@hcengineering/server-notification':
         specifier: workspace:^0.7.0
         version: link:../../server-plugins/notification
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../models/server-agentra-core:
+    dependencies:
+      '@hcengineering/agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/agentra-core
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/model':
+        specifier: workspace:^0.7.17
+        version: link:../../foundations/core/packages/model
+      '@hcengineering/model-agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../agentra-core
+      '@hcengineering/model-core':
+        specifier: workspace:^0.7.0
+        version: link:../core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/server-agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/agentra-core
+      '@hcengineering/server-core':
+        specifier: workspace:^0.7.19
+        version: link:../../foundations/server/packages/core
     devDependencies:
       '@hcengineering/platform-rig':
         specifier: workspace:^0.7.21
@@ -11581,6 +12102,9 @@ importers:
       '@hcengineering/server-core':
         specifier: workspace:^0.7.19
         version: link:../../foundations/server/packages/core
+      '@hcengineering/server-products':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/products
     devDependencies:
       '@hcengineering/platform-rig':
         specifier: workspace:^0.7.21
@@ -12156,6 +12680,73 @@ importers:
       '@hcengineering/tracker':
         specifier: workspace:^0.7.0
         version: link:../../plugins/tracker
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../models/server-traceability:
+    dependencies:
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/model':
+        specifier: workspace:^0.7.17
+        version: link:../../foundations/core/packages/model
+      '@hcengineering/model-traceability':
+        specifier: workspace:^0.7.0
+        version: link:../traceability
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/server-core':
+        specifier: workspace:^0.7.19
+        version: link:../../foundations/server/packages/core
+      '@hcengineering/server-traceability':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/traceability
+      '@hcengineering/traceability':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/traceability
     devDependencies:
       '@hcengineering/platform-rig':
         specifier: workspace:^0.7.21
@@ -13097,6 +13688,9 @@ importers:
       '@hcengineering/platform':
         specifier: workspace:^0.7.20
         version: link:../../foundations/core/packages/platform
+      '@hcengineering/products':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/products
       '@hcengineering/setting':
         specifier: workspace:^0.7.0
         version: link:../../plugins/setting
@@ -13112,6 +13706,9 @@ importers:
       '@hcengineering/time':
         specifier: workspace:^0.7.0
         version: link:../../plugins/time
+      '@hcengineering/traceability':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/traceability
       '@hcengineering/ui':
         specifier: workspace:^0.7.0
         version: link:../../packages/ui
@@ -13315,6 +13912,70 @@ importers:
       '@hcengineering/view':
         specifier: workspace:^0.7.0
         version: link:../../plugins/view
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../models/traceability:
+    dependencies:
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/model':
+        specifier: workspace:^0.7.17
+        version: link:../../foundations/core/packages/model
+      '@hcengineering/model-core':
+        specifier: workspace:^0.7.0
+        version: link:../core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/traceability':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/traceability
+      '@hcengineering/ui':
+        specifier: workspace:^0.7.0
+        version: link:../../packages/ui
     devDependencies:
       '@hcengineering/platform-rig':
         specifier: workspace:^0.7.21
@@ -15429,6 +16090,186 @@ importers:
       '@hcengineering/view-resources':
         specifier: workspace:^0.7.0
         version: link:../view-resources
+      svelte:
+        specifier: ^4.2.20
+        version: 4.2.20
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      eslint-plugin-svelte:
+        specifier: ^2.35.1
+        version: 2.46.1(eslint@8.57.1)(svelte@4.2.20)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      prettier-plugin-svelte:
+        specifier: ^3.4.0
+        version: 3.4.0(prettier@3.6.2)(svelte@4.2.20)
+      sass:
+        specifier: ^1.80.0
+        version: 1.93.3
+      svelte-check:
+        specifier: ^3.6.9
+        version: 3.8.6(@babel/core@7.28.5)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.93.3)(svelte@4.2.20)
+      svelte-eslint-parser:
+        specifier: ^0.33.1
+        version: 0.33.1(svelte@4.2.20)
+      svelte-loader:
+        specifier: ^3.2.0
+        version: 3.2.4(svelte@4.2.20)
+      svelte-preprocess:
+        specifier: ^5.1.4
+        version: 5.1.4(@babel/core@7.28.5)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.93.3)(svelte@4.2.20)(typescript@5.9.3)
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../plugins/agentra-core:
+    dependencies:
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(jest-util@30.2.0)(jest@29.7.0)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../plugins/agentra-core-assets:
+    dependencies:
+      '@hcengineering/agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../agentra-core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../plugins/agentra-core-resources:
+    dependencies:
+      '@hcengineering/agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../agentra-core
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/ui':
+        specifier: workspace:^0.7.0
+        version: link:../../packages/ui
       svelte:
         specifier: ^4.2.20
         version: 4.2.20
@@ -19120,6 +19961,417 @@ importers:
       '@hcengineering/view-resources':
         specifier: workspace:^0.7.0
         version: link:../view-resources
+      svelte:
+        specifier: ^4.2.20
+        version: 4.2.20
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      eslint-plugin-svelte:
+        specifier: ^2.35.1
+        version: 2.46.1(eslint@8.57.1)(svelte@4.2.20)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      prettier-plugin-svelte:
+        specifier: ^3.4.0
+        version: 3.4.0(prettier@3.6.2)(svelte@4.2.20)
+      sass:
+        specifier: ^1.80.0
+        version: 1.93.3
+      svelte-check:
+        specifier: ^3.6.9
+        version: 3.8.6(@babel/core@7.28.5)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.93.3)(svelte@4.2.20)
+      svelte-eslint-parser:
+        specifier: ^0.33.1
+        version: 0.33.1(svelte@4.2.20)
+      svelte-loader:
+        specifier: ^3.2.0
+        version: 3.2.4(svelte@4.2.20)
+      svelte-preprocess:
+        specifier: ^5.1.4
+        version: 5.1.4(@babel/core@7.28.5)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.93.3)(svelte@4.2.20)(typescript@5.9.3)
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../plugins/crm-lite:
+    dependencies:
+      '@hcengineering/card':
+        specifier: workspace:^0.7.0
+        version: link:../card
+      '@hcengineering/contact':
+        specifier: workspace:^0.7.0
+        version: link:../contact
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/task':
+        specifier: workspace:^0.7.0
+        version: link:../task
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(jest-util@30.2.0)(jest@29.7.0)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../plugins/crm-lite-assets:
+    dependencies:
+      '@hcengineering/crm-lite':
+        specifier: workspace:^0.7.0
+        version: link:../crm-lite
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../plugins/crm-lite-resources:
+    dependencies:
+      '@hcengineering/attachment':
+        specifier: workspace:^0.7.0
+        version: link:../attachment
+      '@hcengineering/attachment-resources':
+        specifier: workspace:^0.7.0
+        version: link:../attachment-resources
+      '@hcengineering/card':
+        specifier: workspace:^0.7.0
+        version: link:../card
+      '@hcengineering/contact':
+        specifier: workspace:^0.7.0
+        version: link:../contact
+      '@hcengineering/contact-resources':
+        specifier: workspace:^0.7.0
+        version: link:../contact-resources
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/crm-lite':
+        specifier: workspace:^0.7.0
+        version: link:../crm-lite
+      '@hcengineering/notification':
+        specifier: workspace:^0.7.0
+        version: link:../notification
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/presentation':
+        specifier: workspace:^0.7.0
+        version: link:../../packages/presentation
+      '@hcengineering/task':
+        specifier: workspace:^0.7.0
+        version: link:../task
+      '@hcengineering/task-resources':
+        specifier: workspace:^0.7.0
+        version: link:../task-resources
+      '@hcengineering/ui':
+        specifier: workspace:^0.7.0
+        version: link:../../packages/ui
+      '@hcengineering/view':
+        specifier: workspace:^0.7.0
+        version: link:../view
+      '@hcengineering/view-resources':
+        specifier: workspace:^0.7.0
+        version: link:../view-resources
+      svelte:
+        specifier: ^4.2.20
+        version: 4.2.20
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      eslint-plugin-svelte:
+        specifier: ^2.35.1
+        version: 2.46.1(eslint@8.57.1)(svelte@4.2.20)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      prettier-plugin-svelte:
+        specifier: ^3.4.0
+        version: 3.4.0(prettier@3.6.2)(svelte@4.2.20)
+      sass:
+        specifier: ^1.80.0
+        version: 1.93.3
+      svelte-check:
+        specifier: ^3.6.9
+        version: 3.8.6(@babel/core@7.28.5)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.93.3)(svelte@4.2.20)
+      svelte-eslint-parser:
+        specifier: ^0.33.1
+        version: 0.33.1(svelte@4.2.20)
+      svelte-loader:
+        specifier: ^3.2.0
+        version: 3.2.4(svelte@4.2.20)
+      svelte-preprocess:
+        specifier: ^5.1.4
+        version: 5.1.4(@babel/core@7.28.5)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.93.3)(svelte@4.2.20)(typescript@5.9.3)
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../plugins/cycle:
+    dependencies:
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/tracker':
+        specifier: workspace:^0.7.0
+        version: link:../tracker
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(jest-util@30.2.0)(jest@29.7.0)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../plugins/cycle-assets:
+    dependencies:
+      '@hcengineering/cycle':
+        specifier: workspace:^0.7.0
+        version: link:../cycle
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../plugins/cycle-resources:
+    dependencies:
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/cycle':
+        specifier: workspace:^0.7.0
+        version: link:../cycle
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/presentation':
+        specifier: workspace:^0.7.0
+        version: link:../../packages/presentation
+      '@hcengineering/ui':
+        specifier: workspace:^0.7.0
+        version: link:../../packages/ui
+      '@hcengineering/view':
+        specifier: workspace:^0.7.0
+        version: link:../view
       svelte:
         specifier: ^4.2.20
         version: 4.2.20
@@ -26267,6 +27519,216 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  ../../plugins/requirements:
+    dependencies:
+      '@hcengineering/card':
+        specifier: workspace:^0.7.0
+        version: link:../card
+      '@hcengineering/contact':
+        specifier: workspace:^0.7.0
+        version: link:../contact
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/products':
+        specifier: workspace:^0.7.0
+        version: link:../products
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(jest-util@30.2.0)(jest@29.7.0)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../plugins/requirements-assets:
+    dependencies:
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/requirements':
+        specifier: workspace:^0.7.0
+        version: link:../requirements
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../plugins/requirements-resources:
+    dependencies:
+      '@hcengineering/card':
+        specifier: workspace:^0.7.0
+        version: link:../card
+      '@hcengineering/contact':
+        specifier: workspace:^0.7.0
+        version: link:../contact
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/presentation':
+        specifier: workspace:^0.7.0
+        version: link:../../packages/presentation
+      '@hcengineering/requirements':
+        specifier: workspace:^0.7.0
+        version: link:../requirements
+      '@hcengineering/test-management':
+        specifier: workspace:^0.7.0
+        version: link:../test-management
+      '@hcengineering/traceability':
+        specifier: workspace:^0.7.0
+        version: link:../traceability
+      '@hcengineering/traceability-resources':
+        specifier: workspace:^0.7.0
+        version: link:../traceability-resources
+      '@hcengineering/ui':
+        specifier: workspace:^0.7.0
+        version: link:../../packages/ui
+      '@hcengineering/view':
+        specifier: workspace:^0.7.0
+        version: link:../view
+      svelte:
+        specifier: ^4.2.20
+        version: 4.2.20
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      eslint-plugin-svelte:
+        specifier: ^2.35.1
+        version: 2.46.1(eslint@8.57.1)(svelte@4.2.20)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      prettier-plugin-svelte:
+        specifier: ^3.4.0
+        version: 3.4.0(prettier@3.6.2)(svelte@4.2.20)
+      sass:
+        specifier: ^1.80.0
+        version: 1.93.3
+      svelte-check:
+        specifier: ^3.6.9
+        version: 3.8.6(@babel/core@7.28.5)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.93.3)(svelte@4.2.20)
+      svelte-eslint-parser:
+        specifier: ^0.33.1
+        version: 0.33.1(svelte@4.2.20)
+      svelte-loader:
+        specifier: ^3.2.0
+        version: 3.2.4(svelte@4.2.20)
+      svelte-preprocess:
+        specifier: ^5.1.4
+        version: 5.1.4(@babel/core@7.28.5)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.93.3)(svelte@4.2.20)(typescript@5.9.3)
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   ../../plugins/setting:
     dependencies:
       '@hcengineering/account-client':
@@ -27911,6 +29373,12 @@ importers:
       '@hcengineering/preference':
         specifier: workspace:^0.7.0
         version: link:../preference
+      '@hcengineering/products':
+        specifier: workspace:^0.7.0
+        version: link:../products
+      '@hcengineering/rank':
+        specifier: workspace:^0.7.18
+        version: link:../../foundations/core/packages/rank
       '@hcengineering/tags':
         specifier: workspace:^0.7.0
         version: link:../tags
@@ -28084,6 +29552,9 @@ importers:
       '@hcengineering/query':
         specifier: workspace:^0.7.18
         version: link:../../foundations/core/packages/query
+      '@hcengineering/requirements':
+        specifier: workspace:^0.7.0
+        version: link:../requirements
       '@hcengineering/setting':
         specifier: workspace:^0.7.0
         version: link:../setting
@@ -28105,6 +29576,12 @@ importers:
       '@hcengineering/text-editor-resources':
         specifier: workspace:^0.7.0
         version: link:../text-editor-resources
+      '@hcengineering/traceability':
+        specifier: workspace:^0.7.0
+        version: link:../traceability
+      '@hcengineering/traceability-resources':
+        specifier: workspace:^0.7.0
+        version: link:../traceability-resources
       '@hcengineering/ui':
         specifier: workspace:^0.7.0
         version: link:../../packages/ui
@@ -28786,6 +30263,201 @@ importers:
       fast-equals:
         specifier: ^5.2.2
         version: 5.3.2
+      svelte:
+        specifier: ^4.2.20
+        version: 4.2.20
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      eslint-plugin-svelte:
+        specifier: ^2.35.1
+        version: 2.46.1(eslint@8.57.1)(svelte@4.2.20)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      prettier-plugin-svelte:
+        specifier: ^3.4.0
+        version: 3.4.0(prettier@3.6.2)(svelte@4.2.20)
+      sass:
+        specifier: ^1.80.0
+        version: 1.93.3
+      svelte-check:
+        specifier: ^3.6.9
+        version: 3.8.6(@babel/core@7.28.5)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.93.3)(svelte@4.2.20)
+      svelte-eslint-parser:
+        specifier: ^0.33.1
+        version: 0.33.1(svelte@4.2.20)
+      svelte-loader:
+        specifier: ^3.2.0
+        version: 3.2.4(svelte@4.2.20)
+      svelte-preprocess:
+        specifier: ^5.1.4
+        version: 5.1.4(@babel/core@7.28.5)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.93.3)(svelte@4.2.20)(typescript@5.9.3)
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3)))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../plugins/traceability:
+    dependencies:
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../plugins/traceability-assets:
+    dependencies:
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/traceability':
+        specifier: workspace:^0.7.0
+        version: link:../traceability
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../plugins/traceability-resources:
+    dependencies:
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/presentation':
+        specifier: workspace:^0.7.0
+        version: link:../../packages/presentation
+      '@hcengineering/traceability':
+        specifier: workspace:^0.7.0
+        version: link:../traceability
+      '@hcengineering/tracker':
+        specifier: workspace:^0.7.0
+        version: link:../tracker
+      '@hcengineering/ui':
+        specifier: workspace:^0.7.0
+        version: link:../../packages/ui
+      '@hcengineering/view':
+        specifier: workspace:^0.7.0
+        version: link:../view
+      '@hcengineering/view-resources':
+        specifier: workspace:^0.7.0
+        version: link:../view-resources
       svelte:
         specifier: ^4.2.20
         version: 4.2.20
@@ -31795,6 +33467,152 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  ../../server-plugins/agentra-core:
+    dependencies:
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/server-core':
+        specifier: workspace:^0.7.19
+        version: link:../../foundations/server/packages/core
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../server-plugins/agentra-core-resources:
+    dependencies:
+      '@hcengineering/activity':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/activity
+      '@hcengineering/agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/agentra-core
+      '@hcengineering/contact':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/contact
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/crm-lite':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/crm-lite
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/products':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/products
+      '@hcengineering/requirements':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/requirements
+      '@hcengineering/server-agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../agentra-core
+      '@hcengineering/server-core':
+        specifier: workspace:^0.7.19
+        version: link:../../foundations/server/packages/core
+      '@hcengineering/task':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/task
+      '@hcengineering/test-management':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/test-management
+      '@hcengineering/text-core':
+        specifier: workspace:^0.7.19
+        version: link:../../foundations/core/packages/text-core
+      '@hcengineering/traceability':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/traceability
+      '@hcengineering/tracker':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/tracker
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   ../../server-plugins/ai-bot:
     dependencies:
       '@hcengineering/ai-bot':
@@ -32973,6 +34791,79 @@ importers:
       eslint-config-prettier:
         specifier: ^8.8.0
         version: 8.10.2(eslint@8.57.1)
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../server-plugins/crm-lite:
+    dependencies:
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/crm-lite':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/crm-lite
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/requirements':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/requirements
+      '@hcengineering/server-agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../agentra-core
+      '@hcengineering/server-agentra-core-resources':
+        specifier: workspace:^0.7.0
+        version: link:../agentra-core-resources
+      '@hcengineering/server-core':
+        specifier: workspace:^0.7.19
+        version: link:../../foundations/server/packages/core
+      '@hcengineering/traceability':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/traceability
+    devDependencies:
+      '@hcengineering/middleware':
+        specifier: workspace:^0.7.23
+        version: link:../../foundations/server/packages/middleware
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
       eslint-config-standard-with-typescript:
         specifier: ^40.0.0
         version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
@@ -34348,6 +36239,137 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  ../../server-plugins/products:
+    dependencies:
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/products':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/products
+      '@hcengineering/server-core':
+        specifier: workspace:^0.7.19
+        version: link:../../foundations/server/packages/core
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../server-plugins/products-resources:
+    dependencies:
+      '@hcengineering/activity':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/activity
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/products':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/products
+      '@hcengineering/server-agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../agentra-core
+      '@hcengineering/server-agentra-core-resources':
+        specifier: workspace:^0.7.0
+        version: link:../agentra-core-resources
+      '@hcengineering/server-core':
+        specifier: workspace:^0.7.19
+        version: link:../../foundations/server/packages/core
+      '@hcengineering/server-products':
+        specifier: workspace:^0.7.0
+        version: link:../products
+    devDependencies:
+      '@hcengineering/middleware':
+        specifier: workspace:^0.7.23
+        version: link:../../foundations/server/packages/middleware
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   ../../server-plugins/rating:
     dependencies:
       '@hcengineering/core':
@@ -35247,6 +37269,70 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  ../../server-plugins/test-management:
+    dependencies:
+      '@hcengineering/attachment':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/attachment
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/server-core':
+        specifier: workspace:^0.7.19
+        version: link:../../foundations/server/packages/core
+      '@hcengineering/test-management':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/test-management
+    devDependencies:
+      '@hcengineering/middleware':
+        specifier: workspace:^0.7.23
+        version: link:../../foundations/server/packages/middleware
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   ../../server-plugins/time:
     dependencies:
       '@hcengineering/core':
@@ -35389,6 +37475,125 @@ importers:
       ts-jest:
         specifier: ^29.1.1
         version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(jest-util@30.2.0)(jest@29.7.0)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../server-plugins/traceability:
+    dependencies:
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/server-core':
+        specifier: workspace:^0.7.19
+        version: link:../../foundations/server/packages/core
+      '@hcengineering/traceability':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/traceability
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  ../../server-plugins/traceability-resources:
+    dependencies:
+      '@hcengineering/core':
+        specifier: workspace:^0.7.26
+        version: link:../../foundations/core/packages/core
+      '@hcengineering/platform':
+        specifier: workspace:^0.7.20
+        version: link:../../foundations/core/packages/platform
+      '@hcengineering/server-core':
+        specifier: workspace:^0.7.19
+        version: link:../../foundations/server/packages/core
+      '@hcengineering/server-traceability':
+        specifier: workspace:^0.7.0
+        version: link:../traceability
+      '@hcengineering/traceability':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/traceability
+    devDependencies:
+      '@hcengineering/platform-rig':
+        specifier: workspace:^0.7.21
+        version: link:../../foundations/utils/packages/platform-rig
+      '@types/jest':
+        specifier: ^29.5.5
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.18.1
+        version: 22.19.0
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.21.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^6.21.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: ^8.54.0
+        version: 8.57.1
+      eslint-config-standard-with-typescript:
+        specifier: ^40.0.0
+        version: 40.0.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint-plugin-n@15.7.0(eslint@8.57.1))(eslint-plugin-promise@6.6.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-import:
+        specifier: ^2.26.0
+        version: 2.32.0(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^15.4.0
+        version: 15.7.0(eslint@8.57.1)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.6.0(eslint@8.57.1)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@22.19.0)(ts-node@10.9.2(@types/node@22.19.0)(typescript@5.9.3))
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      ts-jest:
+        specifier: ^29.1.1
+        version: 29.4.5(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@30.2.0)(babel-jest@29.7.0(@babel/core@7.28.5))(esbuild@0.25.12)(jest-util@30.2.0)(jest@29.7.0(@types/node@22.19.0))(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -36575,6 +38780,12 @@ importers:
       '@hcengineering/activity-assets':
         specifier: workspace:^0.7.0
         version: link:../../plugins/activity-assets
+      '@hcengineering/agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/agentra-core
+      '@hcengineering/agentra-core-assets':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/agentra-core-assets
       '@hcengineering/attachment':
         specifier: workspace:^0.7.0
         version: link:../../plugins/attachment
@@ -36638,6 +38849,18 @@ importers:
       '@hcengineering/core':
         specifier: workspace:^0.7.26
         version: link:../../foundations/core/packages/core
+      '@hcengineering/crm-lite':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/crm-lite
+      '@hcengineering/crm-lite-assets':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/crm-lite-assets
+      '@hcengineering/cycle':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/cycle
+      '@hcengineering/cycle-assets':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/cycle-assets
       '@hcengineering/document':
         specifier: workspace:^0.7.0
         version: link:../../plugins/document
@@ -36749,6 +38972,12 @@ importers:
       '@hcengineering/request-assets':
         specifier: workspace:^0.7.0
         version: link:../../plugins/request-assets
+      '@hcengineering/requirements':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/requirements
+      '@hcengineering/requirements-assets':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/requirements-assets
       '@hcengineering/server':
         specifier: workspace:^0.7.19
         version: link:../../foundations/server/packages/server
@@ -36758,6 +38987,12 @@ importers:
       '@hcengineering/server-activity-resources':
         specifier: workspace:^0.7.0
         version: link:../../server-plugins/activity-resources
+      '@hcengineering/server-agentra-core':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/agentra-core
+      '@hcengineering/server-agentra-core-resources':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/agentra-core-resources
       '@hcengineering/server-ai-bot':
         specifier: workspace:^0.7.0
         version: link:../../server-plugins/ai-bot
@@ -36809,6 +39044,9 @@ importers:
       '@hcengineering/server-core':
         specifier: workspace:^0.7.19
         version: link:../../foundations/server/packages/core
+      '@hcengineering/server-crm-lite':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/crm-lite
       '@hcengineering/server-document':
         specifier: workspace:^0.7.0
         version: link:../../server-plugins/document
@@ -36878,6 +39116,12 @@ importers:
       '@hcengineering/server-process-resources':
         specifier: workspace:^0.7.0
         version: link:../../server-plugins/process-resources
+      '@hcengineering/server-products':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/products
+      '@hcengineering/server-products-resources':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/products-resources
       '@hcengineering/server-rating':
         specifier: workspace:^0.7.0
         version: link:../../server-plugins/rating
@@ -36917,6 +39161,9 @@ importers:
       '@hcengineering/server-telegram-resources':
         specifier: workspace:^0.7.0
         version: link:../../server-plugins/telegram-resources
+      '@hcengineering/server-test-management':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/test-management
       '@hcengineering/server-time':
         specifier: workspace:^0.7.0
         version: link:../../server-plugins/time
@@ -36926,6 +39173,12 @@ importers:
       '@hcengineering/server-token':
         specifier: workspace:^0.7.18
         version: link:../../foundations/core/packages/token
+      '@hcengineering/server-traceability':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/traceability
+      '@hcengineering/server-traceability-resources':
+        specifier: workspace:^0.7.0
+        version: link:../../server-plugins/traceability-resources
       '@hcengineering/server-tracker':
         specifier: workspace:^0.7.0
         version: link:../../server-plugins/tracker
@@ -36992,6 +39245,12 @@ importers:
       '@hcengineering/time-assets':
         specifier: workspace:^0.7.0
         version: link:../../plugins/time-assets
+      '@hcengineering/traceability':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/traceability
+      '@hcengineering/traceability-assets':
+        specifier: workspace:^0.7.0
+        version: link:../../plugins/traceability-assets
       '@hcengineering/tracker':
         specifier: workspace:^0.7.0
         version: link:../../plugins/tracker
@@ -61713,7 +63972,7 @@ snapshots:
   node-loader@2.0.0(webpack@5.102.1):
     dependencies:
       loader-utils: 2.0.4
-      webpack: 5.102.1
+      webpack: 5.102.1(esbuild@0.25.12)(webpack-cli@5.1.4)
 
   node-localstorage@2.2.1:
     dependencies:

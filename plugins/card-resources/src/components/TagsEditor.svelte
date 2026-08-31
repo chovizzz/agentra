@@ -42,6 +42,12 @@
 
   $: activeTags = tags.filter((tag) => hierarchy.hasMixin(doc, tag._id))
 
+  // The card itself carries its read-only state, so do not rely on every call site
+  // remembering to pass the prop (CardWidget did not, and tags stayed editable there).
+  $: isReadonly = readonly || doc.readonly === true
+  $: canAdd = !isReadonly && !checkAddPermission($permissionsStore)
+  $: canRemove = !isReadonly && !checkRemovePermission($permissionsStore)
+
   async function removeTag (tagId: string): Promise<void> {
     await client.update(doc, { $unset: { [tagId]: true } })
   }
@@ -73,7 +79,7 @@
       },
       eventToHTMLElement(e),
       async (res) => {
-        if (res !== undefined) {
+        if (res !== undefined && canAdd) {
           await client.createMixin(doc._id, doc._class, doc.space, res, {})
         }
       }
@@ -102,7 +108,7 @@
     e.preventDefault()
     if (activeTags.length === 0) return
     const value = activeTags.map((mixin) => ({ id: mixin._id, label: mixin.label, isSelected: true }))
-    if (possibleMixins.length > 0) {
+    if (canAdd && possibleMixins.length > 0) {
       value.push(...possibleMixins.map((mixin) => ({ id: mixin._id, label: mixin.label, isSelected: false })))
     }
     showPopup(SelectPopup, { value }, eventToHTMLElement(e), async (result) => {
@@ -110,8 +116,10 @@
       const selected = value.find((v) => v.id === result)
       if (selected === undefined) return
       if (selected.isSelected) {
+        if (!canRemove || !isRemoveable(selected.id as Ref<Mixin<Doc>>, activeTags)) return
         await removeTag(selected.id as Ref<Mixin<Card>>)
       } else {
+        if (!canAdd) return
         await client.createMixin(doc._id, doc._class, doc.space, selected.id as Ref<Mixin<Card>>, {})
       }
     })
@@ -132,16 +140,15 @@
         />
       {:else}
         {#each activeTags as mixin}
-          {@const removable =
-            !readonly && isRemoveable(mixin._id, activeTags) && !checkRemovePermission($permissionsStore)}
+          {@const removable = canRemove && isRemoveable(mixin._id, activeTags)}
           <CardTagColored
             labelIntl={mixin.label}
             color={mixin.background ?? 0}
             {removable}
-            on:remove={() => removeTag(mixin._id)}
+            on:remove={() => (removable ? removeTag(mixin._id) : undefined)}
           />
         {/each}
-        {#if !readonly && dropdownItems.length > 0 && !checkAddPermission($permissionsStore)}
+        {#if canAdd && dropdownItems.length > 0}
           <CircleButton id={id ? `${id}-add` : undefined} icon={IconAdd} size={'small'} ghost on:click={add} />
         {/if}
       {/if}

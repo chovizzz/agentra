@@ -70,6 +70,8 @@
     "ConvertToEmbedPreview": "显示为内容预览",
     "UnableToLoadEmbeddedContent": "由于权限设置或不支持的内容，无法加载链接预览",
     "CannotConnectToCollaborationService": "无法连接到协作者",
+    "ContentChangeRejectedTitle": "修改未保存",
+    "ContentChangeRejected": "该文档的一处修改已回滚：在当前状态下不能修改此字段。",
     "SourceURL": "源URL",
     "SelectedDocuments": "选定的文档 ({count, plural, =1 {1 项} other {# 项}})",
     "Highlight": "Highlight",

@@ -311,6 +311,21 @@
         ...p,
         kind: p.kind ?? kind ?? ('' as Ref<TaskType>),
         _id: generateId(),
+        // Provenance for the child draft, mirroring the one the parent gets
+        // below. `IssueDraft.template` already declares this shape; nothing
+        // used to fill it in for children, so a sub issue built from a
+        // template child could not be traced back to the child it came from.
+        //
+        // 🔴 The key is `p.id`, NOT the index. `IssueTemplateChild.id` is
+        // minted once by `generateId()` when the child is added
+        // (`templates/IssueTemplateChildEditor.svelte`), and reordering
+        // splices the child OBJECT around without reassigning ids
+        // (`templates/IssueTemplateChilds.svelte`), so this survives reorder
+        // and sibling deletion. An index would not.
+        template: {
+          template: template._id,
+          childId: p.id
+        },
         space: _space as Ref<Project>,
         subIssues: [],
         startDate: null,
@@ -512,6 +527,34 @@
         childInfo: [],
         kind,
         identifier
+      }
+
+      // Record which template this issue was built from. `Issue.template` has
+      // always been declared (`plugins/tracker/src/index.ts`) and is already
+      // RENDERED by `issues/edit/ControlPanel.svelte`, but nothing ever wrote
+      // it, so that panel was dead. `updateTemplate` only ever put it on the
+      // draft.
+      //
+      // ⚠️ Assigned CONDITIONALLY on purpose. An unconditional
+      // `template: object.template` would put an explicit `undefined` into
+      // `TxCreateDoc.attributes` for every issue created without a template —
+      // `TxProcessor.createDoc2Doc` spreads `attributes` verbatim, so that
+      // would materialise the key on every document in the collection.
+      // ⚠️ DO NOT ADDITIONALLY GUARD THIS ON `templateId`. It is tempting:
+      // `templateId` is the id the picker currently holds, and it can run ahead
+      // of `object.template`, because `updateTemplate` only writes after
+      // `templateQuery` has resolved. But the two are NOT describing the same
+      // thing. `templateId` is what the user last CLICKED; `object.template` is
+      // what the draft's fields were actually built from — and `updateTemplate`
+      // sets the fields and the provenance in ONE object rebuild
+      // (`object = { ...object, ...templBase, template: { template: _id } }`),
+      // so `object.template` is exactly consistent with the content by
+      // construction. If the user picks B and hits Create while B is still
+      // loading (or B turns out to be unreadable), the draft still holds A's
+      // fields, so A is the TRUE origin and dropping it would lose real
+      // provenance rather than avoid a false one.
+      if (object.template !== undefined) {
+        value.template = object.template
       }
 
       if (!isEmptyMarkup(object.description)) {

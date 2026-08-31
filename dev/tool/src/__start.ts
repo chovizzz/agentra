@@ -22,6 +22,8 @@ import { devTool } from '.'
 
 import { addLocation } from '@hcengineering/platform'
 import { serverActivityId } from '@hcengineering/server-activity'
+import { serverAgentraCoreId } from '@hcengineering/server-agentra-core'
+import { serverTraceabilityId } from '@hcengineering/server-traceability'
 import { serverAiBotId } from '@hcengineering/server-ai-bot'
 import { serverAttachmentId } from '@hcengineering/server-attachment'
 import { serverCalendarId } from '@hcengineering/server-calendar'
@@ -48,6 +50,8 @@ import { serverTrackerId } from '@hcengineering/server-tracker'
 import { serverViewId } from '@hcengineering/server-view'
 
 addLocation(serverActivityId, () => import('@hcengineering/server-activity-resources'))
+addLocation(serverAgentraCoreId, () => import('@hcengineering/server-agentra-core-resources'))
+addLocation(serverTraceabilityId, () => import('@hcengineering/server-traceability-resources'))
 addLocation(serverAttachmentId, () => import('@hcengineering/server-attachment-resources'))
 addLocation(serverCollaborationId, () => import('@hcengineering/server-collaboration-resources'))
 addLocation(serverContactId, () => import('@hcengineering/server-contact-resources'))
