@@ -983,6 +983,20 @@ export function createModel (builder: Builder): void {
     contact.socialIdentityProvider.Telegram
   )
 
+  builder.createDoc(
+    contact.class.SocialIdentityProvider,
+    core.space.Model,
+    {
+      label: contact.string.Feishu,
+      // Reuses the generic profile glyph rather than shipping an unofficial
+      // redraw of the Feishu/Lark trademark. `contact.icon.Profile` is already
+      // what SocialIdsEditor falls back to for providers without an icon.
+      icon: contact.icon.Profile,
+      type: SocialIdType.FEISHU
+    },
+    contact.socialIdentityProvider.Feishu
+  )
+
   builder.mixin(contact.class.Person, core.class.Class, view.mixin.ObjectPresenter, {
     presenter: contact.component.PersonPresenter
   })
