@@ -1007,7 +1007,8 @@ export enum SocialIdType {
   OIDC = 'oidc',
   HULY = 'huly',
   TELEGRAM = 'telegram',
-  HULY_ASSISTANT = 'huly-assistant'
+  HULY_ASSISTANT = 'huly-assistant',
+  FEISHU = 'feishu'
 }
 
 export interface SocialId {

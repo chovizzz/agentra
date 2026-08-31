@@ -27,6 +27,7 @@ import { Doc as YDoc } from 'yjs'
 
 import { Context } from '../context'
 import { CollabStorageAdapter } from './adapter'
+import { PlatformRejectedError, isPlatformRejection } from './errors'
 
 const activityMarkupLimit = 100 * 1024 // 100kb
 
@@ -257,7 +258,29 @@ export class PlatformStorageAdapter implements CollabStorageAdapter {
       }
     )
 
-    await ctx.with('update', {}, () => client.diffUpdate(current, { [objectAttr]: blobId }))
+    // 🔴 ONLY THIS CALL IS CLASSIFIED. It is the one transaction that carries the
+    // document text, so it is the only failure where "put the ydoc back" is the
+    // right answer. The `findOne` above and the activity write below can fail for
+    // their own reasons; those stay ordinary errors and keep the retry-forever
+    // behaviour they have always had.
+    try {
+      await ctx.with('update', {}, () => client.diffUpdate(current, { [objectAttr]: blobId }))
+    } catch (err: any) {
+      if (isPlatformRejection(err)) {
+        // The platform looked at this write and refused it (a guard middleware,
+        // a permission check, ...). Retrying cannot change the answer, and the
+        // ydoc we just wrote in `saveDocument` now holds content the platform
+        // does not have. Hand that fact up so the caller can reconcile.
+        ctx.warn('platform refused document content update', {
+          documentName,
+          objectClass,
+          objectAttr,
+          status: err.status
+        })
+        throw new PlatformRejectedError(documentName, objectAttr, err.status, err)
+      }
+      throw err
+    }
 
     const prevValue = prevMarkup.length > activityMarkupLimit ? activity.string.ValueTooLarge : prevMarkup
     const currValue = currMarkup.length > activityMarkupLimit ? activity.string.ValueTooLarge : currMarkup

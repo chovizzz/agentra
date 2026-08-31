@@ -27,15 +27,24 @@ import {
   onStoreDocumentPayload
 } from '@hocuspocus/server'
 import { Transformer } from '@hocuspocus/transformer'
-import { Doc as YDoc } from 'yjs'
+import { Doc as YDoc, applyUpdate, encodeStateAsUpdate } from 'yjs'
 import { Context, withContext } from '../context'
 import { CollabStorageAdapter } from '../storage/adapter'
+import { PlatformRejectedError } from '../storage/errors'
 
 export interface StorageConfiguration {
   ctx: MeasureContext
   adapter: CollabStorageAdapter
   transformer: Transformer
   saveRetryInterval?: number
+  /**
+   * How many times a platform *refusal* is re-attempted before the document is
+   * reconciled back to the last content the platform accepted. A refusal is
+   * deterministic, so this is not a retry budget in the usual sense — it only
+   * guards against a one-off server error that happened to be reported with a
+   * status this service reads as a refusal.
+   */
+  platformRejectAttempts?: number
 }
 
 type DocumentName = string
@@ -54,11 +63,13 @@ export class StorageExtension implements Extension {
   private readonly promises = new Map<DocumentName, Promise<void>>()
 
   private readonly saveRetryInterval: number
+  private readonly platformRejectAttempts: number
   private stopped = false
 
   constructor (configuration: StorageConfiguration) {
     this.configuration = configuration
     this.saveRetryInterval = configuration.saveRetryInterval ?? 1000
+    this.platformRejectAttempts = configuration.platformRejectAttempts ?? 3
   }
 
   async onDestroy (): Promise<any> {
@@ -83,6 +94,19 @@ export class StorageExtension implements Extension {
 
     if (document.isLoading) {
       ctx.warn('document changed while is loading', { documentName, connectionId })
+      return
+    }
+
+    if (connectionId === undefined) {
+      // 🔴 AN ORIGIN-LESS TRANSACTION IS NOT A CLIENT EDIT. Yjs defaults the
+      // transaction origin to `null`, and hocuspocus then reports the change
+      // with an empty context, so `connectionId` is `undefined`. Hocuspocus
+      // itself refuses to store such an update (`handleDocumentUpdate` returns
+      // early when there is no connection); recording it here would put an
+      // `undefined` key in `collaborators` that nothing ever clears, leaving
+      // the document permanently "dirty". `revertDocument` below transacts
+      // exactly like this, which is how this was found.
+      ctx.info('ignoring change with no connection', { documentName })
       return
     }
 
@@ -116,7 +140,12 @@ export class StorageExtension implements Extension {
     }
   }
 
-  async onStoreDocument ({ context, documentName, document }: withContext<onStoreDocumentPayload>): Promise<void> {
+  async onStoreDocument ({
+    context,
+    documentName,
+    document,
+    socketId
+  }: withContext<onStoreDocumentPayload>): Promise<void> {
     const { ctx } = this.configuration
     const { connectionId } = context
 
@@ -128,7 +157,12 @@ export class StorageExtension implements Extension {
       return
     }
 
-    await this.storeDocument(documentName, document, context)
+    // `socketId === 'server'` is hocuspocus' own marker for a `DirectConnection`
+    // store, i.e. the `updateContent` RPC. That call awaits this hook, so an
+    // error thrown here becomes the RPC's error response. Every other caller is
+    // the debounced background save, where nothing awaits us and throwing only
+    // costs the document its unload — see `performStoreDocument`.
+    await this.storeDocument(documentName, document, context, undefined, socketId === 'server')
   }
 
   async onConnect ({ context, documentName, instance }: withContext<onConnectPayload>): Promise<any> {
@@ -191,19 +225,27 @@ export class StorageExtension implements Extension {
     documentName: string,
     document: Document,
     context: Context,
-    connectionId?: string
+    connectionId?: string,
+    propagateRejection: boolean = false
   ): Promise<void> {
     const prev = this.promises.get(documentName)
 
     const curr = async (): Promise<void> => {
       if (prev !== undefined) {
-        await prev
+        // Saves can now end in a rejection (see `performStoreDocument`). A
+        // previous save that failed has already reported itself; swallowing it
+        // here keeps the chain going so the next save still gets its attempt.
+        try {
+          await prev
+        } catch {
+          // intentionally ignored
+        }
       }
 
       // Check whether we still have changes after the previous save
       const noUpdates = this.hasNoUpdates(documentName, connectionId)
       if (!noUpdates) {
-        await this.performStoreDocument(documentName, document, context)
+        await this.performStoreDocument(documentName, document, context, propagateRejection)
       }
     }
 
@@ -219,10 +261,16 @@ export class StorageExtension implements Extension {
     }
   }
 
-  private async performStoreDocument (documentName: string, document: Document, context: Context): Promise<void> {
+  private async performStoreDocument (
+    documentName: string,
+    document: Document,
+    context: Context,
+    propagateRejection: boolean
+  ): Promise<void> {
     const { ctx, adapter } = this.configuration
 
     let attempt = 0
+    let rejections = 0
     while (true) {
       attempt++
       const now = Date.now()
@@ -250,6 +298,41 @@ export class StorageExtension implements Extension {
         Analytics.handleError(err)
         ctx.error('failed to save document', { documentName, attempt, error: err })
 
+        if (err instanceof PlatformRejectedError) {
+          rejections++
+          if (rejections >= this.platformRejectAttempts) {
+            // 🔴 A REFUSAL IS TERMINAL, SO IT MUST NOT JOIN THE RETRY LOOP.
+            // The loop below exists for storage/transport failures, which a
+            // retry can fix. A refusal cannot be retried into an acceptance,
+            // and looping on it burns a save every `saveRetryInterval` forever
+            // while pinning the document in memory.
+            //
+            // What is left behind is the real problem: `saveDocument` writes
+            // the ydoc BEFORE it talks to the platform, and `loadDocument`
+            // prefers the ydoc over the blob ref. So a refused edit stays in
+            // collaborator storage and gets served back to editors even though
+            // the platform never took it. Put the document back to the content
+            // the platform does hold, persist that, and let the editors see it.
+            await this.revertDocument(documentName, document, context, err, now)
+
+            if (propagateRejection) {
+              // The RPC path awaits this hook, so throwing is what turns a
+              // refusal into an error response for the caller.
+              throw err
+            }
+
+            // 🔴 THE BACKGROUND PATH MUST NOT THROW. Nobody awaits the
+            // debounced store, so an error there reaches no user — and
+            // hocuspocus skips `afterStoreDocument`, hence `unloadDocument`,
+            // whenever `onStoreDocument` rejects. With `unloadImmediately:
+            // false` (see `server.ts`) a document whose last connection closed
+            // while a save was pending would then sit in `hocuspocus.documents`
+            // forever. Returning normally lets it unload; the reconcile above,
+            // which every connected editor receives, is the feedback here.
+            return
+          }
+        }
+
         if (this.stopped) {
           ctx.info('storage extension stopped, skipping document save', { documentName })
           throw new Error('Aborted')
@@ -257,6 +340,77 @@ export class StorageExtension implements Extension {
 
         await new Promise((resolve) => setTimeout(resolve, this.saveRetryInterval))
       }
+    }
+  }
+
+  /**
+   * Bring the in-memory document, and collaborator's own ydoc storage, back to
+   * the last content the platform accepted.
+   *
+   * ⚠️ This is deliberately generic: it is driven by the refusal the platform
+   * returned and the attribute named in it, and knows nothing about which class
+   * or which guard produced it. Any server-side check that refuses a
+   * `TxUpdateDoc` on a collaborative attribute is reconciled the same way.
+   *
+   * The transaction is applied with no origin, which matters twice over:
+   * hocuspocus broadcasts the resulting update to every connected editor (so
+   * the author watches the refused text revert, which is the only feedback the
+   * background save path has), and it does NOT schedule another store, so this
+   * cannot recurse.
+   */
+  private async revertDocument (
+    documentName: string,
+    document: Document,
+    context: Context,
+    rejection: PlatformRejectedError,
+    since: number
+  ): Promise<void> {
+    const { ctx, adapter, transformer } = this.configuration
+    const { objectAttr } = rejection
+
+    const accepted = this.markups.get(documentName)?.[objectAttr]
+    if (accepted === undefined) {
+      // Nothing known-good to go back to — the document was never read as
+      // markup. Leave it alone rather than blanking a field we cannot restore.
+      ctx.warn('cannot revert refused document, no known accepted content', { documentName, objectAttr })
+      return
+    }
+
+    try {
+      ctx.warn('reverting refused document content', { documentName, objectAttr })
+
+      const update = encodeStateAsUpdate(transformer.toYdoc(accepted, objectAttr))
+      document.transact(() => {
+        const fragment = document.getXmlFragment(objectAttr)
+        fragment.delete(0, fragment.length)
+        applyUpdate(document, update)
+      })
+
+      // Persist the reverted ydoc. `prev` and `curr` now agree on `objectAttr`,
+      // so `saveDocumentToPlatform` short-circuits and no second transaction is
+      // sent to the platform.
+      await adapter.saveDocument(ctx, documentName, document, context, {
+        prev: () => this.markups.get(documentName) ?? {},
+        curr: () => transformer.fromYdoc(document)
+      })
+
+      // Edits that arrived after this attempt started keep their timestamp and
+      // are therefore preserved for the next save, exactly as on the happy path.
+      this.clearUpdates(documentName, since)
+
+      // Explicit signal for clients that care to render one. Providers with no
+      // stateless handler ignore it, so this is additive.
+      document.broadcastStateless(
+        JSON.stringify({
+          type: 'content-rejected',
+          documentName,
+          objectAttr,
+          status: rejection.status
+        })
+      )
+    } catch (err: any) {
+      Analytics.handleError(err)
+      ctx.error('failed to revert refused document content', { documentName, objectAttr, error: err })
     }
   }
 
