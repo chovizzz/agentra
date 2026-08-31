@@ -19,7 +19,7 @@ Agentra 直接 fork [Huly Platform](https://github.com/hcengineering/platform)�
 
 核心代码以 `platform` fork 为主；Docker Compose、域名、密钥、备份及镜像编排由 [huly-selfhost](https://github.com/hcengineering/huly-selfhost) 的独立 fork 或部署覆盖层维护。
 
-不恢复 Huly 已逐步弃用的旧 `lead` 模块。新建 `crm-lite` 模块，复用 Contact、Card、Tracker、Products、Test Management、Activity、Notification、Process 和 GitHub 等现有模块。
+不启用上游既有的 `lead` 模块。事实描述：该模块在 `models/all/src/index.ts` 中**仍正常注册**，只是配置为 `enabled: false, beta: true`（默认关闭的 beta 能力），**并非上游已弃用或已删除**。不采用它的理由是**默认禁用 + 能力差异**——它缺少本项目所需的版本化正文、结构化转换、跨模块 Trace Link 与配置化 Pipeline/Source，把它改造到位的代价高于新建模块，且会加大上游合并冲突面。因此新建 `crm-lite` 模块，复用 Contact、Card、Tracker、Products、Test Management、Activity、Notification、Process 和 GitHub 等现有模块。
 
 ## 2. 产品边界
 
@@ -80,8 +80,8 @@ flowchart LR
 
 - `contact`：Organization、Person、Employee；
 - `card`：版本化内容、类型、关系和扩展字段基础；
-- `tracker`：Project、Issue、父子任务、组件、里程碑、依赖、估时和工时；
-- `products`：Product、Product Version 和发布状态；
+- `tracker`：Project、Issue、父子任务、组件、里程碑、估时和工时，以及 `Issue.blockedBy` / `Issue.relations` 两个 `RelatedDocument[]` 数组表达的阻塞/关联关系。🔴 **更正**：FS/SS/FF/SF 四类依赖 + `lag` **上游并未落地**（`IssueRelation` 是为尚未实现的 Gantt 预留的死 schema，全仓 `addCollection(IssueRelation)` 零命中），已随 Gantt 一并降级 V1.1（PRD PM-003 / PM-005）；
+- `products`：Product、Product Version 和发布状态（✅ D7 已关闭 2026-08-26：把 `models/all/src/index.ts` 中 products 配置改为 `enabled: true`）；
 - `test-management`：Test Project、Suite、Case、Plan、Run、Result；
 - `github`：Issue/PR 等代码仓库对象同步；
 - `activity`、`notification`、`view`、`process`、`fulltext`：横向能力。
@@ -112,21 +112,28 @@ flowchart LR
 | Test Suite/Case/Plan/Run/Result | `test-management` 现有对象 | 通过 mixin/新 AttachedDoc 扩展 |
 | Repository/PR | `github` 现有对象 | 复用官方同步 |
 | Product Version | `products.ProductVersion` | 语义化版本和发布状态 |
-| Trace Link | 新增 `traceability.TraceLink` | 跨类有向关系及关系类型 |
+| Trace Link | 新增 `traceability.TraceLink` | **跨模块**有向关系及关系类型；存储落在 `DOMAIN_RELATION`（`docA` = source / `docB` = target），白拿两个 btree 索引 |
 
 Trace Link 的方向固定为 `source --kind--> target`：
 
-| kind | 固定方向 |
-| --- | --- |
-| `converted-to` | Lead → Requirement |
-| `implements` | Work Item → Requirement |
-| `blocks` | Work Item → Work Item |
-| `verifies` | Test Case → Requirement |
-| `defect-of` | Bug → Test Result/Test Case/Requirement |
-| `fixed-by` | Bug → Pull Request |
-| `delivered-in` | Requirement/Work Item/Bug → Product Version |
+| kind | 固定方向 | 改版时是否继承 | V1 创建路径 |
+| --- | --- | --- | --- |
+| `converted-to` | Lead → Requirement | ✅ 继承 | ✅ 已有（转换 command） |
+| `implements` | Work Item → Requirement | ✅ 继承 | ⚠️ 需补手工双向关联（Task 12a） |
+| `verifies` | Test Case → Requirement | ❌ **不继承**（覆盖率归零，逼 QA 重新确认） | ❌ 零 → Task 15 扩充 |
+| `defect-of` | Bug → Test Result/Test Case/Requirement | ✅ 继承 | ⚠️ 仅覆盖 TestResult → Task 15 扩充 |
+| `fixed-by` | Bug → Pull Request | ✅ 继承 | ❌ 零 → Task 17a |
+| `delivered-in` | Requirement/Work Item/Bug → Product Version | ❌ **不继承**（发布是时点快照） | ❌ 零 → Task 18 扩充 |
+
+🔴 **`blocks` 已从 kind 列表中删除**（2026-08-26，D2 关闭）：Issue ↔ Issue 依赖归 Tracker 原生，不进 TraceLink。
 
 反向关系由查询派生，不创建第二条反向 Link。
+
+**追溯边记录的是「具体版本的审计事实」**，不是「当前逻辑关系」：边存具体版本的 `_id`，另冗余存两端的 baseId 供查询期归一。「追溯完整率 100%」按**当前版本口径**（边必须指向该需求 `isLatest` 的那一版）。详见 Technical Spec §3.2.1。
+
+> ✅ **D2 已关闭（2026-08-26）**：自建 `TraceLink` 类，只承载**跨模块**关系（六种 kind），存储放 `DOMAIN_RELATION`。
+>
+> ✅ **D1 已关闭（2026-08-26）：Lead 与 Requirement 均定为 `card.Card` 扩展类型（MasterTag）**，本节上表的两行即**已定结论**。原型证明 **Card 能挂看板且不改上游 `card` 包一行代码** —— 看板的硬前提是「宿主类有 `rank` + 有可分组属性 + 挂 `task.mixin.KanbanCard`」，**与是否 Task 子类无关**；Card 自带 `rank`，`packages/kanban` 对 `@hcengineering/task` 依赖数为 0，`Viewlet.attachTo` 是 `Ref<Class<Doc>>`。看板走**路 A**（复用上游 `task.viewlet.Kanban`），**不做完成栏**（赢单/丢单是普通状态列）。Requirement 否决 `controlled-documents`，决定性理由是其状态为字符串 enum、装不下 `InDelivery`/`Validating`。详见 Technical Spec §3.1 / §3.1.1 / §3.3.1。
 
 ## 6. 关键流程
 
@@ -166,8 +173,8 @@ Product Version 达到发布门禁后变为 Released。系统汇总关联需求�
 
 ## 8. 一致性与错误处理
 
-- 转换、Webhook 和外部同步必须幂等；
-- 外部 API 失败采用指数退避、死信状态和人工重试；
+- 转换、Webhook 和外部同步必须幂等。🔴 **平台不保证多对象原子性**（一次 `PostgresAdapter.tx()` 会落成多个互不相干的数据库事务），因此幂等靠 **确定性 `_id` claim + 可重入命令**（每步先查再写），不靠「本地事务 + outbox」；
+- 外部 API 失败采用指数退避、死信状态和人工重试（**V1 的 `DeadLetter` 只是一个可见状态值；outbox / 死信队列 / 对账 job 三件套推 V1.1**）；
 - UI 显示 `pending/synced/failed`，不得静默吞错；
 - 删除有引用对象时默认归档；物理删除需要管理员权限和二次确认；
 - Trace Link 两端权限独立计算，禁止通过关系泄露无权对象标题或内容；
@@ -185,8 +192,8 @@ Product Version 达到发布门禁后变为 Released。系统汇总关联需求�
 
 ## 10. 交付分期
 
-- V1：飞书登录、轻量 CRM、需求、项目/周期/里程碑、Issue/Bug、测试闭环、GitHub、版本发布和基础报表；
-- V1.1：自定义字段、多视图、表单、Lookup/公式和自动化规则；
-- V1.2：仪表盘设计器、高级行级权限、项目组合、资源容量和自动化测试结果接入。
+- V1：飞书登录、轻量 CRM、需求、项目/周期/里程碑、Issue/Bug、测试闭环（**含 JUnit 结果导入**）、GitHub、版本发布和基础报表；
+- V1.1：自定义字段、多视图、表单、Lookup/公式和自动化规则；**四类计划依赖 + Gantt**、**重复任务**、**outbox / 死信队列 / 对账 job**；
+- V1.2：仪表盘设计器、高级行级权限、项目组合、资源容量、自动化测试结果接入；**Kubernetes 编排（V1 非目标）**。
 
 详细范围见 [PRD](./2026-08-25-agentra-prd.md)，工程约束见 [Technical Spec](./2026-08-25-agentra-technical-spec.md)。

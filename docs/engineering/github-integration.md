@@ -1,0 +1,131 @@
+# GitHub 集成：连接 Agentra 项目与 GitHub 仓库
+
+目标：让 Agentra 里的项目（如 Plaud）与 GitHub 仓库（如 `Tinsley-Chen/shopify-plaud-yidian`）
+双向同步 —— GitHub 的 issue 和 PR 在 Agentra 里就是 `Issue` 的子类
+（`GithubIssue extends Issue`、`GithubPullRequest extends Issue`，见
+`services/github/github/src/index.ts`），和你项目里已有的任务/缺陷是**同一个体系**，
+可以互相关联、出现在同一个看板和追溯链里。
+
+同步覆盖：issue、PR、PR commit、review、review comment、仓库元数据。
+PR review 还会变成 Agentra 里的待办（`GithubTodo extends ToDo`）。
+
+---
+
+## 🔴 必须是 GitHub App，不能用 Personal Access Token
+
+`pod-github` 的必填配置是 `APP_ID` / `CLIENT_ID` / `CLIENT_SECRET` / `PRIVATE_KEY`
+（`services/github/pod-github/src/config.ts` 的 `required` 数组），**这四项只有 App 才有**。
+
+原因不是实现偷懒：
+- **Webhook**：PR、commit、review 事件要推回 Agentra，webhook 属于 App，PAT 没有。
+- **Installation token**：App 用私钥签出按仓库授权的短期 token，权限边界比 PAT 清晰得多，
+  且不绑定某个人的账号 —— 那个人离职、改密码、轮换 PAT 都不会让集成挂掉。
+
+---
+
+## 一、创建 GitHub App
+
+<https://github.com/settings/apps> → **New GitHub App**（组织的 App 走
+`https://github.com/organizations/<org>/settings/apps`）。
+
+| 字段 | 填什么 |
+|---|---|
+| GitHub App name | 任意，例如 `agentra-sync`。**这个名字的 slug 就是 `BOT_NAME`** |
+| Homepage URL | `http://agentra.local:8087`（本地阶段随便填，不校验） |
+| Callback URL | `http://agentra.local:3500/auth`（本地阶段；上公网后改成公网地址） |
+| Webhook | **本地阶段先取消勾选 Active**，见下方「关于 webhook」 |
+| Webhook secret | 若启用，自填一个随机串，与 `WEBHOOK_SECRET` 一致 |
+
+**Repository permissions**（至少）：
+
+| 权限 | 级别 |
+|---|---|
+| Contents | Read-only（要读分支/commit） |
+| Issues | **Read and write** |
+| Pull requests | **Read and write** |
+| Metadata | Read-only（强制项） |
+
+**Subscribe to events**（启用 webhook 时才需要）：
+Issues、Issue comment、Pull request、Pull request review、Pull request review comment、Push。
+
+创建后在 App 设置页：
+
+1. 记下 **App ID**（纯数字）→ `APP_ID`
+2. 记下 **Client ID**（`Iv1.` 或 `Iv23` 开头）→ `CLIENT_ID` 和 `GITHUB_CLIENTID`
+3. **Generate a new client secret** → `CLIENT_SECRET`
+4. **Generate a private key** → 下载 `.pem` 文件 → `PRIVATE_KEY`（见下方转换）
+5. 左侧 **Install App** → 装到 `Tinsley-Chen/shopify-plaud-yidian`（可选 Only select repositories）
+
+---
+
+## 二、填配置
+
+凭据写进 `dev/.env.local`（**不要写 `dev/.env`，那个文件被 git 跟踪**），
+键名见 `dev/.env.local.example`。
+
+### 私钥要转成单行
+
+`config.ts` 会做 `.replace(/\\n/g, '\n')` 还原换行，所以 `PRIVATE_KEY` 必须是**单行、
+换行写成字面量 `\n`**。直接贴多行 PEM 会让 YAML 和 dotenv 双双解析失败。
+
+```sh
+awk 'BEGIN{ORS="\\n"}1' ~/Downloads/agentra-sync.2026-08-31.private-key.pem
+```
+
+把输出整行贴到 `PRIVATE_KEY=` 后面（建议用引号包起来）。
+
+---
+
+## 三、启动
+
+```sh
+cd dev
+docker compose --env-file .env --env-file .env.local \
+  -f docker-compose.yaml -f docker-compose.min.yaml up -d github front
+```
+
+⚠️ `front` 要一起重起 —— `GITHUB_APP` / `GITHUB_CLIENTID` 是它生成 `config.json` 时读的
+（`pods/front/src/__start.ts:30-31`）。不重起的话界面上的「连接 GitHub」会指向上游示例
+App（`uberflow-dev`），授权会跳到别人的 App 上。
+
+**验证**：
+
+```sh
+docker logs dev-github-1 --tail 20
+curl -s --noproxy '*' -o /dev/null -w "%{http_code}\n" http://localhost:3500/
+```
+
+缺配置时容器会直接退出，日志第一行就是 `Missing env variables: APP_ID, ...` —— 它不降级运行。
+
+然后在 Agentra 界面里：设置 → 集成 → GitHub → 授权并选择仓库，绑定到 Plaud 项目。
+
+---
+
+## 四、关于 webhook：本地跑不通的那一半
+
+**能在本地跑通的**：Agentra → GitHub 的**主动调用**（读 issue/PR、创建、评论、改状态）。
+这条路只需要出网。
+
+**本地跑不通的**：GitHub → Agentra 的**事件回流**。GitHub 的服务器打不到你本机的
+`agentra.local` / `127.0.0.1`，所以 PR 合并、新 commit、review 这些事件不会自动同步进来。
+
+两个选项：
+
+1. **内网穿透**（ngrok / cpolar）拿一个临时公网 HTTPS 地址，填进 App 的 Webhook URL：
+   `https://<你的隧道域名>/webhook`。适合验证功能。
+2. **部署到公网服务器**。这是最终形态，也是 PRD 里 `DEV-006`「CI 结果关联 Build/Test Run，
+   失败时通知负责人」那条链真正需要的前提。
+
+在没有 webhook 之前，同步是**单向 + 手动触发**的，别按双向实时来验收。
+
+---
+
+## 五、一处已知的欠账
+
+`services/github/pod-github/src/loaders.ts` 是模块注册 checklist 的 **8.4 镜像点**
+（见 `agentra-module-checklist.md`）。当初**有意没给 Agentra 的新模块加** —— 理由是那份清单
+装的是 pod-github 自己会渲染的 `IntlString`，Agentra 模块与 GitHub 同步路径无交集。
+
+**如果 GitHub 集成上线后需要渲染我们新模块的文案**（例如把 crm-lite / requirements 的字符串
+带进 GitHub 侧的通知或 issue 正文），那处必须补，否则会出现 `agentra-core:string:Xxx`
+这样的裸 id。目前不需要。
