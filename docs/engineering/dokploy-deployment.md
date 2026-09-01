@@ -117,18 +117,53 @@ GET 返回 405 是正常应答）、`transactor 404`、`collab 404`。
   （`http://127.0.0.1:3000/...`），飞书回调会打到本机，登录必失败。
 - 也会带进重复的 `ALLOWED_WORKSPACES`。
 
-剩下的：
+## 数据迁移（已完成 2026-09-01）
 
-1. **管理员账号与工作区还没建**。需要在
-   <http://agentra.49.51.37.69.sslip.io> 上注册（涉及设置密码，由人来做）。
-   建好之后才能做数据迁移。
-2. **`FEISHU_TENANT_WORKSPACE_MAP` 里的工作区 slug 还是本地的 `agentra-main`**，
-   生产上那个工作区尚不存在。建完工作区后要把它改成该工作区的 `url` 字段，
-   否则飞书登录能通过但落不到工作区里。
-3. **两处回调地址要在外部平台上改**（不是环境变量）：
+本地工作区 `agentra-main` 整体迁到生产，走 `dev/tool` 的 backup / backup-restore。
+生产的 CockroachDB 不对公网暴露，工具必须在内网跑，而我们没有该机器的 SSH 凭据 ——
+**用 GHCR 当传输通道**：把 tool 的 bundle 和备份目录打进一个镜像，在 compose 里
+加一个跑完即退的一次性服务执行恢复，跑完删掉。
+
+⚠️ 那个一次性服务**不能套用 `x-common` 锚点** —— 里面的 `restart: unless-stopped`
+会让它反复重启，等于反复恢复。删除也必须赶在下次 `docker compose up -d` 之前，
+否则已退出的容器会被重新拉起。
+
+核对结果（生产 = 本地，逐项一致）：445 Issue、2958 TestCase、2958 TestStep、
+336 TestSuite、12 个 tracker 项目、2 个测试專案、3957 个附件 / 11 MB。
+
+### 两个踩过的坑
+
+**一、`.local` 主机名让备份慢 1000 倍。** macOS 对 `.local` 后缀先走 mDNS，
+即使 `/etc/hosts` 里有记录也要等约 5 秒才回落。备份每个附件都要解析一次
+`agentra.local`，3957 个附件 ≈ 5.5 小时；又因为 tar 包要攒够体积才落盘，
+表现为"目录 0 字节、进程 0% CPU"，**极像挂死**。
+判据是 `sample <pid>`：线程停在 `getaddrinfo` / `si_addrinfo` 上。把
+`STORAGE_CONFIG` / `DB_URL` / `ACCOUNTS_URL` 的主机名换成 `127.0.0.1` 后，
+同一份备份 20.6 秒跑完。
+
+**二、增量备份会跳过上次 `--skip` 掉的域。** 用 `--skip blob` 跑过一次后，
+再对同一个目录跑全量，它判定无变化、什么都不做（0 条 chunk 行、快照数不变）。
+要补 blob 必须**换一个全新的备份目录**。
+
+### 恢复后必须手动补的一步
+
+`Navigator.svelte` 的空间查询是 `members: getCurrentAccount().uuid` ——
+**严格按成员过滤**，非平台管理员看不到自己不在 members 里的空间，UI 里也没有
+加入入口。tracker 项目带 `autoJoin: true`（`contact-resources` 的触发器在人员
+创建时把账号 push 进去）所以自动可见；测试專案没有这个标记，恢复后不可见，
+需要手动把新账号加进 `members`（本次是直接 UPDATE `public.space` 后重启
+transactor 清缓存）。
+
+⚠️ 平台管理员那条绕过路对飞书登录**不成立**：`isAdminEmail` 按 email 匹配，而
+`pods/authProviders/src/feishu.ts` 故意传空 email（防止上游按 email 静默合并
+账号导致接管），飞书账号根本没有 email social id。
+
+## 待办
+
+1. **两处回调地址要在外部平台上改**（不是环境变量）：
    - GitHub App 设置页 Callback URL → `http://github.49.51.37.69.sslip.io/auth`
    - 飞书应用重定向 URI → `http://account.49.51.37.69.sslip.io/auth/feishu/callback`
      （必须与 `FEISHU_REDIRECT_URL` **逐字符**一致）
-4. **GitHub 的 webhook 回流**目前仍不可用：pod-github 只有 POST `/api/v1/*`
+2. **GitHub 的 webhook 回流**目前仍不可用：pod-github 只有 POST `/api/v1/*`
    路由，GET `/auth` 那座桥在开源仓库里是缺的（见 `github-integration.md`）。
-5. **没有 HTTPS**。sslip.io 可以配 Let's Encrypt，但更合适的是等真域名。
+3. **没有 HTTPS**。sslip.io 可以配 Let's Encrypt，但更合适的是等真域名。
