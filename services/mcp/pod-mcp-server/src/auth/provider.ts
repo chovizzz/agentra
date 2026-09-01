@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import { createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto'
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 import type { Request, Response } from 'express'
 import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js'
 import type { AuthorizationParams, OAuthServerProvider } from '@modelcontextprotocol/sdk/server/auth/provider.js'
@@ -49,57 +49,82 @@ interface IssuedToken {
 }
 
 /**
- * The state we hand to Feishu.
+ * HMAC-sign a payload into a self-contained string.
  *
- * It is HMAC-signed rather than stored, so a callback that did not originate
- * from an /authorize we issued cannot be replayed into one. The signature covers
- * the whole payload including `iat`, which is what bounds the replay window.
+ * Used for both the Feishu `state` and the OAuth `client_id`: signing instead of
+ * storing means neither depends on server memory, so a restart cannot orphan
+ * them. The signature covers `iat`, which is what lets a reader impose a TTL.
  */
-function signState (secret: string, payload: object): string {
+function sign (secret: string, payload: object): string {
   const body = Buffer.from(JSON.stringify({ ...payload, iat: Date.now() })).toString('base64url')
   const mac = createHmac('sha256', secret).update(body).digest('base64url')
   return `${body}.${mac}`
 }
 
-function verifyState (secret: string, raw: string | undefined): PendingAuthorization {
-  if (raw === undefined) throw new Error('missing state')
+function verify (secret: string, raw: string | undefined, ttlMs?: number): any {
+  if (raw === undefined) throw new Error('missing value')
   const [body, mac] = raw.split('.')
-  if (body === undefined || mac === undefined) throw new Error('malformed state')
+  if (body === undefined || mac === undefined) throw new Error('malformed value')
 
   const expected = createHmac('sha256', secret).update(body).digest('base64url')
   const a = Buffer.from(mac)
   const b = Buffer.from(expected)
   // Constant-time compare: a length-leaking or short-circuiting comparison here
   // would let an attacker discover a valid MAC byte by byte.
-  if (a.length !== b.length || !timingSafeEqual(a, b)) throw new Error('bad state signature')
+  if (a.length !== b.length || !timingSafeEqual(a, b)) throw new Error('bad signature')
 
   const payload = JSON.parse(Buffer.from(body, 'base64url').toString())
-  if (typeof payload.iat !== 'number' || Date.now() - payload.iat > STATE_TTL_MS) {
-    throw new Error('state expired')
+  if (ttlMs !== undefined && (typeof payload.iat !== 'number' || Date.now() - payload.iat > ttlMs)) {
+    throw new Error('expired')
   }
-  return payload as PendingAuthorization
+  return payload
 }
 
-class MemoryClientsStore implements OAuthRegisteredClientsStore {
-  private readonly clients = new Map<string, OAuthClientInformationFull>()
+function verifyState (secret: string, raw: string | undefined): PendingAuthorization {
+  try {
+    return verify(secret, raw, STATE_TTL_MS) as PendingAuthorization
+  } catch (err) {
+    // Keep the wording the callback reports, so a rejected state is still
+    // distinguishable from a Feishu-side failure in the browser.
+    throw new Error(`${err instanceof Error ? err.message : 'invalid'}`.replace('value', 'state'))
+  }
+}
+
+/**
+ * Stateless dynamic client registration: the `client_id` IS the signed client
+ * metadata, so nothing is stored and nothing is lost on restart.
+ *
+ * 🔴 An in-memory registry looks fine until the first redeploy, and then it fails
+ * in the worst possible way: the MCP client has cached its `client_id`, the server
+ * no longer knows it, and every attempt dies with `invalid_client` — with no way
+ * for the user to recover short of re-adding the server. Re-authorizing after a
+ * restart is acceptable; being locked out is not.
+ */
+class StatelessClientsStore implements OAuthRegisteredClientsStore {
+  constructor (private readonly secret: string) {}
 
   getClient (clientId: string): OAuthClientInformationFull | undefined {
-    return this.clients.get(clientId)
+    try {
+      const { iat, ...client } = verify(this.secret, clientId)
+      return { ...client, client_id: clientId } as OAuthClientInformationFull
+    } catch {
+      return undefined
+    }
   }
 
-  registerClient (client: Omit<OAuthClientInformationFull, 'client_id' | 'client_id_issued_at'>): OAuthClientInformationFull {
-    const full: OAuthClientInformationFull = {
+  registerClient (
+    client: Omit<OAuthClientInformationFull, 'client_id' | 'client_id_issued_at'>
+  ): OAuthClientInformationFull {
+    return {
       ...client,
-      client_id: randomUUID(),
+      client_id: sign(this.secret, client),
       client_id_issued_at: Math.floor(Date.now() / 1000)
     }
-    this.clients.set(full.client_id, full)
-    return full
   }
 }
 
 export class FeishuBackedProvider implements OAuthServerProvider {
-  readonly clientsStore = new MemoryClientsStore()
+  readonly clientsStore: StatelessClientsStore
 
   private readonly codes = new Map<string, IssuedCode>()
   private readonly tokens = new Map<string, IssuedToken>()
@@ -108,7 +133,9 @@ export class FeishuBackedProvider implements OAuthServerProvider {
     private readonly feishu: FeishuConfig,
     private readonly agentra: AgentraAuth,
     private readonly stateSecret: string
-  ) {}
+  ) {
+    this.clientsStore = new StatelessClientsStore(stateSecret)
+  }
 
   /**
    * Send the browser to Feishu, carrying everything needed to finish the MCP
@@ -123,7 +150,7 @@ export class FeishuBackedProvider implements OAuthServerProvider {
       state: params.state,
       scopes: params.scopes ?? []
     }
-    res.redirect(buildAuthorizeUrl(this.feishu, signState(this.stateSecret, pending)))
+    res.redirect(buildAuthorizeUrl(this.feishu, sign(this.stateSecret, pending)))
   }
 
   /**
