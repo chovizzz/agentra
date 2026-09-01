@@ -14,7 +14,7 @@
 //
 
 import { getClient as getAccountClient } from '@hcengineering/account-client'
-import type { PersonUuid, WorkspaceUuid } from '@hcengineering/core'
+import { systemAccountUuid, type PersonUuid, type WorkspaceUuid } from '@hcengineering/core'
 import { generateToken } from '@hcengineering/server-token'
 
 /**
@@ -37,9 +37,19 @@ export interface AgentraAuth {
   tokenTtlSec: number
 }
 
-/** A system token, used only to look the social id up in the account service. */
+/**
+ * A system token, used only to look the social id up in the account service.
+ *
+ * 🔴 The account uuid must be `systemAccountUuid`, not an empty string — the
+ * account service rejects a blank one with `Invalid account uuid: ""`, which
+ * surfaces to the user as a bare `access_denied` at the end of the Feishu
+ * round-trip, long after the actual mistake.
+ *
+ * No workspace is bound: this token only resolves a social id, and scoping it to
+ * a workspace would imply an authority it does not need.
+ */
 function systemToken (auth: AgentraAuth): string {
-  return generateToken('' as PersonUuid, auth.workspaceUuid, { service: 'mcp' }, auth.serverSecret)
+  return generateToken(systemAccountUuid, undefined, { service: 'mcp' }, auth.serverSecret)
 }
 
 export async function resolvePerson (auth: AgentraAuth, socialKey: string): Promise<PersonUuid | undefined> {
