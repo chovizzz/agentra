@@ -109,16 +109,26 @@ GET 返回 405 是正常应答）、`transactor 404`、`collab 404`。
 
 ## 待办
 
+凭据已于 2026-09-01 填入 Dokploy（25 个环境变量，无重复、无空值）。
+`github` 已从 502 变为正常应答，飞书 provider 已注册、登录页显示"Continue with 飞书"。
+
+⚠️ **粘贴时踩到的两个点，记下来免得下次重犯**：
+- 直接粘 `dev/.env.local` 会带进**本地的** `FEISHU_REDIRECT_URL`
+  （`http://127.0.0.1:3000/...`），飞书回调会打到本机，登录必失败。
+- 也会带进重复的 `ALLOWED_WORKSPACES`。
+
+剩下的：
+
 1. **管理员账号与工作区还没建**。需要在
    <http://agentra.49.51.37.69.sslip.io> 上注册（涉及设置密码，由人来做）。
    建好之后才能做数据迁移。
-2. **GitHub 集成未配置**：服务器上 `APP_ID`/`CLIENT_ID`/`CLIENT_SECRET`/
-   `PRIVATE_KEY`/`WEBHOOK_SECRET`/`BOT_NAME`/`GITHUB_APP`/`GITHUB_CLIENTID`
-   都是空的（凭据只存在于本机 `dev/.env.local`）。容器活着但 HTTP 服务
-   起不来，日志是 `[@octokit/auth-app] appId option is required`，对外表现
-   为 502。填上后还要把 GitHub App 的 Callback URL 改到
-   `http://github.49.51.37.69.sslip.io/...`。
-3. **飞书登录未启用**：`FEISHU_*` 全空，provider 不注册、登录页不显示按钮
-   （这是设计好的行为，不是故障）。启用前要把飞书应用的重定向 URI 改成
-   `http://account.49.51.37.69.sslip.io/auth/feishu/callback`。
-4. **没有 HTTPS**。sslip.io 可以配 Let's Encrypt，但更合适的是等真域名。
+2. **`FEISHU_TENANT_WORKSPACE_MAP` 里的工作区 slug 还是本地的 `agentra-main`**，
+   生产上那个工作区尚不存在。建完工作区后要把它改成该工作区的 `url` 字段，
+   否则飞书登录能通过但落不到工作区里。
+3. **两处回调地址要在外部平台上改**（不是环境变量）：
+   - GitHub App 设置页 Callback URL → `http://github.49.51.37.69.sslip.io/auth`
+   - 飞书应用重定向 URI → `http://account.49.51.37.69.sslip.io/auth/feishu/callback`
+     （必须与 `FEISHU_REDIRECT_URL` **逐字符**一致）
+4. **GitHub 的 webhook 回流**目前仍不可用：pod-github 只有 POST `/api/v1/*`
+   路由，GET `/auth` 那座桥在开源仓库里是缺的（见 `github-integration.md`）。
+5. **没有 HTTPS**。sslip.io 可以配 Let's Encrypt，但更合适的是等真域名。
