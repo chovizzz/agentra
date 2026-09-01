@@ -16,33 +16,9 @@
 import type { PlatformClient } from '@hcengineering/api-client'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 
-import type { Config } from './config'
-import { connectPlatform } from './platform'
 import { errorResult } from './tools/result'
 import { registerIssueTools } from './tools/issues'
 import { registerTestCaseTools } from './tools/testcases'
-
-/**
- * Lazily open one platform connection and reuse it.
- *
- * Connecting eagerly at startup would make the process refuse to boot whenever
- * Agentra is briefly unreachable; a lazy connection lets the server come up and
- * fail the individual tool call instead, which is what the agent can act on.
- */
-function createClientProvider (config: Config): () => Promise<PlatformClient> {
-  let pending: Promise<PlatformClient> | undefined
-  return async () => {
-    if (pending === undefined) {
-      pending = connectPlatform(config).catch((err) => {
-        // Drop the rejected promise so the next call retries rather than
-        // replaying the same failure forever.
-        pending = undefined
-        throw err
-      })
-    }
-    return await pending
-  }
-}
 
 /**
  * Wrap every tool handler so a thrown error becomes an `isError` result.
@@ -64,9 +40,14 @@ function withErrorHandling (server: McpServer): McpServer {
   return server
 }
 
-export function buildServer (config: Config): McpServer {
+/**
+ * One MCP server bound to one caller's platform client.
+ *
+ * `getClient` is passed in rather than derived from config: under OAuth it
+ * resolves to the client of whoever authorized *this* request.
+ */
+export function buildServer (getClient: () => Promise<PlatformClient>): McpServer {
   const server = new McpServer({ name: 'agentra', version: '0.7.0' })
-  const getClient = createClientProvider(config)
 
   withErrorHandling(server)
   registerIssueTools(server, getClient)

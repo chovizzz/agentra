@@ -13,23 +13,45 @@
 // limitations under the License.
 //
 
+import type { WorkspaceUuid } from '@hcengineering/core'
+import { requireBearerAuth } from '@modelcontextprotocol/sdk/server/auth/middleware/bearerAuth.js'
+import { mcpAuthRouter } from '@modelcontextprotocol/sdk/server/auth/router.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import express from 'express'
 
 import { loadConfig, type Config } from './config'
+import { FeishuBackedProvider } from './auth/provider'
+import { ClientPool } from './platform'
 import { buildServer } from './server'
 
 async function runStdio (config: Config): Promise<void> {
-  const server = buildServer(config)
+  const pool = new ClientPool(config)
+  const token = config.token as string
+  const server = buildServer(async () => await pool.get(token))
   // 🔴 Nothing may be written to stdout in stdio mode — stdout *is* the protocol
-  // channel, and a stray console.log corrupts the JSON-RPC stream. Diagnostics
-  // go to stderr.
+  // channel, and a stray console.log corrupts the JSON-RPC stream. Diagnostics go
+  // to stderr.
   await server.connect(new StdioServerTransport())
   console.error('agentra mcp server ready on stdio')
 }
 
 async function runHttp (config: Config): Promise<void> {
+  const oauth = config.oauth
+  if (oauth === undefined) throw new Error('http transport requires OAuth configuration')
+
+  const pool = new ClientPool(config)
+  const provider = new FeishuBackedProvider(
+    oauth.feishu,
+    {
+      accountsUrl: oauth.accountsUrl,
+      serverSecret: oauth.serverSecret,
+      workspaceUuid: oauth.workspaceUuid as WorkspaceUuid,
+      tokenTtlSec: oauth.tokenTtlSec
+    },
+    oauth.serverSecret
+  )
+
   const app = express()
   app.use(express.json())
 
@@ -37,11 +59,39 @@ async function runHttp (config: Config): Promise<void> {
     res.json({ status: 'ok' })
   })
 
-  app.post('/mcp', (req, res) => {
-    // A fresh server and transport per request: the stateless mode carries no
-    // session across calls, so sharing one transport would let concurrent
-    // requests interleave on the same stream.
-    const server = buildServer(config)
+  // The Feishu redirect target. Registered before the OAuth router so it is not
+  // shadowed, and it is the ONLY place a Feishu identity becomes an Agentra token.
+  app.get('/auth/feishu/callback', (req, res) => {
+    void provider.handleCallback(req, res)
+  })
+
+  // Advertises the metadata MCP clients discover, and serves /authorize, /token
+  // and dynamic client registration. Must be mounted at the application root.
+  app.use(
+    mcpAuthRouter({
+      provider,
+      issuerUrl: new URL(oauth.publicUrl),
+      resourceServerUrl: new URL(oauth.publicUrl),
+      resourceName: 'Agentra'
+    })
+  )
+
+  const requireAuth = requireBearerAuth({
+    verifier: provider,
+    resourceMetadataUrl: `${oauth.publicUrl}/.well-known/oauth-protected-resource`
+  })
+
+  app.post('/mcp', requireAuth, (req, res) => {
+    // A fresh server and transport per request: stateless mode carries no session
+    // across calls, so a shared transport would let concurrent requests interleave
+    // on one stream — and, more importantly, would blur whose token is in use.
+    const agentraToken = (req as any).auth?.extra?.agentraToken
+    if (typeof agentraToken !== 'string') {
+      res.status(401).json({ error: 'no Agentra token bound to this access token' })
+      return
+    }
+
+    const server = buildServer(async () => await pool.get(agentraToken))
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined })
     res.on('close', () => {
       void transport.close()
@@ -59,7 +109,7 @@ async function runHttp (config: Config): Promise<void> {
   })
 
   app.listen(config.port, () => {
-    console.log(`agentra mcp server listening on :${config.port}`)
+    console.log(`agentra mcp server listening on :${config.port} (oauth via feishu)`)
   })
 }
 

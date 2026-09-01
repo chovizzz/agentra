@@ -238,20 +238,34 @@ services:
     <<: *common
 
   mcp:
-    image: ghcr.io/chovizzz/agentra-mcp-server:dae6f85fd
+    image: ghcr.io/chovizzz/agentra-mcp-server:${MCP_TAG}
     depends_on:
       - transactor
       - front
+      - account
     environment:
       - MCP_TRANSPORT=http
       - MCP_PORT=3100
+      # 自己的公网地址：既是 OAuth 的 issuer，也是飞书回调的基址。
+      # ⚠️ 必须与飞书应用里登记的重定向 URI 前缀一致，回调路径是
+      #    /auth/feishu/callback。
+      - MCP_PUBLIC_URL=http://mcp.${SERVER_HOST}
       # ⚠️ 这里要的是**前端**地址，不是 transactor —— api-client 的 connect()
       #    先从它拉 /config.json 才知道 account / collaborator 在哪。
       - AGENTRA_URL=http://agentra.${SERVER_HOST}
       - AGENTRA_WORKSPACE=agentra-main
-      # 账户设置里签发的可撤销 API 令牌。⚠️ 它没有 scope，等于该账号在该工作区
-      # 的全部权限；工具集里刻意不提供删除操作以限制最坏情况。
-      - AGENTRA_TOKEN=${MCP_AGENTRA_TOKEN}
+      - AGENTRA_WORKSPACE_UUID=${AGENTRA_WORKSPACE_UUID}
+      - ACCOUNTS_URL=http://account:3000
+      # 🔴 这是本服务唯一真正特权的地方：拿着 SERVER_SECRET 它能为任何人签
+      #    令牌。收窄它的是上游而不是这里 —— 调用方已经过了飞书租户白名单，
+      #    且社交身份来自飞书验证过的 open_id，不是用户输入。
+      #    换来的是每个 agent 以授权者本人身份操作、可归因、可过期，
+      #    比一个全员共用的静态令牌好得多。
+      - SERVER_SECRET=${SERVER_SECRET}
+      - MCP_TOKEN_TTL_SEC=28800
+      - FEISHU_CLIENT_ID
+      - FEISHU_CLIENT_SECRET
+      - FEISHU_ALLOWED_TENANT_KEYS
     networks: [default, dokploy-network]
     <<: *common
 

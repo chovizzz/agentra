@@ -42488,12 +42488,18 @@ importers:
 
   ../../services/mcp/pod-mcp-server:
     dependencies:
+      '@hcengineering/account-client':
+        specifier: workspace:^0.7.25
+        version: link:../../../foundations/core/packages/account-client
       '@hcengineering/api-client':
         specifier: workspace:^0.7.25
         version: link:../../../foundations/core/packages/api-client
       '@hcengineering/core':
         specifier: workspace:^0.7.26
         version: link:../../../foundations/core/packages/core
+      '@hcengineering/server-token':
+        specifier: workspace:^0.7.18
+        version: link:../../../foundations/core/packages/token
       '@hcengineering/task':
         specifier: workspace:^0.7.20
         version: link:../../../plugins/task

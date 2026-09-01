@@ -13,30 +13,44 @@
 用 websocket 的 `connect()` 而不是 `connectRest()`：工具需要
 `createDoc` / `addCollection` / `updateDoc`，REST 客户端只提供裸 `tx`。
 
-## 🔴 令牌没有 scope
+## 认证：走飞书 OAuth，不用静态令牌
 
-Agentra 的 API 令牌是**该账号在该工作区的完整权限 JWT** —— 技术方案里设想的
-`test:result:write` / `test:case:read` 分级在代码里并不存在。所以这个服务
-持有的令牌能做令牌主人能做的一切。
+agent 连接时浏览器弹飞书登录，之后它以**授权者本人**的身份操作 —— 权限就是
+那个人的权限，行为可归因，令牌有过期时间（`MCP_TOKEN_TTL_SEC`，默认 8 小时）。
 
-工具集里**故意不提供任何删除操作**：模型幻觉或提示注入的最坏结果应该是
+平台自身没有 OAuth 服务器（`server/account` 里 oauth 相关代码 0 命中），
+所以这个服务同时充当 MCP 规范里的授权服务器与资源服务器：`/authorize` 跳飞书，
+回调里把 `feishu:<tenant>.<openId>` 解析成 Agentra 账号，再为那个人签一个短期令牌。
+
+🔴 **代价：本服务持有 `SERVER_SECRET`**，也就是说它能为任何人签令牌。收窄它的
+是上游而不是签发处 —— 调用方已经过了飞书租户白名单，社交身份来自飞书验证过的
+`open_id` 而非用户输入。相比"全员共用一个静态全权限令牌"，这是更小的暴露面。
+
+⚠️ 几个刻意的取舍：
+
+- **不支持 refresh token**。背后的 Agentra 令牌过期时间是固定的，静默续签会
+  抵消掉"有界生命周期"这个唯一的刹车。过期就重新授权。
+- **回调里不自动开户**。建账号是登录流程的职责（工作区映射与角色规则都在那儿），
+  从面向 agent 的端点开第二道更弱的门是不对的。没有账号就提示先登录一次 Agentra。
+- **授权码一次性**，取出即删，先于任何校验，所以重放必然失败。
+- **令牌存在内存里**，重启即失效、需重新授权。单实例够用；要多实例就得换成共享存储。
+
+## 令牌没有 scope（平台限制）
+
+Agentra 的令牌是**该账号在该工作区的完整权限 JWT** —— 技术方案里设想的
+`test:result:write` / `test:case:read` 分级在代码里并不存在
+（`PermissionsGrant` 的 `spaces` 是**加法**，见 `getGrantSpaces`，不是减法）。
+
+所以工具集里**故意不提供任何删除操作**：模型幻觉或提示注入的最坏结果应该是
 多出脏数据，而不是丢数据。要删就去界面里删。
-
-## 配置
-
-| 变量 | 说明 |
-|---|---|
-| `AGENTRA_URL` | **前端**地址（不是 transactor）。`connect()` 要从它拉 `/config.json` |
-| `AGENTRA_TOKEN` | 账户设置里签发的 API 令牌 |
-| `AGENTRA_WORKSPACE` | 工作区 slug（如 `agentra-main`），不是 http 地址 |
-| `MCP_TRANSPORT` | `http`（默认）或 `stdio` |
-| `MCP_PORT` | http 模式端口，默认 3100 |
 
 ## 两种用法
 
 **远程（部署形态）**：`MCP_TRANSPORT=http`，`POST /mcp`，`GET /health`。
 
 **本地 stdio**：`MCP_TRANSPORT=stdio`，供 Claude Code / Desktop 直接拉起。
+stdio 没有浏览器可跳转，所以这条路仍用 `AGENTRA_TOKEN` —— 它跑在操作者自己的
+机器上、以操作者自己的身份，信任边界与 OAuth 登录建立的是同一个。
 ⚠️ stdio 模式下 stdout **就是**协议通道，任何 `console.log` 都会污染
 JSON-RPC 流；诊断信息一律走 stderr。
 

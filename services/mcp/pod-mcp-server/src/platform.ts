@@ -17,19 +17,47 @@ import { connect, NodeWebSocketFactory, type PlatformClient } from '@hcengineeri
 import type { Config } from './config'
 
 /**
- * One platform connection shared by every tool call.
+ * A platform connection per Agentra token, reused across requests.
+ *
+ * Keyed by token rather than shared, because under OAuth every agent acts as the
+ * person who authorized it — one shared connection would silently give everyone
+ * the first authorizer's permissions.
  *
  * The websocket client is used rather than `connectRest` because the tools need
- * `createDoc` / `addCollection` / `updateDoc`, which the REST client does not
- * expose — it only offers the raw `tx` surface.
+ * `createDoc` / `addCollection` / `updateDoc`; the REST client exposes only the
+ * raw `tx` surface.
  *
- * ⚠️ `NodeWebSocketFactory` is not optional here. Without it the client reaches
- * for the browser `WebSocket` global and fails at connect time in Node.
+ * ⚠️ `NodeWebSocketFactory` is not optional — without it the client reaches for
+ * the browser `WebSocket` global and fails at connect time in Node.
  */
-export async function connectPlatform (config: Config): Promise<PlatformClient> {
-  return await connect(config.url, {
-    token: config.token,
-    workspace: config.workspace,
-    socketFactory: NodeWebSocketFactory
-  })
+export class ClientPool {
+  private readonly clients = new Map<string, Promise<PlatformClient>>()
+
+  constructor (private readonly config: Config) {}
+
+  async get (token: string): Promise<PlatformClient> {
+    let pending = this.clients.get(token)
+    if (pending === undefined) {
+      pending = connect(this.config.url, {
+        token,
+        workspace: this.config.workspace,
+        socketFactory: NodeWebSocketFactory
+      }).catch((err) => {
+        // Drop the rejected promise so the next call retries instead of replaying
+        // the same failure for the lifetime of the process.
+        this.clients.delete(token)
+        throw err
+      })
+      this.clients.set(token, pending)
+    }
+    return await pending
+  }
+
+  async close (): Promise<void> {
+    const pending = [...this.clients.values()]
+    this.clients.clear()
+    for (const p of pending) {
+      await p.then(async (c) => { await c.close() }).catch(() => {})
+    }
+  }
 }
