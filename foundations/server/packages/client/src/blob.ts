@@ -56,12 +56,23 @@ export class BlobClient {
         try {
           const chunks: Buffer[] = []
           const readable = await this.storageAdapter.partial(ctx, this.workspace, name, written, chunkSize)
-          await new Promise<void>((resolve) => {
+          await new Promise<void>((resolve, reject) => {
             readable.on('data', (chunk) => {
               chunks.push(chunk)
             })
             readable.on('end', () => {
               readable.destroy()
+              resolve()
+            })
+            // 只监听 'end' 时，流一旦出错这个 promise 就永远不 settle：外层既有的
+            // 重试与空块计数都够不着，整个备份会静默停住而不是失败。'error' 让它
+            // 走进下面的 catch，'close' 兜住"不发 end 就关闭"（提前中断）的情况 ——
+            // 那时拿到的 chunk 偏短或为空，正好交给既有的重试路径处理。
+            readable.on('error', (err) => {
+              readable.destroy()
+              reject(err)
+            })
+            readable.on('close', () => {
               resolve()
             })
           })
