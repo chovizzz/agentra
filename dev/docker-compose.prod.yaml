@@ -237,6 +237,24 @@ services:
     networks: [default, dokploy-network]
     <<: *common
 
+  mcp:
+    image: ghcr.io/chovizzz/agentra-mcp-server:dae6f85fd
+    depends_on:
+      - transactor
+      - front
+    environment:
+      - MCP_TRANSPORT=http
+      - MCP_PORT=3100
+      # ⚠️ 这里要的是**前端**地址，不是 transactor —— api-client 的 connect()
+      #    先从它拉 /config.json 才知道 account / collaborator 在哪。
+      - AGENTRA_URL=http://agentra.${SERVER_HOST}
+      - AGENTRA_WORKSPACE=agentra-main
+      # 账户设置里签发的可撤销 API 令牌。⚠️ 它没有 scope，等于该账号在该工作区
+      # 的全部权限；工具集里刻意不提供删除操作以限制最坏情况。
+      - AGENTRA_TOKEN=${MCP_AGENTRA_TOKEN}
+    networks: [default, dokploy-network]
+    <<: *common
+
 networks:
   # Dokploy 的 Traefik 所在网络，由 Dokploy 自己创建，这里只引用。
   dokploy-network:
