@@ -247,9 +247,13 @@ services:
       - MCP_TRANSPORT=http
       - MCP_PORT=3100
       # 自己的公网地址：既是 OAuth 的 issuer，也是飞书回调的基址。
-      # ⚠️ 必须与飞书应用里登记的重定向 URI 前缀一致，回调路径是
-      #    /auth/feishu/callback。
-      - MCP_PUBLIC_URL=http://mcp.${SERVER_HOST}
+      # 🔴 必须是 HTTPS。MCP SDK 按 OAuth 2.1 强制 issuer 为 https（只对
+      #    localhost 例外），填 http 会以 `Issuer URL must be HTTPS` 崩溃重启，
+      #    而本机用 127.0.0.1 测试时不会暴露这个问题。
+      #    这个域名在 Dokploy 里配了 Let's Encrypt 证书。
+      # ⚠️ 必须与飞书应用里登记的重定向 URI 前缀一致（同为 https），
+      #    回调路径是 /auth/feishu/callback。
+      - MCP_PUBLIC_URL=https://mcp.${SERVER_HOST}
       # ⚠️ 这里要的是**前端**地址，不是 transactor —— api-client 的 connect()
       #    先从它拉 /config.json 才知道 account / collaborator 在哪。
       - AGENTRA_URL=http://agentra.${SERVER_HOST}
