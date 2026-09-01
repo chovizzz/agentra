@@ -124,3 +124,6 @@ dev/tool/history.json
 ws-tests/docker-compose.override.yml
 .cursor/*
 CLAUDE.md
+# 生产环境变量（含密钥），只提交 .example
+.env.prod
+*.env.prod

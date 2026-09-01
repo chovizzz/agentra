@@ -1,0 +1,230 @@
+# Agentra 生产部署（Dokploy / 单机）
+#
+# 与 dev/docker-compose.yaml 的关键差别，每一条都有原因：
+#
+# 1. 镜像来自 GHCR 而不是本地构建。服务器只有 7.45 GB 内存，跑不动
+#    `rush build`（本机构建时 Docker VM 就吃了 9.7 GB）。
+# 2. 只保留核心服务。上游 dev 栈有 30 个服务，这台机器装不下：
+#    砍掉 elastic/fulltext（全文检索）、rekoni（文档解析）、preview、
+#    print、sign、love、telegram、gmail、calendar、ai-bot、process、
+#    backup、rating、hulylake、hulypulse、hulykvs、jaeger、
+#    redpanda_console、time-machine、events-processor、media、export、stream。
+#    ⚠️ 代价：全文搜索不可用、附件预览不可用。核心的项目/任务/缺陷/
+#    测试管理/飞书登录/GitHub 集成都在。
+# 3. 主机名用 SERVER_HOST 变量而不是写死 agentra.local。没有域名时填 IP。
+# 4. 不暴露 cockroach / redpanda / minio 的端口到公网 —— dev 栈为了本地
+#    调试全开了，那在公网上是不能接受的。只有 front(8087) 和
+#    account(3000) 与 github(3500) 对外。
+#
+# 起法：
+#   docker compose --env-file .env.prod -f docker-compose.prod.yaml up -d
+
+x-common: &common
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: { max-size: '10m', max-file: '3' }
+
+services:
+  cockroach:
+    image: cockroachdb/cockroach:latest-v24.3
+    command: start-single-node --insecure
+    volumes:
+      - cockroach_db:/cockroach/cockroach-data
+    # ⚠️ 不映射 26257 到宿主：无密码的数据库绝不能对公网开放。
+    # 需要连库时用 `docker compose exec cockroach cockroach sql --insecure`。
+    <<: *common
+
+  minio:
+    image: minio/minio
+    command: server /data --address ":9000" --console-address ":9001"
+    volumes:
+      - files:/data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      retries: 10
+    <<: *common
+
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.3.6
+    command:
+      - redpanda
+      - start
+      - --kafka-addr internal://0.0.0.0:9092
+      - --advertise-kafka-addr internal://redpanda:9092
+      - --mode dev-container
+      - --smp 1
+      - --default-log-level=warn
+      # 512M 是这台机器上的实际约束，不是随手填的。
+      - --memory 512M
+    volumes:
+      - redpanda:/var/lib/redpanda/data
+    healthcheck:
+      test: ['CMD', 'rpk', 'cluster', 'info']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    <<: *common
+
+  stats:
+    image: ghcr.io/chovizzz/agentra-stats:${AGENTRA_TAG}
+    environment:
+      - PORT=4900
+      - SERVER_SECRET=${SERVER_SECRET}
+    <<: *common
+
+  datalake:
+    image: ghcr.io/chovizzz/agentra-datalake:${AGENTRA_TAG}
+    depends_on:
+      minio: { condition: service_healthy }
+    environment:
+      - PORT=4030
+      - SECRET=${SERVER_SECRET}
+      - ACCOUNTS_URL=http://account:3000
+      - STATS_URL=http://stats:4900
+      - STREAM_URL=
+      - DB_URL=${DB_URL}
+      - BUCKETS=${STORAGE_BUCKETS}
+    <<: *common
+
+  account:
+    image: ghcr.io/chovizzz/agentra-account:${AGENTRA_TAG}
+    depends_on:
+      redpanda: { condition: service_healthy }
+    ports:
+      - '3000:3000'
+    environment:
+      - ACCOUNT_PORT=3000
+      - SERVER_SECRET=${SERVER_SECRET}
+      - QUEUE_CONFIG=redpanda:9092
+      - DB_URL=${DB_URL}
+      - STATS_URL=http://stats:4900
+      - REGION_INFO=cockroach|CockroachDB
+      - TRANSACTOR_URL=ws://transactor:3332;ws://${SERVER_HOST}:3332;cockroach,
+      - STORAGE_CONFIG=${STORAGE_CONFIG}
+      - FRONT_URL=http://${SERVER_HOST}:8087
+      - ACCOUNTS_URL=http://${SERVER_HOST}:3000
+      - ADMIN_EMAILS=${ADMIN_EMAILS}
+      - WORKSPACE_LIMIT_PER_USER=10000
+      - MAIL_URL=
+      - LAST_NAME_FIRST=true
+      # 飞书：没有域名时留空，provider 不注册、登录页不显示按钮（这是设计好的行为）。
+      - FEISHU_CLIENT_ID
+      - FEISHU_CLIENT_SECRET
+      - FEISHU_ALLOWED_TENANT_KEYS
+      - FEISHU_DISPLAY_NAME
+      - FEISHU_REDIRECT_URL
+      - FEISHU_TENANT_WORKSPACE_MAP
+      - FEISHU_AUTO_PROVISION
+      - FEISHU_SYNC_PROFILE
+      - FEISHU_STATE_HMAC_SECRET
+    <<: *common
+
+  workspace:
+    image: ghcr.io/chovizzz/agentra-workspace:${AGENTRA_TAG}
+    depends_on:
+      redpanda: { condition: service_healthy }
+    environment:
+      - SERVER_SECRET=${SERVER_SECRET}
+      - QUEUE_CONFIG=redpanda:9092
+      - DB_URL=${DB_URL}
+      - STATS_URL=http://stats:4900
+      - ACCOUNTS_URL=http://account:3000
+      - TRANSACTOR_URL=ws://transactor:3332;ws://${SERVER_HOST}:3332;cockroach,
+      - STORAGE_CONFIG=${STORAGE_CONFIG}
+      - REGION=cockroach
+      - MODEL_ENABLED=*
+    <<: *common
+
+  transactor:
+    image: ghcr.io/chovizzz/agentra-transactor:${AGENTRA_TAG}
+    depends_on:
+      redpanda: { condition: service_healthy }
+    ports:
+      - '3332:3332'
+    environment:
+      - SERVER_PORT=3332
+      - SERVER_SECRET=${SERVER_SECRET}
+      - QUEUE_CONFIG=redpanda:9092
+      - DB_URL=${DB_URL}
+      - STATS_URL=http://stats:4900
+      - ACCOUNTS_URL=http://account:3000
+      - FRONT_URL=http://${SERVER_HOST}:8087
+      - STORAGE_CONFIG=${STORAGE_CONFIG}
+      - SERVER_CURSOR_MAXTIMEMS=30000
+      - REGION=cockroach
+      # ⚠️ 全文检索被砍掉了，这里必须留空而不是指向不存在的服务，
+      # 否则 transactor 会反复重试连接并刷日志。
+      - FULLTEXT_URL=
+    <<: *common
+
+  collaborator:
+    image: ghcr.io/chovizzz/agentra-collaborator:${AGENTRA_TAG}
+    environment:
+      - COLLABORATOR_PORT=3078
+      - SECRET=${SERVER_SECRET}
+      - ACCOUNTS_URL=http://account:3000
+      - STATS_URL=http://stats:4900
+      - STORAGE_CONFIG=${STORAGE_CONFIG}
+    <<: *common
+
+  front:
+    image: ghcr.io/chovizzz/agentra-front:${AGENTRA_TAG}
+    depends_on:
+      - account
+    ports:
+      - '8087:8080'
+    environment:
+      - SERVER_PORT=8080
+      - SERVER_SECRET=${SERVER_SECRET}
+      - ACCOUNTS_URL=http://${SERVER_HOST}:3000
+      - UPLOAD_URL=/files
+      - FILES_URL=http://${SERVER_HOST}:4030/blob/:workspace/:blobId/:filename
+      - STATS_URL=http://stats:4900
+      - COLLABORATOR_URL=ws://${SERVER_HOST}:3078
+      - STORAGE_CONFIG=${STORAGE_CONFIG}
+      - GITHUB_URL=http://${SERVER_HOST}:3500
+      - GITHUB_APP
+      - GITHUB_CLIENTID
+      # 被砍掉的服务：留空而不是指向不存在的地址，前端会据此隐藏入口。
+      - REKONI_URL=
+      - PREVIEW_URL=
+      - GMAIL_URL=
+      - CALENDAR_URL=
+      - TELEGRAM_URL=
+      - PRINT_URL=
+      - LINK_PREVIEW_URL=
+    <<: *common
+
+  github:
+    image: ghcr.io/chovizzz/agentra-github:${AGENTRA_TAG}
+    depends_on:
+      - account
+    ports:
+      - '3500:3500'
+    environment:
+      - PORT=3500
+      - SERVICE_ID=github-service
+      - SERVER_SECRET=${SERVER_SECRET}
+      - ACCOUNTS_URL=http://account:3000
+      - FRONT_URL=http://${SERVER_HOST}:8087
+      - COLLABORATOR_URL=http://collaborator:3078
+      - STATS_URL=http://stats:4900
+      - STORAGE_CONFIG=${STORAGE_CONFIG}
+      - APP_ID
+      - CLIENT_ID
+      - CLIENT_SECRET
+      - PRIVATE_KEY
+      - WEBHOOK_SECRET
+      - BOT_NAME
+      - ALLOWED_WORKSPACES=${ALLOWED_WORKSPACES:-*}
+    <<: *common
+
+volumes:
+  cockroach_db:
+  files:
+  redpanda:
