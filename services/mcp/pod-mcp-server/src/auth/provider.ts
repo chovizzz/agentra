@@ -18,6 +18,7 @@ import type { Request, Response } from 'express'
 import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js'
 import type { AuthorizationParams, OAuthServerProvider } from '@modelcontextprotocol/sdk/server/auth/provider.js'
 import type { OAuthRegisteredClientsStore } from '@modelcontextprotocol/sdk/server/auth/clients.js'
+import { InvalidTokenError } from '@modelcontextprotocol/sdk/server/auth/errors.js'
 import type { OAuthClientInformationFull, OAuthTokens } from '@modelcontextprotocol/sdk/shared/auth.js'
 
 import { type AgentraAuth, mintUserToken, resolvePerson } from './agentra'
@@ -272,12 +273,21 @@ export class FeishuBackedProvider implements OAuthServerProvider {
     throw new Error('refresh tokens are not supported; re-authorize instead')
   }
 
+  /**
+   * 🔴 Must throw `InvalidTokenError`, not a plain `Error`.
+   *
+   * `requireBearerAuth` maps only that type to 401; anything else becomes a 500,
+   * and a 500 does not tell the client to re-authorize — it reads as "the server
+   * is broken". Since access tokens live in memory, every redeploy invalidates
+   * them, so this is the normal path, not an edge case: getting the status wrong
+   * strands the user on a server that is actually healthy.
+   */
   async verifyAccessToken (token: string): Promise<AuthInfo> {
     const issued = this.tokens.get(token)
-    if (issued === undefined) throw new Error('invalid access token')
+    if (issued === undefined) throw new InvalidTokenError('unknown access token; re-authorize')
     if (issued.expiresAt * 1000 <= Date.now()) {
       this.tokens.delete(token)
-      throw new Error('access token expired')
+      throw new InvalidTokenError('access token expired; re-authorize')
     }
     return {
       token,

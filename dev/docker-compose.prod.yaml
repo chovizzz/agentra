@@ -13,6 +13,7 @@
 #    测试管理/飞书登录/GitHub 集成都在。
 # 3. 主机名用 SERVER_HOST 变量而不是写死 agentra.local，见下面第 4 条。
 # 4. 一个宿主端口都不映射，全部走 Traefik。云安全组只放行 22/80/443/3000，
+#    所有对外主机名都配了 Let's Encrypt 证书，浏览器侧一律 https / wss；
 #    Dokploy 自带的 Traefik 已经占着 80，所以对外访问一律收到 80 上按
 #    主机名分流：<服务>.${SERVER_HOST}。SERVER_HOST 用 sslip.io 的通配
 #    DNS（49.51.37.69.sslip.io 及其任意子域都解析到本机 IP），因此不需要
@@ -115,10 +116,10 @@ services:
       - DB_URL=${DB_URL}
       - STATS_URL=http://stats:4900
       - REGION_INFO=cockroach|CockroachDB
-      - TRANSACTOR_URL=ws://transactor:3332;ws://transactor.${SERVER_HOST};cockroach,
+      - TRANSACTOR_URL=ws://transactor:3332;wss://transactor.${SERVER_HOST};cockroach,
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - FRONT_URL=http://agentra.${SERVER_HOST}
-      - ACCOUNTS_URL=http://account.${SERVER_HOST}
+      - FRONT_URL=https://agentra.${SERVER_HOST}
+      - ACCOUNTS_URL=https://account.${SERVER_HOST}
       - ADMIN_EMAILS=${ADMIN_EMAILS}
       - WORKSPACE_LIMIT_PER_USER=10000
       - MAIL_URL=
@@ -149,7 +150,7 @@ services:
       # 与 DB_URL 同一个库，但变量名不同：workspace 单独读 ACCOUNTS_DB_URL，
       # 缺了会打印 `Please provide account db url` 后 exit(1) 并崩溃重启。
       - ACCOUNTS_DB_URL=${DB_URL}
-      - TRANSACTOR_URL=ws://transactor:3332;ws://transactor.${SERVER_HOST};cockroach,
+      - TRANSACTOR_URL=ws://transactor:3332;wss://transactor.${SERVER_HOST};cockroach,
       - STORAGE_CONFIG=${STORAGE_CONFIG}
       - REGION=cockroach
       - MODEL_ENABLED=*
@@ -166,7 +167,7 @@ services:
       - DB_URL=${DB_URL}
       - STATS_URL=http://stats:4900
       - ACCOUNTS_URL=http://account:3000
-      - FRONT_URL=http://agentra.${SERVER_HOST}
+      - FRONT_URL=https://agentra.${SERVER_HOST}
       - STORAGE_CONFIG=${STORAGE_CONFIG}
       - SERVER_CURSOR_MAXTIMEMS=30000
       - REGION=cockroach
@@ -194,13 +195,13 @@ services:
     environment:
       - SERVER_PORT=8080
       - SERVER_SECRET=${SERVER_SECRET}
-      - ACCOUNTS_URL=http://account.${SERVER_HOST}
+      - ACCOUNTS_URL=https://account.${SERVER_HOST}
       - UPLOAD_URL=/files
-      - FILES_URL=http://datalake.${SERVER_HOST}/blob/:workspace/:blobId/:filename
+      - FILES_URL=https://datalake.${SERVER_HOST}/blob/:workspace/:blobId/:filename
       - STATS_URL=http://stats:4900
-      - COLLABORATOR_URL=ws://collab.${SERVER_HOST}
+      - COLLABORATOR_URL=wss://collab.${SERVER_HOST}
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - GITHUB_URL=http://github.${SERVER_HOST}
+      - GITHUB_URL=https://github.${SERVER_HOST}
       - GITHUB_APP
       - GITHUB_CLIENTID
       # 被砍掉的服务：留空而不是指向不存在的地址，前端会据此隐藏入口。
@@ -223,7 +224,7 @@ services:
       - SERVICE_ID=github-service
       - SERVER_SECRET=${SERVER_SECRET}
       - ACCOUNTS_URL=http://account:3000
-      - FRONT_URL=http://agentra.${SERVER_HOST}
+      - FRONT_URL=https://agentra.${SERVER_HOST}
       - COLLABORATOR_URL=http://collaborator:3078
       - STATS_URL=http://stats:4900
       - STORAGE_CONFIG=${STORAGE_CONFIG}
@@ -256,7 +257,7 @@ services:
       - MCP_PUBLIC_URL=https://mcp.${SERVER_HOST}
       # ⚠️ 这里要的是**前端**地址，不是 transactor —— api-client 的 connect()
       #    先从它拉 /config.json 才知道 account / collaborator 在哪。
-      - AGENTRA_URL=http://agentra.${SERVER_HOST}
+      - AGENTRA_URL=https://agentra.${SERVER_HOST}
       - AGENTRA_WORKSPACE=agentra-main
       - AGENTRA_WORKSPACE_UUID=${AGENTRA_WORKSPACE_UUID}
       - ACCOUNTS_URL=http://account:3000
