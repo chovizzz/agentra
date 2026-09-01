@@ -9,7 +9,7 @@ GHCR（`ghcr.io/chovizzz/agentra-*`），tag 是 git commit `6e3227395`。
 
 | 服务 | 地址 |
 |---|---|
-| 前端 | <http://front.49.51.37.69.sslip.io> |
+| 前端 | <http://agentra.49.51.37.69.sslip.io> |
 | account | <http://account.49.51.37.69.sslip.io> |
 | transactor (ws) | <ws://transactor.49.51.37.69.sslip.io> |
 | collaborator (ws) | <ws://collab.49.51.37.69.sslip.io> |
@@ -64,7 +64,7 @@ collaborator(ws)、datalake 四个服务，端口全被挡。
 - Traefik 只能路由到 `dokploy-network` 上的容器，对外服务必须显式声明；
   而一旦写了 `networks:` 就**不再隐式加入 `default`**，两个都要列，
   否则容器间调用（`http://account:3000` 那些）会断。
-- `SERVER_HOST` 不能填裸 IP，否则拼出 `front.49.51.37.69` 这种解析不了的名字。
+- `SERVER_HOST` 不能填裸 IP，否则拼出 `agentra.49.51.37.69` 这种解析不了的名字。
 
 ## 环境变量的一个陷阱
 
@@ -94,12 +94,12 @@ Dokploy 报 `done` 只代表 `docker compose up -d` 返回 0，**不是**服务�
 ```sh
 # 1. 11 个容器都 running，且 Up 时长在增长（崩溃重启表现为反复 Up 几十秒）
 # 2. 外部可达
-for h in front account transactor collab datalake; do
+for h in agentra account transactor collab datalake; do
   curl -so /dev/null -w "$h %{http_code}\n" http://$h.49.51.37.69.sslip.io/
 done
 ```
 
-预期：`front 200`、`datalake 200`、`account 405`（POST-only 的 RPC 端点，
+预期：`agentra 200`、`datalake 200`、`account 405`（POST-only 的 RPC 端点，
 GET 返回 405 是正常应答）、`transactor 404`、`collab 404`。
 
 ⚠️ **404 要分辨来源**：Traefik 无路由时返回 19 字节 `text/plain`；
@@ -110,7 +110,7 @@ GET 返回 405 是正常应答）、`transactor 404`、`collab 404`。
 ## 待办
 
 1. **管理员账号与工作区还没建**。需要在
-   <http://front.49.51.37.69.sslip.io> 上注册（涉及设置密码，由人来做）。
+   <http://agentra.49.51.37.69.sslip.io> 上注册（涉及设置密码，由人来做）。
    建好之后才能做数据迁移。
 2. **GitHub 集成未配置**：服务器上 `APP_ID`/`CLIENT_ID`/`CLIENT_SECRET`/
    `PRIVATE_KEY`/`WEBHOOK_SECRET`/`BOT_NAME`/`GITHUB_APP`/`GITHUB_CLIENTID`

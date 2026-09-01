@@ -117,7 +117,7 @@ services:
       - REGION_INFO=cockroach|CockroachDB
       - TRANSACTOR_URL=ws://transactor:3332;ws://transactor.${SERVER_HOST};cockroach,
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - FRONT_URL=http://front.${SERVER_HOST}
+      - FRONT_URL=http://agentra.${SERVER_HOST}
       - ACCOUNTS_URL=http://account.${SERVER_HOST}
       - ADMIN_EMAILS=${ADMIN_EMAILS}
       - WORKSPACE_LIMIT_PER_USER=10000
@@ -166,7 +166,7 @@ services:
       - DB_URL=${DB_URL}
       - STATS_URL=http://stats:4900
       - ACCOUNTS_URL=http://account:3000
-      - FRONT_URL=http://front.${SERVER_HOST}
+      - FRONT_URL=http://agentra.${SERVER_HOST}
       - STORAGE_CONFIG=${STORAGE_CONFIG}
       - SERVER_CURSOR_MAXTIMEMS=30000
       - REGION=cockroach
@@ -223,7 +223,7 @@ services:
       - SERVICE_ID=github-service
       - SERVER_SECRET=${SERVER_SECRET}
       - ACCOUNTS_URL=http://account:3000
-      - FRONT_URL=http://front.${SERVER_HOST}
+      - FRONT_URL=http://agentra.${SERVER_HOST}
       - COLLABORATOR_URL=http://collaborator:3078
       - STATS_URL=http://stats:4900
       - STORAGE_CONFIG=${STORAGE_CONFIG}
