@@ -88,7 +88,14 @@ services:
       - STATS_URL=http://stats:4900
       - STREAM_URL=
       - DB_URL=${DB_URL}
-      - BUCKETS=${STORAGE_BUCKETS}
+      # 格式是 `<bucket>,<location>|<url>?accessKey=&secretKey=`
+      # （services/datalake/pod-datalake/src/config.ts 的 parseBucketConfig）。
+      # 🔴 不要写成 `minio|minio?accessKey=...` —— 那是 BACKUP_STORAGE_CONFIG
+      #    的形状，用在这里会以 `Invalid bucket config` 崩溃重启。
+      # 🔴 也不要把这串放进 Dokploy 的环境变量再用 ${...} 引 ——
+      #    Compose 不对 env 值做二次插值，${MINIO_USER} 会原样传进容器。
+      #    在 compose 文件里插值才生效。
+      - BUCKETS=blobs,eu|http://minio:9000?accessKey=${MINIO_USER}&secretKey=${MINIO_PASSWORD}
     <<: *common
 
   account:
@@ -137,6 +144,9 @@ services:
       - DB_URL=${DB_URL}
       - STATS_URL=http://stats:4900
       - ACCOUNTS_URL=http://account:3000
+      # 与 DB_URL 同一个库，但变量名不同：workspace 单独读 ACCOUNTS_DB_URL，
+      # 缺了会打印 `Please provide account db url` 后 exit(1) 并崩溃重启。
+      - ACCOUNTS_DB_URL=${DB_URL}
       - TRANSACTOR_URL=ws://transactor:3332;ws://${SERVER_HOST}:3332;cockroach,
       - STORAGE_CONFIG=${STORAGE_CONFIG}
       - REGION=cockroach
