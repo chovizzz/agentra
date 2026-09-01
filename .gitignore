@@ -127,3 +127,6 @@ CLAUDE.md
 # 生产环境变量（含密钥），只提交 .example
 .env.prod
 *.env.prod
+
+# 生产环境变量的粘贴稿（含密钥）
+dev/.env.prod.local
