@@ -2288,6 +2288,11 @@
       "shouldPublish": false
     },
     {
+      "packageName": "@hcengineering/pod-mcp-server",
+      "projectFolder": "services/mcp/pod-mcp-server",
+      "shouldPublish": false
+    },
+    {
       "packageName": "@hcengineering/pod-export",
       "projectFolder": "services/export/pod-export",
       "shouldPublish": false
