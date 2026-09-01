@@ -11,10 +11,15 @@
 #    redpanda_console、time-machine、events-processor、media、export、stream。
 #    ⚠️ 代价：全文搜索不可用、附件预览不可用。核心的项目/任务/缺陷/
 #    测试管理/飞书登录/GitHub 集成都在。
-# 3. 主机名用 SERVER_HOST 变量而不是写死 agentra.local。没有域名时填 IP。
-# 4. 不暴露 cockroach / redpanda / minio 的端口到公网 —— dev 栈为了本地
-#    调试全开了，那在公网上是不能接受的。只有 front(8087)、
-#    account(3010) 与 github(3500) 对外。
+# 3. 主机名用 SERVER_HOST 变量而不是写死 agentra.local，见下面第 4 条。
+# 4. 一个宿主端口都不映射，全部走 Traefik。云安全组只放行 22/80/443/3000，
+#    Dokploy 自带的 Traefik 已经占着 80，所以对外访问一律收到 80 上按
+#    主机名分流：<服务>.${SERVER_HOST}。SERVER_HOST 用 sslip.io 的通配
+#    DNS（49.51.37.69.sslip.io 及其任意子域都解析到本机 IP），因此不需要
+#    真买域名。将来买了域名，把 SERVER_HOST 换成它即可，其余不用动。
+#    ⚠️ Traefik 只能路由到 dokploy-network 上的容器，所以每个对外服务都要
+#       显式声明 networks；一旦写了 networks，就不再隐式加入 default，
+#       两个网络都得列出来，否则容器间调用会断。
 #
 # 起法：
 #   docker compose --env-file .env.prod -f docker-compose.prod.yaml up -d
@@ -96,17 +101,13 @@ services:
       #    Compose 不对 env 值做二次插值，${MINIO_USER} 会原样传进容器。
       #    在 compose 文件里插值才生效。
       - BUCKETS=blobs,eu|http://minio:9000?accessKey=${MINIO_USER}&secretKey=${MINIO_PASSWORD}
+    networks: [default, dokploy-network]
     <<: *common
 
   account:
     image: ghcr.io/chovizzz/agentra-account:${AGENTRA_TAG}
     depends_on:
       redpanda: { condition: service_healthy }
-    ports:
-      # 🔴 宿主侧不能用 3000：Dokploy 面板自己占着 3000，冲突会让整个
-      #    compose 在最后一步失败（Bind for 0.0.0.0:3000 already allocated）。
-      #    容器内仍是 3000，改的只是对外映射。
-      - '3010:3000'
     environment:
       - ACCOUNT_PORT=3000
       - SERVER_SECRET=${SERVER_SECRET}
@@ -114,10 +115,10 @@ services:
       - DB_URL=${DB_URL}
       - STATS_URL=http://stats:4900
       - REGION_INFO=cockroach|CockroachDB
-      - TRANSACTOR_URL=ws://transactor:3332;ws://${SERVER_HOST}:3332;cockroach,
+      - TRANSACTOR_URL=ws://transactor:3332;ws://transactor.${SERVER_HOST};cockroach,
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - FRONT_URL=http://${SERVER_HOST}:8087
-      - ACCOUNTS_URL=http://${SERVER_HOST}:3010
+      - FRONT_URL=http://front.${SERVER_HOST}
+      - ACCOUNTS_URL=http://account.${SERVER_HOST}
       - ADMIN_EMAILS=${ADMIN_EMAILS}
       - WORKSPACE_LIMIT_PER_USER=10000
       - MAIL_URL=
@@ -132,6 +133,7 @@ services:
       - FEISHU_AUTO_PROVISION
       - FEISHU_SYNC_PROFILE
       - FEISHU_STATE_HMAC_SECRET
+    networks: [default, dokploy-network]
     <<: *common
 
   workspace:
@@ -147,7 +149,7 @@ services:
       # 与 DB_URL 同一个库，但变量名不同：workspace 单独读 ACCOUNTS_DB_URL，
       # 缺了会打印 `Please provide account db url` 后 exit(1) 并崩溃重启。
       - ACCOUNTS_DB_URL=${DB_URL}
-      - TRANSACTOR_URL=ws://transactor:3332;ws://${SERVER_HOST}:3332;cockroach,
+      - TRANSACTOR_URL=ws://transactor:3332;ws://transactor.${SERVER_HOST};cockroach,
       - STORAGE_CONFIG=${STORAGE_CONFIG}
       - REGION=cockroach
       - MODEL_ENABLED=*
@@ -157,8 +159,6 @@ services:
     image: ghcr.io/chovizzz/agentra-transactor:${AGENTRA_TAG}
     depends_on:
       redpanda: { condition: service_healthy }
-    ports:
-      - '3332:3332'
     environment:
       - SERVER_PORT=3332
       - SERVER_SECRET=${SERVER_SECRET}
@@ -166,13 +166,14 @@ services:
       - DB_URL=${DB_URL}
       - STATS_URL=http://stats:4900
       - ACCOUNTS_URL=http://account:3000
-      - FRONT_URL=http://${SERVER_HOST}:8087
+      - FRONT_URL=http://front.${SERVER_HOST}
       - STORAGE_CONFIG=${STORAGE_CONFIG}
       - SERVER_CURSOR_MAXTIMEMS=30000
       - REGION=cockroach
       # ⚠️ 全文检索被砍掉了，这里必须留空而不是指向不存在的服务，
       # 否则 transactor 会反复重试连接并刷日志。
       - FULLTEXT_URL=
+    networks: [default, dokploy-network]
     <<: *common
 
   collaborator:
@@ -183,24 +184,23 @@ services:
       - ACCOUNTS_URL=http://account:3000
       - STATS_URL=http://stats:4900
       - STORAGE_CONFIG=${STORAGE_CONFIG}
+    networks: [default, dokploy-network]
     <<: *common
 
   front:
     image: ghcr.io/chovizzz/agentra-front:${AGENTRA_TAG}
     depends_on:
       - account
-    ports:
-      - '8087:8080'
     environment:
       - SERVER_PORT=8080
       - SERVER_SECRET=${SERVER_SECRET}
-      - ACCOUNTS_URL=http://${SERVER_HOST}:3010
+      - ACCOUNTS_URL=http://account.${SERVER_HOST}
       - UPLOAD_URL=/files
-      - FILES_URL=http://${SERVER_HOST}:4030/blob/:workspace/:blobId/:filename
+      - FILES_URL=http://datalake.${SERVER_HOST}/blob/:workspace/:blobId/:filename
       - STATS_URL=http://stats:4900
-      - COLLABORATOR_URL=ws://${SERVER_HOST}:3078
+      - COLLABORATOR_URL=ws://collab.${SERVER_HOST}
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - GITHUB_URL=http://${SERVER_HOST}:3500
+      - GITHUB_URL=http://github.${SERVER_HOST}
       - GITHUB_APP
       - GITHUB_CLIENTID
       # 被砍掉的服务：留空而不是指向不存在的地址，前端会据此隐藏入口。
@@ -211,20 +211,19 @@ services:
       - TELEGRAM_URL=
       - PRINT_URL=
       - LINK_PREVIEW_URL=
+    networks: [default, dokploy-network]
     <<: *common
 
   github:
     image: ghcr.io/chovizzz/agentra-github:${AGENTRA_TAG}
     depends_on:
       - account
-    ports:
-      - '3500:3500'
     environment:
       - PORT=3500
       - SERVICE_ID=github-service
       - SERVER_SECRET=${SERVER_SECRET}
       - ACCOUNTS_URL=http://account:3000
-      - FRONT_URL=http://${SERVER_HOST}:8087
+      - FRONT_URL=http://front.${SERVER_HOST}
       - COLLABORATOR_URL=http://collaborator:3078
       - STATS_URL=http://stats:4900
       - STORAGE_CONFIG=${STORAGE_CONFIG}
@@ -235,7 +234,13 @@ services:
       - WEBHOOK_SECRET
       - BOT_NAME
       - ALLOWED_WORKSPACES=${ALLOWED_WORKSPACES:-*}
+    networks: [default, dokploy-network]
     <<: *common
+
+networks:
+  # Dokploy 的 Traefik 所在网络，由 Dokploy 自己创建，这里只引用。
+  dokploy-network:
+    external: true
 
 volumes:
   cockroach_db:
