@@ -52,10 +52,27 @@ function systemToken (auth: AgentraAuth): string {
   return generateToken(systemAccountUuid, undefined, { service: 'mcp' }, auth.serverSecret)
 }
 
+/**
+ * socialKey -> PersonId -> PersonUuid, in two calls.
+ *
+ * 🔴 NOT `findFullSocialIdBySocialKey`, which would do it in one: that endpoint is
+ * behind `verifyAllowedServices(['telegram-bot','gmail','tool','workspace',
+ * 'google-calendar'])` (server/account/src/serviceOperations.ts), so calling it as
+ * `service: 'mcp'` fails with a bare `platform:status:Forbidden` — and that failure
+ * only surfaces at the very end of the Feishu round-trip.
+ *
+ * The two endpoints used here take any decodable token, which is what a service
+ * outside that hard-coded list is meant to use. Labelling ourselves `tool` to slip
+ * past the list would make the audit trail lie about who called.
+ *
+ * `requireAccount` is on deliberately: a Feishu identity with a person but no
+ * account cannot log in, and minting a token for it would paper over that.
+ */
 export async function resolvePerson (auth: AgentraAuth, socialKey: string): Promise<PersonUuid | undefined> {
   const client = getAccountClient(auth.accountsUrl, systemToken(auth))
-  const socialId = await client.findFullSocialIdBySocialKey(socialKey)
-  return socialId?.personUuid
+  const socialId = await client.findSocialIdBySocialKey(socialKey)
+  if (socialId === undefined) return undefined
+  return await client.findPersonBySocialId(socialId, true)
 }
 
 export function mintUserToken (auth: AgentraAuth, person: PersonUuid): { token: string, expiresAt: number } {
