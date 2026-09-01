@@ -13,8 +13,8 @@
 #    测试管理/飞书登录/GitHub 集成都在。
 # 3. 主机名用 SERVER_HOST 变量而不是写死 agentra.local。没有域名时填 IP。
 # 4. 不暴露 cockroach / redpanda / minio 的端口到公网 —— dev 栈为了本地
-#    调试全开了，那在公网上是不能接受的。只有 front(8087) 和
-#    account(3000) 与 github(3500) 对外。
+#    调试全开了，那在公网上是不能接受的。只有 front(8087)、
+#    account(3010) 与 github(3500) 对外。
 #
 # 起法：
 #   docker compose --env-file .env.prod -f docker-compose.prod.yaml up -d
@@ -96,7 +96,10 @@ services:
     depends_on:
       redpanda: { condition: service_healthy }
     ports:
-      - '3000:3000'
+      # 🔴 宿主侧不能用 3000：Dokploy 面板自己占着 3000，冲突会让整个
+      #    compose 在最后一步失败（Bind for 0.0.0.0:3000 already allocated）。
+      #    容器内仍是 3000，改的只是对外映射。
+      - '3010:3000'
     environment:
       - ACCOUNT_PORT=3000
       - SERVER_SECRET=${SERVER_SECRET}
@@ -107,7 +110,7 @@ services:
       - TRANSACTOR_URL=ws://transactor:3332;ws://${SERVER_HOST}:3332;cockroach,
       - STORAGE_CONFIG=${STORAGE_CONFIG}
       - FRONT_URL=http://${SERVER_HOST}:8087
-      - ACCOUNTS_URL=http://${SERVER_HOST}:3000
+      - ACCOUNTS_URL=http://${SERVER_HOST}:3010
       - ADMIN_EMAILS=${ADMIN_EMAILS}
       - WORKSPACE_LIMIT_PER_USER=10000
       - MAIL_URL=
@@ -181,7 +184,7 @@ services:
     environment:
       - SERVER_PORT=8080
       - SERVER_SECRET=${SERVER_SECRET}
-      - ACCOUNTS_URL=http://${SERVER_HOST}:3000
+      - ACCOUNTS_URL=http://${SERVER_HOST}:3010
       - UPLOAD_URL=/files
       - FILES_URL=http://${SERVER_HOST}:4030/blob/:workspace/:blobId/:filename
       - STATS_URL=http://stats:4900
