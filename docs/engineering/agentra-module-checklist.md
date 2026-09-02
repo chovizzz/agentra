@@ -293,3 +293,25 @@ zh 的 key 对齐要另写断言（见 `plugins/agentra-core-assets/src/__tests_
 其中 `server/server-pipeline/package.json` 在第 7 步和 8.2 各出现一次（同一个文件、两个不同原因：
 前者为 `serverPlugins.ts` 的 `addLocation` 提供依赖，后者为 `internationalization.ts` 的静态
 `en.json` 导入提供依赖）。核对时按**动作**逐项打勾，不要按文件数对账。
+
+## ⚠️ `rush validate` 绿 ≠ 打包能过
+
+新增 `.svelte` 组件时，**用到的每个包都必须写进该 resources 包的 `dependencies`**。
+
+`rush validate`（tsc）走的是 workspace 的符号链接，能解析到根 `node_modules` 里
+任何已安装的包，**即使当前包并没有声明它**。webpack 不吃这一套，会在打包时报
+`Module not found: Can't resolve '@hcengineering/xxx'`。
+
+2026-09-01 实测：`McpSettings.svelte` 用了 `copyTextToClipboard`，
+`rush validate` 全绿、`svelte-check` 全绿，`rushx package`（webpack）才炸，
+因为 `agentra-core-resources` 没声明 `@hcengineering/presentation`。
+
+**判据**：新组件写完后跑一次 `cd dev/prod && rushx package`，不要只跑 validate。
+这与本文档已记的「`-resources` 包被二次类型检查」是同一类陷阱的另一面 ——
+那条说的是"包内 tsc 干净不等于 rush validate 过"，这条说的是
+"rush validate 过不等于 webpack 过"。
+
+### 契约包拿 `AnyComponent` 要依赖 `@hcengineering/ui`
+
+`AnyComponent` 定义在 `@hcengineering/ui`，上游契约包（如 `plugins/tracker`）
+就是这么依赖的。契约包本身不含 UI 代码，但类型要从那里取。
