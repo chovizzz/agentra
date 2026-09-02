@@ -27,6 +27,13 @@
     "McpAuth": "授权",
     "McpAuthDescription": "每个 agent 各自用飞书授权，并以授权者本人的身份操作。授权 8 小时后过期，重新授权只需一次点击。",
     "McpCopied": "已复制",
-    "McpCopy": "复制"
+    "McpCopy": "复制",
+    "McpOneClick": "一键接入",
+    "McpOneClickHint": "会打开对应应用并添加本服务。这里不写入任何配置——由应用自己向你确认。",
+    "McpCli": "命令行接入",
+    "McpOtherClients": "其它客户端",
+    "McpOtherClientsHint": "把这段粘进客户端的 MCP 配置里。",
+    "McpCodexCaveat": "Codex 的远程服务器认证用的是静态 bearer token，不走 MCP 的 OAuth 流程，所以目前可能无法对本服务完成授权。",
+    "McpInstallIn": "添加到 {client}"
   }
 }

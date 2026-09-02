@@ -27,6 +27,13 @@
     "McpAuth": "Authorization",
     "McpAuthDescription": "Each agent authorizes with Feishu and acts as the person who authorized it. Access expires after 8 hours; re-authorizing is a single click.",
     "McpCopied": "Copied",
-    "McpCopy": "Copy"
+    "McpCopy": "Copy",
+    "McpOneClick": "One click",
+    "McpOneClickHint": "Opens the app and adds this server. Nothing is configured here — the app asks you to confirm.",
+    "McpCli": "From a terminal",
+    "McpOtherClients": "Any other client",
+    "McpOtherClientsHint": "Paste this into the client's MCP configuration.",
+    "McpCodexCaveat": "Codex authenticates remote servers with a static bearer token rather than the MCP OAuth flow, so it may not be able to authorize against this server yet.",
+    "McpInstallIn": "Add to {client}"
   }
 }

@@ -23,7 +23,77 @@
   // command that silently cannot work.
   const base = (getMetadata(agentraCore.metadata.McpUrl) ?? '').replace(/\/$/, '')
   const endpoint = base !== '' ? `${base}/mcp` : ''
-  const addCommand = endpoint !== '' ? `claude mcp add --transport http agentra ${endpoint}` : ''
+
+  const SERVER_NAME = 'agentra'
+
+  /**
+   * The whole config a client needs is the URL — this server authenticates with
+   * OAuth and registers clients dynamically, so there is no key, token or client
+   * id to hand over. That is what makes a one-click link possible at all: the
+   * link carries nothing secret and is the same for everybody.
+   */
+  const remoteConfig = { url: endpoint }
+
+  // Deeplinks differ per app in both shape AND encoding, so they are spelled out
+  // rather than derived:
+  //   Cursor  — base64 of the config object   (cursor.com/docs/context/mcp/install-links)
+  //   VS Code — URL-encoded JSON, and it wants an explicit `type`
+  //             (Cursor infers "remote" from the presence of `url` and has no
+  //             `type` field for it at all, so the two cannot share one object.)
+  const b64 = (o: unknown): string => btoa(JSON.stringify(o))
+  const enc = (o: unknown): string => encodeURIComponent(JSON.stringify(o))
+
+  interface OneClick {
+    id: string
+    label: string
+    href: string
+  }
+
+  $: oneClick = (endpoint === ''
+    ? []
+    : [
+        {
+          id: 'cursor',
+          label: 'Cursor',
+          href: `cursor://anysphere.cursor-deeplink/mcp/install?name=${SERVER_NAME}&config=${b64(remoteConfig)}`
+        },
+        {
+          id: 'vscode',
+          label: 'VS Code',
+          href: `vscode:mcp/install?name=${SERVER_NAME}&config=${enc({ type: 'http', url: endpoint })}`
+        },
+        {
+          id: 'vscode-insiders',
+          label: 'VS Code Insiders',
+          href: `vscode-insiders:mcp/install?name=${SERVER_NAME}&config=${enc({ type: 'http', url: endpoint })}`
+        }
+      ]) as OneClick[]
+
+  interface Snippet {
+    id: string
+    label: string
+    text: string
+    caveat?: typeof agentraCore.string.McpCodexCaveat
+  }
+
+  $: snippets = (endpoint === ''
+    ? []
+    : [
+        {
+          id: 'claude',
+          label: 'Claude Code',
+          text: `claude mcp add --transport http ${SERVER_NAME} ${endpoint}`
+        },
+        {
+          id: 'codex',
+          label: 'Codex',
+          text: `codex mcp add ${SERVER_NAME} --url ${endpoint}`,
+          caveat: agentraCore.string.McpCodexCaveat
+        }
+      ]) as Snippet[]
+
+  // The de-facto shape every remaining client reads (Cline, Windsurf, Zed, …).
+  $: manualJson = JSON.stringify({ mcpServers: { [SERVER_NAME]: remoteConfig } }, null, 2)
 
   let copied: string | undefined
 
@@ -49,24 +119,55 @@
     <p class="mcp-empty"><Label label={agentraCore.string.McpNotConfigured} /></p>
   {:else}
     <section class="mcp-section">
+      <span class="mcp-label"><Label label={agentraCore.string.McpOneClick} /></span>
+      <div class="mcp-buttons">
+        {#each oneClick as c (c.id)}
+          <a class="mcp-button" href={c.href}>
+            <Label label={agentraCore.string.McpInstallIn} params={{ client: c.label }} />
+          </a>
+        {/each}
+      </div>
+      <p class="mcp-hint"><Label label={agentraCore.string.McpOneClickHint} /></p>
+    </section>
+
+    <section class="mcp-section">
+      <span class="mcp-label"><Label label={agentraCore.string.McpCli} /></span>
+      {#each snippets as sn (sn.id)}
+        <div class="mcp-snippet">
+          <span class="mcp-snippet-name">{sn.label}</span>
+          <button class="mcp-code" on:click={() => copy(sn.text)}>
+            <span class="mcp-code-text">{sn.text}</span>
+            <span class="mcp-code-action">
+              <Label label={copied === sn.text ? agentraCore.string.McpCopied : agentraCore.string.McpCopy} />
+            </span>
+          </button>
+          {#if sn.caveat !== undefined}
+            <p class="mcp-caveat"><Label label={sn.caveat} /></p>
+          {/if}
+        </div>
+      {/each}
+      <p class="mcp-hint"><Label label={agentraCore.string.McpAddCommandHint} /></p>
+    </section>
+
+    <section class="mcp-section">
+      <span class="mcp-label"><Label label={agentraCore.string.McpOtherClients} /></span>
+      <button class="mcp-code mcp-code-block" on:click={() => copy(manualJson)}>
+        <pre class="mcp-code-text">{manualJson}</pre>
+        <span class="mcp-code-action">
+          <Label label={copied === manualJson ? agentraCore.string.McpCopied : agentraCore.string.McpCopy} />
+        </span>
+      </button>
+      <p class="mcp-hint"><Label label={agentraCore.string.McpOtherClientsHint} /></p>
+    </section>
+
+    <section class="mcp-section">
       <span class="mcp-label"><Label label={agentraCore.string.McpEndpoint} /></span>
-      <button class="mcp-code" title={copied === endpoint ? '' : undefined} on:click={() => copy(endpoint)}>
+      <button class="mcp-code" on:click={() => copy(endpoint)}>
         <span class="mcp-code-text">{endpoint}</span>
         <span class="mcp-code-action">
           <Label label={copied === endpoint ? agentraCore.string.McpCopied : agentraCore.string.McpCopy} />
         </span>
       </button>
-    </section>
-
-    <section class="mcp-section">
-      <span class="mcp-label"><Label label={agentraCore.string.McpAddCommand} /></span>
-      <button class="mcp-code" on:click={() => copy(addCommand)}>
-        <span class="mcp-code-text">{addCommand}</span>
-        <span class="mcp-code-action">
-          <Label label={copied === addCommand ? agentraCore.string.McpCopied : agentraCore.string.McpCopy} />
-        </span>
-      </button>
-      <p class="mcp-hint"><Label label={agentraCore.string.McpAddCommandHint} /></p>
     </section>
 
     <section class="mcp-section">
@@ -148,6 +249,49 @@
     font-family: var(--body-font);
     font-size: 0.75rem;
     color: var(--theme-dark-color);
+  }
+  .mcp-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .mcp-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--theme-caption-color);
+    background: var(--theme-button-default);
+    border: 1px solid var(--theme-divider-color);
+    border-radius: 0.375rem;
+    text-decoration: none;
+
+    &:hover {
+      background: var(--theme-button-hovered);
+    }
+  }
+  .mcp-snippet {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .mcp-snippet + .mcp-snippet {
+    margin-top: 0.75rem;
+  }
+  .mcp-snippet-name {
+    font-size: 0.8125rem;
+    color: var(--theme-content-color);
+  }
+  .mcp-code-block {
+    align-items: flex-start;
+  }
+  .mcp-code-block .mcp-code-text {
+    margin: 0;
+    white-space: pre;
+  }
+  .mcp-caveat {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--theme-warning-color, var(--theme-dark-color));
   }
   .mcp-hint,
   .mcp-note,
