@@ -139,7 +139,9 @@ const agentraCore = plugin(agentraCoreId, {
     McpOtherClients: '' as IntlString,
     McpOtherClientsHint: '' as IntlString,
     McpCodexCaveat: '' as IntlString,
-    McpInstallIn: '' as IntlString
+    McpInstallIn: '' as IntlString,
+    McpClaudeCodeHint: '' as IntlString,
+    McpCodexNoDeeplink: '' as IntlString
   },
   icon: {
     AgentraCore: '' as Asset

@@ -47,11 +47,23 @@
     id: string
     label: string
     href: string
+    hint?: typeof agentraCore.string.McpClaudeCodeHint
   }
 
   $: oneClick = (endpoint === ''
     ? []
     : [
+        {
+          id: 'claude-code',
+          label: 'Claude Code',
+          // `claude-cli://open?q=` only PRE-FILLS the prompt box — a deep link
+          // never executes anything on its own. The leading `!` is Claude Code's
+          // bash prefix, so pressing Enter runs the command directly instead of
+          // asking a model to run it. That keeps the click as literal as the
+          // Cursor/VS Code ones: the app shows what will happen and waits.
+          href: `claude-cli://open?q=${encodeURIComponent(`!claude mcp add --transport http ${SERVER_NAME} ${endpoint}`)}`,
+          hint: agentraCore.string.McpClaudeCodeHint
+        },
         {
           id: 'cursor',
           label: 'Cursor',
@@ -73,6 +85,7 @@
     id: string
     label: string
     text: string
+    note?: typeof agentraCore.string.McpCodexNoDeeplink
     caveat?: typeof agentraCore.string.McpCodexCaveat
   }
 
@@ -88,6 +101,11 @@
           id: 'codex',
           label: 'Codex',
           text: `codex mcp add ${SERVER_NAME} --url ${endpoint}`,
+          // Two separate limitations, both worth stating: Codex has no install
+          // deeplink at all (its only URL scheme opens an existing thread), and
+          // even once added it authenticates with a static bearer token rather
+          // than the MCP OAuth flow this server requires.
+          note: agentraCore.string.McpCodexNoDeeplink,
           caveat: agentraCore.string.McpCodexCaveat
         }
       ]) as Snippet[]
@@ -128,6 +146,9 @@
         {/each}
       </div>
       <p class="mcp-hint"><Label label={agentraCore.string.McpOneClickHint} /></p>
+      {#each oneClick.filter((c) => c.hint !== undefined) as c (c.id)}
+        <p class="mcp-hint">{c.label}: <Label label={c.hint} /></p>
+      {/each}
     </section>
 
     <section class="mcp-section">
@@ -141,6 +162,9 @@
               <Label label={copied === sn.text ? agentraCore.string.McpCopied : agentraCore.string.McpCopy} />
             </span>
           </button>
+          {#if sn.note !== undefined}
+            <p class="mcp-hint"><Label label={sn.note} /></p>
+          {/if}
           {#if sn.caveat !== undefined}
             <p class="mcp-caveat"><Label label={sn.caveat} /></p>
           {/if}

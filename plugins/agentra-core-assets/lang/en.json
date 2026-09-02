@@ -34,6 +34,8 @@
     "McpOtherClients": "Any other client",
     "McpOtherClientsHint": "Paste this into the client's MCP configuration.",
     "McpCodexCaveat": "Codex authenticates remote servers with a static bearer token rather than the MCP OAuth flow, so it may not be able to authorize against this server yet.",
-    "McpInstallIn": "Add to {client}"
+    "McpInstallIn": "Add to {client}",
+    "McpClaudeCodeHint": "Opens Claude Code with the command filled in — nothing runs until you press Enter. The link only works after Claude Code has registered its handler, which happens the first time you send a prompt in an interactive session.",
+    "McpCodexNoDeeplink": "Codex has no install link: its only URL scheme opens an existing thread. Copy the command instead."
   }
 }

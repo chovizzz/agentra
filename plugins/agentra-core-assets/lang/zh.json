@@ -34,6 +34,8 @@
     "McpOtherClients": "其它客户端",
     "McpOtherClientsHint": "把这段粘进客户端的 MCP 配置里。",
     "McpCodexCaveat": "Codex 的远程服务器认证用的是静态 bearer token，不走 MCP 的 OAuth 流程，所以目前可能无法对本服务完成授权。",
-    "McpInstallIn": "添加到 {client}"
+    "McpInstallIn": "添加到 {client}",
+    "McpClaudeCodeHint": "会打开 Claude Code 并预填这条命令——在你按回车之前不会执行任何东西。该链接需要 Claude Code 已注册处理器才生效，注册发生在你首次于交互式会话里发出 prompt 时。",
+    "McpCodexNoDeeplink": "Codex 没有安装链接：它唯一的 URL scheme 是打开已有会话。请复制命令使用。"
   }
 }
