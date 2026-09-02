@@ -164,6 +164,10 @@ transactor 清缓存）。
    - GitHub App 设置页 Callback URL → `http://github.49.51.37.69.sslip.io/auth`
    - 飞书应用重定向 URI → `http://account.49.51.37.69.sslip.io/auth/feishu/callback`
      （必须与 `FEISHU_REDIRECT_URL` **逐字符**一致）
-2. **GitHub 的 webhook 回流**目前仍不可用：pod-github 只有 POST `/api/v1/*`
-   路由，GET `/auth` 那座桥在开源仓库里是缺的（见 `github-integration.md`）。
+2. **GitHub App 的回调与 webhook 地址**（见 `github-integration.md`）：
+   - Callback URL → **前端**的 `https://agentra.<SERVER_HOST>/github`
+   - Webhook URL → `https://github.<SERVER_HOST>/`
+
+   ⚠️ 早先这里写着"pod-github 缺 GET /auth 桥接"，那是误诊：处理浏览器回调的是
+   前端的 `ConnectApp`，pod-github 只收 POST 是设计如此。
 3. **没有 HTTPS**。sslip.io 可以配 Let's Encrypt，但更合适的是等真域名。

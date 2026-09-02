@@ -32,9 +32,20 @@ PR review 还会变成 Agentra 里的待办（`GithubTodo extends ToDo`）。
 |---|---|
 | GitHub App name | 任意，例如 `agentra-sync`。**这个名字的 slug 就是 `BOT_NAME`** |
 | Homepage URL | `http://agentra.local:8087`（本地阶段随便填，不校验） |
-| Callback URL | `http://agentra.local:3500/auth`（本地阶段；上公网后改成公网地址） |
+| Callback URL | **前端**的 `/github` 路由，如 `https://agentra.49.51.37.69.sslip.io/github` |
 | Webhook | **本地阶段先取消勾选 Active**，见下方「关于 webhook」 |
 | Webhook secret | 若启用，自填一个随机串，与 `WEBHOOK_SECRET` 一致 |
+
+> 🔴 **回调要指向前端，不是 pod-github。** 处理回调的是
+> `github-resources/src/components/ConnectApp.svelte`：它从 URL 里读
+> `code` / `state` / `installation_id` / `setup_action`，再 POST 给
+> pod-github 的 `/api/v1/auth` 或 `/api/v1/installation`。
+> 该组件注册在 `dev/prod/src/platform.ts` 的路由表里（`githubId` → `ConnectApp`），
+> 所以 URL 就是前端域名加 `/github`。
+>
+> ⚠️ 曾经把回调填成 `<host>:3500/auth` 并据此断言"开源仓库缺 GET /auth 桥接"，
+> 那是误诊 —— pod-github 只有 `POST /api/v1/*` 是**设计如此**，
+> 它本来就不该直接接收浏览器回调。
 
 **Repository permissions**（至少）：
 
@@ -109,16 +120,10 @@ curl -s --noproxy '*' -o /dev/null -w "%{http_code}\n" http://localhost:3500/
 **本地跑不通的**：GitHub → Agentra 的**事件回流**。GitHub 的服务器打不到你本机的
 `agentra.local` / `127.0.0.1`，所以 PR 合并、新 commit、review 这些事件不会自动同步进来。
 
-两个选项：
-
-1. **内网穿透**（ngrok / cpolar）拿一个临时公网 HTTPS 地址，填进 App 的 Webhook URL：
-   `https://<你的隧道域名>/webhook`。适合验证功能。
-2. **部署到公网服务器**。这是最终形态，也是 PRD 里 `DEV-006`「CI 结果关联 Build/Test Run，
-   失败时通知负责人」那条链真正需要的前提。
-
-在没有 webhook 之前，同步是**单向 + 手动触发**的，别按双向实时来验收。
-
----
+部署到公网后这条限制就没有了：把 App 的 Webhook URL 指向
+`https://github.<SERVER_HOST>/` 即可（webhook 由 pod-github 自己的
+`createNodeMiddleware` 处理，与上面的浏览器回调是两条不同的路径 —— 前者是
+GitHub 服务器发来的 POST，后者是用户浏览器的跳转）。
 
 ## 五、一处已知的欠账
 
