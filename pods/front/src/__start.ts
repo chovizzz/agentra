@@ -32,6 +32,9 @@ startFront(metricsContext, {
   INTERCOM_APP_ID: process.env.INTERCOM_APP_ID ?? '',
   INTERCOM_API_URL: process.env.INTERCOM_API_URL ?? '',
   GITHUB_URL: process.env.GITHUB_URL ?? '',
+  // Empty when this deployment ships no MCP server; the settings page says so
+  // rather than printing a command that cannot work.
+  MCP_URL: process.env.MCP_URL ?? '',
   LIVEKIT_WS: process.env.LIVEKIT_WS ?? '',
   LOVE_ENDPOINT: process.env.LOVE_ENDPOINT ?? '',
   SIGN_URL: process.env.SIGN_URL ?? '',

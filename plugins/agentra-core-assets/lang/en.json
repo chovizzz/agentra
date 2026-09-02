@@ -13,6 +13,20 @@
     "ShowArchived": "Show archived",
     "ArchiveConfirmation": "Archive this object? It stays fully traceable and an administrator can restore it.",
     "RestoreConfirmation": "Restore this archived object?",
-    "ArchiveInsteadOfDelete": "This object is referenced by traceability links and cannot be deleted. Archive it instead."
+    "ArchiveInsteadOfDelete": "This object is referenced by traceability links and cannot be deleted. Archive it instead.",
+    "Mcp": "MCP",
+    "McpDescription": "Let an AI agent read and write this workspace's issues and test cases.",
+    "McpEndpoint": "Endpoint",
+    "McpAddCommand": "Connect from Claude Code",
+    "McpAddCommandHint": "Run this once. The first tool call opens a browser to authorize with Feishu; the agent then acts as you, with your permissions.",
+    "McpNotConfigured": "No MCP server is configured for this deployment.",
+    "McpTools": "What an agent can do",
+    "McpToolsRead": "Read: list projects, search and open issues, list test projects, search and open test cases.",
+    "McpToolsWrite": "Write: create and update issues and test cases.",
+    "McpNoDelete": "Deleting is deliberately not offered — an agent's worst case should be extra data, not lost data.",
+    "McpAuth": "Authorization",
+    "McpAuthDescription": "Each agent authorizes with Feishu and acts as the person who authorized it. Access expires after 8 hours; re-authorizing is a single click.",
+    "McpCopied": "Copied",
+    "McpCopy": "Copy"
   }
 }

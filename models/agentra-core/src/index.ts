@@ -13,8 +13,11 @@
 // limitations under the License.
 //
 
+import core, { AccountRole } from '@hcengineering/core'
 import { type Builder } from '@hcengineering/model'
+import setting from '@hcengineering/setting'
 
+import agentraCore from './plugin'
 import { TAgentraMarker, TArchivable } from './types'
 
 export { agentraCoreId } from '@hcengineering/agentra-core'
@@ -43,4 +46,24 @@ export function createModel (builder: Builder): void {
   // Those actions are the hand-off item recorded in the Task 19a report: they
   // require `@hcengineering/model-view`, which this package does not depend on.
   builder.createModel(TAgentraMarker, TArchivable)
+
+  // Settings -> MCP. A plain `SettingsCategory`, NOT a `setting.class.IntegrationType`:
+  // that class exists for integrations that create and hold a per-account
+  // `Integration` document (GitHub, Gmail, …), and it would put a "Connect"
+  // button on a page that has nothing to connect. The MCP server authorizes
+  // agents on its own; this page only tells a person where it is.
+  builder.createDoc(
+    setting.class.SettingsCategory,
+    core.space.Model,
+    {
+      name: 'mcp',
+      label: agentraCore.string.Mcp,
+      icon: agentraCore.icon.AgentraCore,
+      component: agentraCore.component.McpSettings,
+      group: 'settings-account',
+      role: AccountRole.User,
+      order: 1600
+    },
+    agentraCore.ids.McpSettingsCategory
+  )
 }

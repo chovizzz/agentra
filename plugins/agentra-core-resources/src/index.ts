@@ -16,11 +16,13 @@
 import { type Resources } from '@hcengineering/platform'
 
 import AgentraCorePlaceholder from './components/AgentraCorePlaceholder.svelte'
+import McpSettings from './components/McpSettings.svelte'
 import { getAgentraMarkerTitle } from './utils'
 
 export default async (): Promise<Resources> => ({
   component: {
-    AgentraCorePlaceholder
+    AgentraCorePlaceholder,
+    McpSettings
   },
   function: {
     AgentraMarkerTitleProvider: getAgentraMarkerTitle

@@ -13,6 +13,20 @@
     "ShowArchived": "显示已归档",
     "ArchiveConfirmation": "确定归档该对象？追溯关系将完整保留，管理员可随时恢复。",
     "RestoreConfirmation": "确定恢复该已归档对象？",
-    "ArchiveInsteadOfDelete": "该对象存在追溯关系引用，无法物理删除，请改为归档。"
+    "ArchiveInsteadOfDelete": "该对象存在追溯关系引用，无法物理删除，请改为归档。",
+    "Mcp": "MCP",
+    "McpDescription": "让 AI agent 读写本工作区的问题与测试用例。",
+    "McpEndpoint": "端点地址",
+    "McpAddCommand": "在 Claude Code 里连接",
+    "McpAddCommandHint": "执行一次即可。首次调用工具时会弹出浏览器用飞书授权，之后 agent 以你本人的身份、你本人的权限操作。",
+    "McpNotConfigured": "本部署未配置 MCP 服务。",
+    "McpTools": "agent 能做什么",
+    "McpToolsRead": "读取：列出项目、搜索与查看问题、列出测试專案、搜索与查看测试用例。",
+    "McpToolsWrite": "写入：创建与修改问题、创建与修改测试用例。",
+    "McpNoDelete": "刻意不提供删除 —— agent 的最坏情况应该是多出数据，而不是丢失数据。",
+    "McpAuth": "授权",
+    "McpAuthDescription": "每个 agent 各自用飞书授权，并以授权者本人的身份操作。授权 8 小时后过期，重新授权只需一次点击。",
+    "McpCopied": "已复制",
+    "McpCopy": "复制"
   }
 }

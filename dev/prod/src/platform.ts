@@ -16,7 +16,7 @@
 import platform, { type Plugin, addLocation, addStringsLoader, platformId } from '@hcengineering/platform'
 
 import { activityId } from '@hcengineering/activity'
-import { agentraCoreId } from '@hcengineering/agentra-core'
+import agentraCore, { agentraCoreId } from '@hcengineering/agentra-core'
 import { crmLiteId } from '@hcengineering/crm-lite'
 import { cycleId } from '@hcengineering/cycle'
 import { requirementsId } from '@hcengineering/requirements'
@@ -181,6 +181,7 @@ export interface Config {
   GITHUB_APP?: string
   GITHUB_CLIENTID?: string
   GITHUB_URL: string
+  MCP_URL: string
   LOVE_ENDPOINT?: string
   LIVEKIT_WS?: string
   SIGN_URL?: string
@@ -544,6 +545,7 @@ export async function configurePlatform() {
   setMetadata(github.metadata.GithubApplication, config.GITHUB_APP ?? '')
   setMetadata(github.metadata.GithubClientID, config.GITHUB_CLIENTID ?? '')
   setMetadata(github.metadata.GithubURL, config.GITHUB_URL)
+  setMetadata(agentraCore.metadata.McpUrl, config.MCP_URL ?? '')
 
   setMetadata(rekoni.metadata.RekoniUrl, config.REKONI_URL)
 

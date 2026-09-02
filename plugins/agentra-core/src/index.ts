@@ -14,7 +14,8 @@
 //
 
 import type { Class, Doc, Mixin, PersonId, Ref, Timestamp } from '@hcengineering/core'
-import type { Asset, IntlString, Plugin } from '@hcengineering/platform'
+import type { Asset, IntlString, Metadata, Plugin } from '@hcengineering/platform'
+import type { AnyComponent } from '@hcengineering/ui'
 import { plugin } from '@hcengineering/platform'
 
 /**
@@ -92,7 +93,8 @@ const agentraCore = plugin(agentraCoreId, {
     // than `generateId()`) is what makes the migration idempotent under
     // concurrency: a second migrator inserting the same `_id` collides instead
     // of silently producing a duplicate document.
-    BootstrapMarker: '' as Ref<AgentraMarker>
+    BootstrapMarker: '' as Ref<AgentraMarker>,
+    McpSettingsCategory: '' as Ref<Doc>
   },
   mixin: {
     /**
@@ -116,10 +118,39 @@ const agentraCore = plugin(agentraCoreId, {
     ShowArchived: '' as IntlString,
     ArchiveConfirmation: '' as IntlString,
     RestoreConfirmation: '' as IntlString,
-    ArchiveInsteadOfDelete: '' as IntlString
+    ArchiveInsteadOfDelete: '' as IntlString,
+    Mcp: '' as IntlString,
+    McpDescription: '' as IntlString,
+    McpEndpoint: '' as IntlString,
+    McpAddCommand: '' as IntlString,
+    McpAddCommandHint: '' as IntlString,
+    McpNotConfigured: '' as IntlString,
+    McpTools: '' as IntlString,
+    McpToolsRead: '' as IntlString,
+    McpToolsWrite: '' as IntlString,
+    McpNoDelete: '' as IntlString,
+    McpAuth: '' as IntlString,
+    McpAuthDescription: '' as IntlString,
+    McpCopied: '' as IntlString,
+    McpCopy: '' as IntlString
   },
   icon: {
     AgentraCore: '' as Asset
+  },
+  component: {
+    /** Settings -> MCP: how to point an agent at this workspace. */
+    McpSettings: '' as AnyComponent
+  },
+  metadata: {
+    /**
+     * Public base URL of the MCP server, e.g. `https://mcp.example.com`.
+     *
+     * Empty when the deployment has no MCP server — the settings page says so
+     * rather than printing a command that cannot work. It travels the same way
+     * `GITHUB_URL` does: compose -> front's `config.json` -> `setMetadata` in
+     * `dev/prod/src/platform.ts`.
+     */
+    McpUrl: '' as Metadata<string>
   }
 })
 

@@ -202,6 +202,8 @@ services:
       - COLLABORATOR_URL=wss://collab.${SERVER_HOST}
       - STORAGE_CONFIG=${STORAGE_CONFIG}
       - GITHUB_URL=https://github.${SERVER_HOST}
+      # 供设置里的 MCP 页面显示端点与连接命令；留空则该页显示"未配置"。
+      - MCP_URL=https://mcp.${SERVER_HOST}
       - GITHUB_APP
       - GITHUB_CLIENTID
       # 被砍掉的服务：留空而不是指向不存在的地址，前端会据此隐藏入口。
