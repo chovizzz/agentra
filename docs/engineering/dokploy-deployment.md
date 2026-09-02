@@ -166,7 +166,7 @@ transactor 清缓存）。
      （必须与 `FEISHU_REDIRECT_URL` **逐字符**一致）
 2. **GitHub App 的回调与 webhook 地址**（见 `github-integration.md`）：
    - Callback URL → **前端**的 `https://agentra.<SERVER_HOST>/github`
-   - Webhook URL → `https://github.<SERVER_HOST>/`
+   - Webhook URL → `https://github.<SERVER_HOST>/api/webhook`（⚠️ 不是根路径）
 
    ⚠️ 早先这里写着"pod-github 缺 GET /auth 桥接"，那是误诊：处理浏览器回调的是
    前端的 `ConnectApp`，pod-github 只收 POST 是设计如此。

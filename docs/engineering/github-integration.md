@@ -120,10 +120,19 @@ curl -s --noproxy '*' -o /dev/null -w "%{http_code}\n" http://localhost:3500/
 **本地跑不通的**：GitHub → Agentra 的**事件回流**。GitHub 的服务器打不到你本机的
 `agentra.local` / `127.0.0.1`，所以 PR 合并、新 commit、review 这些事件不会自动同步进来。
 
-部署到公网后这条限制就没有了：把 App 的 Webhook URL 指向
-`https://github.<SERVER_HOST>/` 即可（webhook 由 pod-github 自己的
-`createNodeMiddleware` 处理，与上面的浏览器回调是两条不同的路径 —— 前者是
-GitHub 服务器发来的 POST，后者是用户浏览器的跳转）。
+部署到公网后这条限制就没有了。Webhook URL 填：
+
+    https://github.<SERVER_HOST>/api/webhook
+
+⚠️ **是 `/api/webhook`，不是根路径** —— `server.ts:51` 把
+`createNodeMiddleware` 挂在这个固定路径上，根路径会 404。
+判据：无签名地 POST 到正确路径应返回 **400**
+（`Required headers missing: x-hub-signature-256, x-github-delivery`），
+返回 404 说明路径写错了。
+
+webhook 与上面的浏览器回调是两条不同的路径：前者是 GitHub 服务器发来的 POST
+（pod-github 自己处理并校验 `WEBHOOK_SECRET` 签名），后者是用户浏览器的跳转
+（由前端的 `ConnectApp` 处理）。
 
 ## 五、一处已知的欠账
 
