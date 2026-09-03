@@ -15,6 +15,11 @@
 
 // Import migrate operations.
 import { type MigrateOperation } from '@hcengineering/model'
+import { agentraCoreId, agentraCoreOperation } from '@hcengineering/model-agentra-core'
+import { crmLiteId, crmLiteOperation } from '@hcengineering/model-crm-lite'
+import { cycleId, cycleOperation } from '@hcengineering/model-cycle'
+import { requirementsId, requirementsOperation } from '@hcengineering/model-requirements'
+import { traceabilityId, traceabilityOperation } from '@hcengineering/model-traceability'
 import { activityOperation } from '@hcengineering/model-activity'
 import { aiBotId, aiBotOperation } from '@hcengineering/model-ai-bot'
 import { analyticsCollectorOperation } from '@hcengineering/model-analytics-collector'
@@ -67,6 +72,15 @@ export const migrateOperations: [string, MigrateOperation][] = [
   ['core', coreOperation],
   ['rating', ratingOperation],
   ['activity', activityOperation],
+  // Agentra foundation. It depends on nothing but core, so it runs early;
+  // any Agentra module that references card/contact/tracker documents must be
+  // appended AFTER those entries below, not here.
+  [agentraCoreId, agentraCoreOperation],
+  // Traceability only ever touches its own TraceLink rows (every query is pinned
+  // to `_class: traceability.class.TraceLink`), so it depends on nothing beyond
+  // core and runs here. Modules that seed or rewrite trace edges from
+  // card/contact/tracker data must be appended AFTER those entries below.
+  [traceabilityId, traceabilityOperation],
   ['card', cardOperation],
   ['chunter', chunterOperation],
   ['calendar', calendarOperation],
@@ -80,15 +94,30 @@ export const migrateOperations: [string, MigrateOperation][] = [
   ['recruit', recruitOperation],
   ['view', viewOperation],
   ['contact', contactOperation],
+  // Agentra CRM Lite. It must run AFTER `card` (which creates the Default
+  // CardSpace and the card space type this module's space reuses) and AFTER
+  // `contact` (leads reference Organization / Person). It seeds only its own
+  // pipeline / source documents plus its own CardSpace.
+  [crmLiteId, crmLiteOperation],
   ['guest', guestOperation],
   ['tags', tagsOperation],
   ['setting', settingOperation],
   ['tracker', trackerOperation],
+  // Agentra Cycle. 🔴 Must stay immediately AFTER `tracker`: a Cycle's `space`
+  // is a `tracker.class.Project` and the Issue side of the relation is a mixin
+  // on `tracker.class.Issue`. This array is ordered, and the order IS the
+  // execution order.
+  [cycleId, cycleOperation],
   ['documents', documentsOperation],
   ['questions', questionsOperation],
   ['training', trainingOperation],
   ['request', requestOperation],
   ['products', productsOperation],
+  // Agentra Requirements. It must run AFTER `card` (which creates the card space
+  // type this module's space reuses), AFTER `contact` (the `owner` attribute
+  // references Employee) and AFTER `products` (`product` / `targetVersion`
+  // reference Product / ProductVersion). It only creates its own CardSpace.
+  [requirementsId, requirementsOperation],
   ['board', boardOperation],
   ['hr', hrOperation],
   ['document', documentOperation],

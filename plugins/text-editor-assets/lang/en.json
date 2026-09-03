@@ -86,6 +86,8 @@
     "ConvertToEmbedPreview": "Show as a content preview",
     "UnableToLoadEmbeddedContent": "Link preview couldn't be loaded due to permission settings or unsupported content",
     "CannotConnectToCollaborationService": "Cannot connect to collaboration service",
+    "ContentChangeRejectedTitle": "Changes were not saved",
+    "ContentChangeRejected": "An edit to this document was reverted: the field cannot be changed while the item is in its current state.",
     "SourceURL": "Source URL",
     "SelectedDocuments": "Selected documents ({count, plural, =1 {1 item} other {# items}})",
     "LatestVersion": "Latest"

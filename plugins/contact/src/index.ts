@@ -300,7 +300,8 @@ export const contactPlugin = plugin(contactId, {
     Phone: '' as Ref<SocialIdentityProvider>,
     Google: '' as Ref<SocialIdentityProvider>,
     GitHub: '' as Ref<SocialIdentityProvider>,
-    Telegram: '' as Ref<SocialIdentityProvider>
+    Telegram: '' as Ref<SocialIdentityProvider>,
+    Feishu: '' as Ref<SocialIdentityProvider>
   },
   avatarProvider: {
     Color: '' as Ref<AvatarProvider>,

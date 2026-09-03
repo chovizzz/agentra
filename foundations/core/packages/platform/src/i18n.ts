@@ -51,17 +51,30 @@ export async function loadPluginStrings (locale: string, force: boolean = false)
   if (force) {
     cache.clear()
   }
-  for (const [plugin] of loaders) {
-    const localtTanslations = translations.get(locale) ?? new Map<Plugin, Messages | Status<any>>()
-    if (!translations.has(locale)) {
-      translations.set(locale, localtTanslations)
-    }
-    let messages = localtTanslations.get(plugin)
-    if (messages === undefined || force) {
-      messages = await loadTranslationsForComponent(plugin, locale)
-      localtTanslations.set(plugin, messages)
-    }
+
+  const localTranslations = translations.get(locale) ?? new Map<Plugin, Messages | Status<any>>()
+  if (!translations.has(locale)) {
+    translations.set(locale, localTranslations)
   }
+
+  // 🔴 Load every plugin's strings in PARALLEL.
+  //
+  // This used to be a serial `for … await`. `force` clears the cache, so a language
+  // switch re-fetched every registered loader one after another — 69 of them in
+  // dev/prod, each its own lazy chunk. The store that drives re-render is only set
+  // after the last one resolves, so on a real network the UI sat in the old
+  // language long enough to look like switching simply did not work.
+  //
+  // Each load already reports its own failures and resolves to a `Status`, so one
+  // bad plugin cannot reject the whole batch — which is why `Promise.all` is safe
+  // here and no partial-failure handling is needed.
+  await Promise.all(
+    [...loaders.keys()].map(async (plugin) => {
+      if (localTranslations.get(plugin) === undefined || force) {
+        localTranslations.set(plugin, await loadTranslationsForComponent(plugin, locale))
+      }
+    })
+  )
 }
 
 async function setStatus (status: Status, skipError?: boolean): Promise<void> {

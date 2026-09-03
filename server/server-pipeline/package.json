@@ -185,6 +185,24 @@
     "@hcengineering/communication-types": "workspace:^0.7.12",
     "@hcengineering/communication-sdk-types": "workspace:^0.7.12",
     "@hcengineering/communication": "workspace:^0.7.0",
-    "@hcengineering/communication-assets": "workspace:^0.7.0"
+    "@hcengineering/communication-assets": "workspace:^0.7.0",
+    "@hcengineering/agentra-core": "workspace:^0.7.0",
+    "@hcengineering/agentra-core-assets": "workspace:^0.7.0",
+    "@hcengineering/crm-lite": "workspace:^0.7.0",
+    "@hcengineering/crm-lite-assets": "workspace:^0.7.0",
+    "@hcengineering/cycle": "workspace:^0.7.0",
+    "@hcengineering/cycle-assets": "workspace:^0.7.0",
+    "@hcengineering/requirements": "workspace:^0.7.0",
+    "@hcengineering/requirements-assets": "workspace:^0.7.0",
+    "@hcengineering/traceability": "workspace:^0.7.0",
+    "@hcengineering/traceability-assets": "workspace:^0.7.0",
+    "@hcengineering/server-agentra-core": "workspace:^0.7.0",
+    "@hcengineering/server-agentra-core-resources": "workspace:^0.7.0",
+    "@hcengineering/server-crm-lite": "workspace:^0.7.0",
+    "@hcengineering/server-products": "workspace:^0.7.0",
+    "@hcengineering/server-products-resources": "workspace:^0.7.0",
+    "@hcengineering/server-test-management": "workspace:^0.7.0",
+    "@hcengineering/server-traceability": "workspace:^0.7.0",
+    "@hcengineering/server-traceability-resources": "workspace:^0.7.0"
   }
 }

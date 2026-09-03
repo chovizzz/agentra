@@ -15,7 +15,12 @@
 
 const exec = require('child_process').exec
 
-exec('git describe --tags --abbrev=0', (err, stdout, stderr) => {
+// 🔴 `--match 'v*'` is not optional. Without it `git describe` picks up ANY tag,
+// and a tag that is not a release version (`cli-v0.1.0`, say) parses to NaN — which
+// is then baked into the transactor bundle as its VERSION. The front then refuses
+// to start with "Front version X is not in sync with server version NaN.1.0", so a
+// tag unrelated to the platform takes the whole site down at the next deploy.
+exec("git describe --tags --abbrev=0 --match 'v*'", (err, stdout, stderr) => {
   if (err !== null) {
     console.log('"0.6.0"')
   }

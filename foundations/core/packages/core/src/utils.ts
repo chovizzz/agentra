@@ -979,7 +979,13 @@ export function pickPrimarySocialId (socialIds: SocialId[]): SocialId {
   return hulySocialIds[0] ?? activeSocialIds[0]
 }
 
-export const loginSocialTypes = [SocialIdType.EMAIL, SocialIdType.GOOGLE, SocialIdType.GITHUB, SocialIdType.OIDC]
+export const loginSocialTypes = [
+  SocialIdType.EMAIL,
+  SocialIdType.GOOGLE,
+  SocialIdType.GITHUB,
+  SocialIdType.OIDC,
+  SocialIdType.FEISHU
+]
 
 export function notEmpty<T> (id: T | undefined | null): id is T {
   return id !== undefined && id !== null && id !== ''

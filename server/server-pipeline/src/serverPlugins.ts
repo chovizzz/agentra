@@ -1,5 +1,7 @@
 import { addLocation } from '@hcengineering/platform'
 import { serverActivityId } from '@hcengineering/server-activity'
+import { serverAgentraCoreId } from '@hcengineering/server-agentra-core'
+import { serverTraceabilityId } from '@hcengineering/server-traceability'
 import { serverAttachmentId } from '@hcengineering/server-attachment'
 import { serverCardId } from '@hcengineering/server-card'
 import { serverCalendarId } from '@hcengineering/server-calendar'
@@ -29,9 +31,12 @@ import { serverTrainingId } from '@hcengineering/server-training'
 import { serverViewId } from '@hcengineering/server-view'
 import { serverAiBotId } from '@hcengineering/server-ai-bot'
 import { serverProcessId } from '@hcengineering/server-process'
+import { serverProductsId } from '@hcengineering/server-products'
 
 export function registerServerPlugins (): void {
   addLocation(serverActivityId, () => import('@hcengineering/server-activity-resources'))
+  addLocation(serverAgentraCoreId, () => import('@hcengineering/server-agentra-core-resources'))
+  addLocation(serverTraceabilityId, () => import('@hcengineering/server-traceability-resources'))
   addLocation(serverAttachmentId, () => import('@hcengineering/server-attachment-resources'))
   addLocation(serverCollaborationId, () => import('@hcengineering/server-collaboration-resources'))
   addLocation(serverContactId, () => import('@hcengineering/server-contact-resources'))
@@ -61,4 +66,14 @@ export function registerServerPlugins (): void {
   addLocation(serverGithubId, () => import('@hcengineering/server-github-resources'))
   addLocation(serverAiBotId, () => import('@hcengineering/server-ai-bot-resources'))
   addLocation(serverProcessId, () => import('@hcengineering/server-process-resources'))
+  // 🔴 THE ONLY PLACE A `serverProducts.*` RESOURCE ID RESOLVES TO CODE
+  // (Technical Spec §3.6, registration 1 of 3). `models/server-products` names
+  // `serverProducts.function.ProductVersionRemove`; without this line that id
+  // resolves to nothing at runtime and the failure is silent at compile time.
+  //
+  // ⚠️ It does NOT load `ProductVersionReleaseGuardMiddleware` — that is
+  // imported directly by `createServerPipeline` in `./pipeline`. Removing that
+  // import while leaving this line in place would produce a build that looks
+  // fully wired and enforces nothing.
+  addLocation(serverProductsId, () => import('@hcengineering/server-products-resources'))
 }

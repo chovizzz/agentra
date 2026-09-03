@@ -261,6 +261,40 @@ export class TIssue extends TTask implements Issue {
 
   declare childInfo: IssueChildInfo[]
 
+  // Which template — and which child of it — this issue was built from.
+  //
+  // ℹ️ THE FIELD ALREADY PERSISTED WITHOUT THIS `@Prop`. A Huly document is
+  // stored as one JSON value, so `TxProcessor.createDoc2Doc` spreads whatever
+  // `TxCreateDoc.attributes` carries and unknown keys land in the row's `data`
+  // regardless of the model — `parents` and `childInfo` above are declared with
+  // no `@Prop` for exactly that reason. What the attribute adds is the
+  // Hierarchy entry: `hierarchy.findAttribute(Issue, 'template')` now answers,
+  // which is what a filter key, a query builder or a mixin editor needs before
+  // it will admit the field exists.
+  //
+  // 🔴 `@Hidden()` IS NOT COSMETIC. `issues/edit/ControlPanel.svelte` already
+  // renders `issue.template` through a dedicated `ObjectBox`, and it also
+  // builds a generic attribute bar from `getFiltredKeys(hierarchy, Issue,
+  // ignoreKeys)` — which drops an attribute only when `hidden === true` or its
+  // key is in that hand written `ignoreKeys` list. Without `@Hidden()` the
+  // field would render TWICE, and the generic half would be looking for an
+  // editor that does not exist: no `view.mixin.AttributeEditor` is registered
+  // on `core.class.TypeRecord`. `models/test-management/src/types.ts` hides its
+  // `TypeRecord` props on the same grounds.
+  //
+  // ⚠️ `@ReadOnly()` because nothing may retarget an issue's provenance after
+  // the fact; the only writer is `CreateIssue.svelte` / `SubIssues.svelte` at
+  // creation time.
+  //
+  // ⚠️ NO MIGRATION. The attribute is optional and this product has never been
+  // deployed, so there are no rows predating it; a backfill would write a key
+  // onto every issue purely to record "no template", which is what the absent
+  // key already means.
+  @Prop(TypeRecord(), tracker.string.IssueTemplate)
+  @ReadOnly()
+  @Hidden()
+    template?: Issue['template']
+
   @Prop(Collection(time.class.ToDo), getEmbeddedLabel('Action Items'))
     todos?: CollectionSize<ToDo>
 }

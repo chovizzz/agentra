@@ -24,15 +24,30 @@
   import products from '../../plugin'
 
   export const propsByStates: Record<ProductVersionState, ComponentProps<StateTag<IntlString>>> = {
+    [ProductVersionState.Planning]: {
+      label: products.string.ProductVersionStatePlanning,
+      params: {},
+      type: StateType.Ghost
+    },
     [ProductVersionState.Active]: {
       label: products.string.ProductVersionStateActive,
       params: {},
       type: StateType.Regular
     },
+    [ProductVersionState.ReleaseCandidate]: {
+      label: products.string.ProductVersionStateReleaseCandidate,
+      params: {},
+      type: StateType.Primary
+    },
     [ProductVersionState.Released]: {
       label: products.string.ProductVersionStateReleased,
       params: {},
       type: StateType.Positive
+    },
+    [ProductVersionState.Archived]: {
+      label: products.string.ProductVersionStateArchived,
+      params: {},
+      type: StateType.Ghost
     }
   }
 </script>

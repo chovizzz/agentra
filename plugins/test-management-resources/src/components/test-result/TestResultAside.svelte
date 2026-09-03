@@ -19,7 +19,9 @@
   import { AttachmentStyleBoxCollabEditor } from '@hcengineering/attachment-resources'
   import { getClient } from '@hcengineering/presentation'
   import { Doc, Mixin, WithLookup } from '@hcengineering/core'
-  import testManagement, { TestResult } from '@hcengineering/test-management'
+  import testManagement, { TestResult, TestRunStatus } from '@hcengineering/test-management'
+  import traceability from '@hcengineering/traceability'
+  import { DefectButton, TraceLinksSection } from '@hcengineering/traceability-resources'
   import { DocAttributeBar, getDocMixins } from '@hcengineering/view-resources'
 
   import { Component, Label } from '@hcengineering/ui'
@@ -44,6 +46,21 @@
 
 {#if object}
   <DocAttributeBar {object} {mixins} ignoreKeys={['name']} />
+  {#if object.status === TestRunStatus.Failed}
+    <!--
+      🔴 FAILED ONLY. `Bug --defect-of--> TestResult` is legal for any result, but Task 15 scopes the button to a
+    failure: offering "create defect" on a passing result invites a bug filed against evidence that says it works. `DefectButton`
+    itself decides between raising a new defect and OPENING the one that already covers this result. -->
+    <RightHeader>
+      <Label label={traceability.string.Traceability} />
+    </RightHeader>
+    <div class="w-full p-4">
+      <DefectButton {object} kind={'primary'} />
+      <div class="mt-4">
+        <TraceLinksSection {object} />
+      </div>
+    </div>
+  {/if}
   <RightHeader>
     <Label label={testManagement.string.Comments} />
   </RightHeader>

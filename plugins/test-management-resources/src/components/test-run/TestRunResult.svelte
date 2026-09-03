@@ -14,51 +14,85 @@
 -->
 <script lang="ts">
   import { BreadcrumbsElement } from '@hcengineering/presentation'
-  import { ScrollerBar } from '@hcengineering/ui'
+  import { translate } from '@hcengineering/platform'
+  import { ScrollerBar, themeStore } from '@hcengineering/ui'
+  import { TestRunStatus } from '@hcengineering/test-management'
 
   import { type TestRunStats } from '../../testRunUtils'
+  import { testRunStatusAssets } from '../../types'
 
   export let value: TestRunStats
 
   let divScroll: HTMLElement
+
+  // Driven off `testRunStatuses` rather than a hand-written list of segments.
+  // The version this replaced hard-coded four `<BreadcrumbsElement>` blocks, so
+  // `Skipped` had no segment at all — and, because the titles were literal
+  // strings, the Blocked segment was labelled "Failed".
+  const palette: Record<TestRunStatus, string> = {
+    [TestRunStatus.Untested]: '#4CA6EE',
+    [TestRunStatus.Blocked]: '#D27540',
+    [TestRunStatus.Failed]: '#D15045',
+    [TestRunStatus.Passed]: '#46A44F',
+    [TestRunStatus.Skipped]: '#8E8E93'
+  }
+
+  function count (stats: TestRunStats, status: TestRunStatus): number {
+    switch (status) {
+      case TestRunStatus.Untested:
+        return stats.untested
+      case TestRunStatus.Blocked:
+        return stats.blocked
+      case TestRunStatus.Passed:
+        return stats.completed
+      case TestRunStatus.Failed:
+        return stats.failed
+      case TestRunStatus.Skipped:
+        return stats.skipped
+    }
+  }
+
+  // Display order puts the two "not a verdict" buckets at the ends.
+  const order: TestRunStatus[] = [
+    TestRunStatus.Untested,
+    TestRunStatus.Blocked,
+    TestRunStatus.Failed,
+    TestRunStatus.Skipped,
+    TestRunStatus.Passed
+  ]
+
+  interface Segment {
+    status: TestRunStatus
+    label: string
+    color: string
+    position: 'start' | 'middle' | 'end'
+  }
+
+  $: segments = order.map<Segment>((status, index) => ({
+    status,
+    label: count(value, status).toString(),
+    color: palette[status],
+    position: index === 0 ? 'start' : index === order.length - 1 ? 'end' : 'middle'
+  }))
+
+  async function titleOf (status: TestRunStatus, language: string): Promise<string> {
+    return await translate(testRunStatusAssets[status].label, {}, language)
+  }
 </script>
 
-<!--TODO: Refactor and get rid of harcoded values-->
+<!--TODO: Refactor and get rid of hardcoded colors-->
 <ScrollerBar gap="none" bind:scroller={divScroll}>
-  <BreadcrumbsElement
-    noGap
-    label={value.untested.toString()}
-    position={'start'}
-    color={'#4CA6EE'}
-    fontColor="white"
-    title="Untested"
-    selected
-  />
-  <BreadcrumbsElement
-    label={value.blocked.toString()}
-    noGap
-    position={'middle'}
-    color={'#D27540'}
-    selected
-    fontColor="white"
-    title="Failed"
-  />
-  <BreadcrumbsElement
-    label={value.failed.toString()}
-    noGap
-    position={'middle'}
-    color={'#D15045'}
-    selected
-    fontColor="white"
-    title="Failed"
-  />
-  <BreadcrumbsElement
-    noGap
-    label={value.completed.toString()}
-    position={'end'}
-    color={'#46A44F'}
-    fontColor="white"
-    title="Passed"
-    selected
-  />
+  {#each segments as segment (segment.status)}
+    {#await titleOf(segment.status, $themeStore.language) then title}
+      <BreadcrumbsElement
+        noGap
+        label={segment.label}
+        position={segment.position}
+        color={segment.color}
+        fontColor="white"
+        {title}
+        selected
+      />
+    {/await}
+  {/each}
 </ScrollerBar>

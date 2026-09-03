@@ -16,6 +16,11 @@
 import platform, { type Plugin, addLocation, addStringsLoader, platformId } from '@hcengineering/platform'
 
 import { activityId } from '@hcengineering/activity'
+import agentraCore, { agentraCoreId } from '@hcengineering/agentra-core'
+import { crmLiteId } from '@hcengineering/crm-lite'
+import { cycleId } from '@hcengineering/cycle'
+import { requirementsId } from '@hcengineering/requirements'
+import { traceabilityId } from '@hcengineering/traceability'
 import aiBot, { aiBotId } from '@hcengineering/ai-bot'
 import analyticsCollector, { analyticsCollectorId } from '@hcengineering/analytics-collector'
 import { attachmentId } from '@hcengineering/attachment'
@@ -84,6 +89,11 @@ import { aiAssistantId } from '@hcengineering/ai-assistant'
 import { ratingId } from '@hcengineering/rating'
 
 import '@hcengineering/activity-assets'
+import '@hcengineering/agentra-core-assets'
+import '@hcengineering/crm-lite-assets'
+import '@hcengineering/cycle-assets'
+import '@hcengineering/requirements-assets'
+import '@hcengineering/traceability-assets'
 import '@hcengineering/analytics-collector-assets'
 import '@hcengineering/attachment-assets'
 import '@hcengineering/bitrix-assets'
@@ -171,6 +181,7 @@ export interface Config {
   GITHUB_APP?: string
   GITHUB_CLIENTID?: string
   GITHUB_URL: string
+  MCP_URL: string
   LOVE_ENDPOINT?: string
   LIVEKIT_WS?: string
   SIGN_URL?: string
@@ -310,6 +321,20 @@ function configureI18n(): void {
   addStringsLoader(recorderId, async (lang: string) => await import(`@hcengineering/recorder-assets/lang/${lang}.json`))
   addStringsLoader(mediaId, async (lang: string) => await import(`@hcengineering/media-assets/lang/${lang}.json`))
   addStringsLoader(activityId, async (lang: string) => await import(`@hcengineering/activity-assets/lang/${lang}.json`))
+  addStringsLoader(
+    agentraCoreId,
+    async (lang: string) => await import(`@hcengineering/agentra-core-assets/lang/${lang}.json`)
+  )
+  addStringsLoader(crmLiteId, async (lang: string) => await import(`@hcengineering/crm-lite-assets/lang/${lang}.json`))
+  addStringsLoader(cycleId, async (lang: string) => await import(`@hcengineering/cycle-assets/lang/${lang}.json`))
+  addStringsLoader(
+    requirementsId,
+    async (lang: string) => await import(`@hcengineering/requirements-assets/lang/${lang}.json`)
+  )
+  addStringsLoader(
+    traceabilityId,
+    async (lang: string) => await import(`@hcengineering/traceability-assets/lang/${lang}.json`)
+  )
   addStringsLoader(
     attachmentId,
     async (lang: string) => await import(`@hcengineering/attachment-assets/lang/${lang}.json`)
@@ -520,6 +545,7 @@ export async function configurePlatform() {
   setMetadata(github.metadata.GithubApplication, config.GITHUB_APP ?? '')
   setMetadata(github.metadata.GithubClientID, config.GITHUB_CLIENTID ?? '')
   setMetadata(github.metadata.GithubURL, config.GITHUB_URL)
+  setMetadata(agentraCore.metadata.McpUrl, config.MCP_URL ?? '')
 
   setMetadata(rekoni.metadata.RekoniUrl, config.REKONI_URL)
 
@@ -584,6 +610,23 @@ export async function configurePlatform() {
   )
   addLocation(settingId, async () => await import(/* webpackChunkName: "setting" */ '@hcengineering/setting-resources'))
   addLocation(leadId, async () => await import(/* webpackChunkName: "lead" */ '@hcengineering/lead-resources'))
+  addLocation(
+    agentraCoreId,
+    async () => await import(/* webpackChunkName: "agentra-core" */ '@hcengineering/agentra-core-resources')
+  )
+  addLocation(
+    crmLiteId,
+    async () => await import(/* webpackChunkName: "crm-lite" */ '@hcengineering/crm-lite-resources')
+  )
+  addLocation(cycleId, async () => await import(/* webpackChunkName: "cycle" */ '@hcengineering/cycle-resources'))
+  addLocation(
+    requirementsId,
+    async () => await import(/* webpackChunkName: "requirements" */ '@hcengineering/requirements-resources')
+  )
+  addLocation(
+    traceabilityId,
+    async () => await import(/* webpackChunkName: "traceability" */ '@hcengineering/traceability-resources')
+  )
   addLocation(
     telegramId,
     async () => await import(/* webpackChunkName: "telegram" */ '@hcengineering/telegram-resources')

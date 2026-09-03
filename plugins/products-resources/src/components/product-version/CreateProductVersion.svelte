@@ -25,7 +25,7 @@
     copyProjectDocuments,
     deleteProjectDrafts
   } from '@hcengineering/controlled-documents'
-  import { Product, ProductVersion, ProductVersionState } from '@hcengineering/products'
+  import { Product, ProductVersion, ProductVersionState, parentStateOnChildVersion } from '@hcengineering/products'
   import { Data, Ref, SortingOrder, generateId } from '@hcengineering/core'
   import { Card, MessageBox, SpaceSelector, createQuery, getClient } from '@hcengineering/presentation'
   import { StyledTextBox } from '@hcengineering/text-editor-resources'
@@ -104,9 +104,16 @@
     }
 
     if (version.parent !== products.ids.NoParentVersion && version.parent !== undefined) {
+      // 🔴 `parentStateOnChildVersion`, i.e. `Archived` — NOT `Released`.
+      // Forking a child version freezes the parent; it does not RELEASE it.
+      // Writing `Released` here (as this line used to) handed anyone who could
+      // create a child version a way to mark the parent released with the
+      // readiness gate, the approval and the audit record all skipped —
+      // PRD REL-003 would have been unenforceable. `Released` is reachable
+      // only through the server-side `ReleaseProductVersion` command.
       await ops.updateDoc(products.class.ProductVersion, space, version.parent, {
         readonly: true,
-        state: ProductVersionState.Released
+        state: parentStateOnChildVersion
       })
     }
 

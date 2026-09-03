@@ -90,6 +90,11 @@
         "SelectedTestCases": "{count, plural, =0 {선택한 테스트 케이스 없음} one {테스트 케이스 #개 선택} few {테스트 케이스 #개 선택} other {테스트 케이스 #개 선택}}",
         "DefaultAssignee": "기본 담당자",
         "TestPlanTitle": "테스트 계획 제목",
-        "RunAssistant": "실행 도우미"
+        "RunAssistant": "실행 도우미",
+        "BlockedReason": "Blocked reason",
+        "BlockedReasonRequired": "A blocked result must state why",
+        "BlockedReasonPlaceholder": "What is blocking this test?",
+        "ManageTestAssetsPermission": "Manage test assets",
+        "ManageTestAssetsDescription": "Create, edit and delete test suites, cases, plans, runs and results"
     }
 }

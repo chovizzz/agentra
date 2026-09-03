@@ -407,13 +407,14 @@ export class ClientSession implements Session {
   async upload (ctx: ClientSessionCtx, domain: Domain, docs: Doc[]): Promise<void> {
     if (!this.allowUpload) {
       await ctx.sendResponse(ctx.requestId, { error: 'Upload not allowed' })
+      return
     }
     this.lastRequest = Date.now()
     try {
       await this.getOps(ctx.pipeline).upload(ctx.ctx, domain, docs)
     } catch (err: any) {
       await ctx.sendError(ctx.requestId, 'Failed to upload', unknownError(err))
-      ctx.ctx.error('failed to loadDocs', { domain, err })
+      ctx.ctx.error('failed to upload', { domain, err })
       return
     }
     await ctx.sendResponse(ctx.requestId, {})
@@ -422,6 +423,7 @@ export class ClientSession implements Session {
   async clean (ctx: ClientSessionCtx, domain: Domain, docs: Ref<Doc>[]): Promise<void> {
     if (!this.allowUpload) {
       await ctx.sendResponse(ctx.requestId, { error: 'Clean not allowed' })
+      return
     }
     this.lastRequest = Date.now()
     try {

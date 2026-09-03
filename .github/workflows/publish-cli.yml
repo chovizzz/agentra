@@ -1,0 +1,67 @@
+name: Publish Agentra CLI
+
+on:
+  push:
+    tags:
+      - 'cli-v*'
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Ref to publish (e.g. refs/tags/cli-v0.1.0 or a branch)'
+        required: true
+        default: 'refs/heads/feat/agentra-v1'
+
+jobs:
+  publish-cli:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+      - name: Cache node modules
+        uses: actions/cache@v6
+        env:
+          cache-name: cache-node-agentra-cli
+        with:
+          path: common/temp
+          key: ${{ runner.os }}-build-cache-node-platform-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-build-cache-node-platform-
+      - name: Installing...
+        run: node common/scripts/install-run-rush.js install
+      # Only the CLI and what it depends on. The full `rush build` takes ~30 min and
+      # publishing a CLI has no reason to wait on the other ~500 projects.
+      - name: Building...
+        run: node common/scripts/install-run-rush.js build --to @agentra-cli/cli
+      - name: Emit TypeScript declarations
+        run: node common/scripts/install-run-rush.js validate --to @agentra-cli/cli
+      # 🔴 The published artifact is the esbuild bundle, not `lib/`. Publishing the
+      # transpiled output would leave `@hcengineering/*` as runtime deps, and npm
+      # rewrites `workspace:` to a plain range — so installers would pull UPSTREAM's
+      # packages, not this fork's. The bundle inlines the fork's own code instead.
+      - name: Bundling...
+        run: node common/scripts/install-run-rush.js bundle --to @agentra-cli/cli
+      - name: Publish to npm
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "::error::NPM_TOKEN secret is not set. Add it in repository Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          # 🔴 $HOME, not the repo root. safe-publish.js runs `npm publish` with
+          # cwd set to the package folder, and npm reads .npmrc from cwd and from
+          # $HOME — never from an ancestor directory. A root .npmrc is invisible
+          # there, and the failure is a bare ENEEDAUTH that reads like a missing
+          # secret rather than a misplaced file.
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > "$HOME/.npmrc"
+          # `--include` narrows to the @agentra-cli/* projects; safe-publish skips
+          # any version already on the registry, so re-running a tag is a no-op rather
+          # than a 403.
+          node common/scripts/safe-publish.js --include agentra-cli

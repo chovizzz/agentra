@@ -1,6 +1,11 @@
 import { coreId } from '@hcengineering/core'
 import { addStringsLoader, platformId } from '@hcengineering/platform'
 import { activityId } from '@hcengineering/activity'
+import { agentraCoreId } from '@hcengineering/agentra-core'
+import { crmLiteId } from '@hcengineering/crm-lite'
+import { cycleId } from '@hcengineering/cycle'
+import { requirementsId } from '@hcengineering/requirements'
+import { traceabilityId } from '@hcengineering/traceability'
 import { attachmentId } from '@hcengineering/attachment'
 import { boardId } from '@hcengineering/board'
 import { calendarId } from '@hcengineering/calendar'
@@ -44,6 +49,11 @@ import coreEng from '@hcengineering/core/lang/en.json'
 import loginEng from '@hcengineering/login-assets/lang/en.json'
 import platformEng from '@hcengineering/platform/lang/en.json'
 import activityEn from '@hcengineering/activity-assets/lang/en.json'
+import agentraCoreEn from '@hcengineering/agentra-core-assets/lang/en.json'
+import crmLiteEn from '@hcengineering/crm-lite-assets/lang/en.json'
+import cycleEn from '@hcengineering/cycle-assets/lang/en.json'
+import requirementsEn from '@hcengineering/requirements-assets/lang/en.json'
+import traceabilityEn from '@hcengineering/traceability-assets/lang/en.json'
 import attachmentEn from '@hcengineering/attachment-assets/lang/en.json'
 import boardEn from '@hcengineering/board-assets/lang/en.json'
 import calendarEn from '@hcengineering/calendar-assets/lang/en.json'
@@ -95,6 +105,11 @@ export function registerStringLoaders (): void {
   addStringsLoader(contactId, async (lang: string) => contactEn)
   addStringsLoader(recruitId, async (lang: string) => recruitEn)
   addStringsLoader(activityId, async (lang: string) => activityEn)
+  addStringsLoader(agentraCoreId, async (lang: string) => agentraCoreEn)
+  addStringsLoader(crmLiteId, async (lang: string) => crmLiteEn)
+  addStringsLoader(cycleId, async (lang: string) => cycleEn)
+  addStringsLoader(requirementsId, async (lang: string) => requirementsEn)
+  addStringsLoader(traceabilityId, async (lang: string) => traceabilityEn)
   addStringsLoader(settingId, async (lang: string) => settingEn)
   addStringsLoader(supportId, async (lang: string) => supportEn)
   addStringsLoader(telegramId, async (lang: string) => telegramEn)

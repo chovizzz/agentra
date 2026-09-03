@@ -24,10 +24,12 @@ import type { Action, ViewAction } from '@hcengineering/view'
 export default mergeIds(productsId, products, {
   action: {
     CreateProductVersion: '' as Ref<Action<Doc, any>>,
-    DeleteProductVersion: '' as Ref<Action<Doc, any>>
+    DeleteProductVersion: '' as Ref<Action<Doc, any>>,
+    ReleaseProductVersion: '' as Ref<Action<Doc, any>>
   },
   actionImpl: {
-    CreateProductVersion: '' as ViewAction
+    CreateProductVersion: '' as ViewAction,
+    ReleaseProductVersion: '' as ViewAction
   },
   ids: {
     ModulePermissionGroup: '' as Ref<Doc>,
@@ -50,6 +52,7 @@ export default mergeIds(productsId, products, {
   function: {
     CanCreateProductVersion: '' as Resource<(doc?: Doc | Doc[]) => Promise<boolean>>,
     CanDeleteProductVersion: '' as Resource<(doc?: Doc | Doc[]) => Promise<boolean>>,
+    CanReleaseProductVersion: '' as Resource<(doc?: Doc | Doc[]) => Promise<boolean>>,
     ProductIdentifierProvider: '' as Resource<<T extends Doc>(client: Client, ref: Ref<T>, doc?: T) => Promise<string>>
   },
   role: {

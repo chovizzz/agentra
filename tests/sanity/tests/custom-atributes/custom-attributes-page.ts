@@ -53,7 +53,12 @@ export class CustomAttributesPage {
   lead = (): Locator => this.page.getByRole('button', { name: 'Lead' })
   issue = (): Locator => this.page.getByRole('button', { name: 'Issue' })
   card = (): Locator => this.page.getByRole('button', { name: 'Card' })
-  product = (): Locator => this.page.getByRole('button', { name: 'Product' })
+  // ⚠️ `exact` IS LOAD BEARING — same reason as the twin locator in
+  // `tests/model/workspace/classes-pages.ts`: Agentra enables the `products`
+  // module, which puts a "Default Products Products" space type button on this
+  // page, so a substring match resolves to two elements and fails on strict
+  // mode rather than on the class being absent.
+  product = (): Locator => this.page.getByRole('button', { name: 'Product', exact: true })
 
   addAttribute = (): Locator => this.page.locator('.hulyTableAttr-header > .font-medium-14')
 

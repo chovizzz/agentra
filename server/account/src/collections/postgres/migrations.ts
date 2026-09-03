@@ -84,7 +84,8 @@ export function getMigrations (ns: string, flavor: DBFlavor): [string, string][]
     getV24Migration(ns, flavor),
     getV25Migration(ns, flavor),
     getV26Migration(ns, flavor),
-    getV27Migration(ns, flavor)
+    getV27Migration(ns, flavor),
+    getAgentraFeishuSocialIdTypeMigration(ns, flavor)
   ]
 }
 
@@ -840,4 +841,38 @@ function getV27Migration (ns: string, flavor: DBFlavor): [string, string] {
     ON ${ns}.api_tokens (expires_on);
     `
   ]
+}
+
+/**
+ * Agentra fork migration: register the `feishu` value on the `social_id_type` enum.
+ *
+ * The identifier is fork-namespaced on purpose (not `v28`): migrations are tracked by name, so a
+ * fork-specific name can never collide with a future upstream `account_db_v28_*` migration, and the
+ * only merge conflict left is a trivial both-added at the tail of the array in `getMigrations`.
+ *
+ * This migration only ADDS the enum value and must never INSERT a row using it — PostgreSQL permits
+ * `ALTER TYPE ... ADD VALUE` inside a transaction block only while the new value is not used in that
+ * same transaction, and every migration here runs inside one.
+ */
+function getAgentraFeishuSocialIdTypeMigration (ns: string, flavor: DBFlavor): [string, string] {
+  const addValueSql =
+    flavor === 'postgres'
+      ? `
+    -- Add feishu value to social_id_type enum (PostgreSQL)
+    DO $$     BEGIN
+        IF NOT EXISTS (
+            SELECT 1 FROM pg_enum
+            WHERE enumlabel = 'feishu'
+            AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'social_id_type' AND typnamespace = (SELECT oid FROM pg_namespace WHERE nspname = '${ns}'))
+        ) THEN
+            ALTER TYPE ${ns}.social_id_type ADD VALUE 'feishu';
+        END IF;
+    END $$;
+    `
+      : `
+    -- Add feishu value to social_id_type enum (CockroachDB)
+    ALTER TYPE ${ns}.social_id_type ADD VALUE IF NOT EXISTS 'feishu';
+    `
+
+  return ['account_db_agentra_v1_add_feishu_social_id_type', addValueSql]
 }

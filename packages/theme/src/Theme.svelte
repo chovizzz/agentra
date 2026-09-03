@@ -122,16 +122,17 @@
     checkSystemTheme()
   }
 
-  const setDocumentLanguage = (): void => {
-    document.documentElement.lang = $currentLanguage
-  }
+  // Reactive, not once-on-mount: switching the language has to move `<html lang>`
+  // with it. Screen readers, `:lang()` rules and the browser's own
+  // spellcheck/translate prompts all read this attribute, and leaving it on the
+  // language the page happened to load with is worse than not setting it at all.
+  $: document.documentElement.lang = $currentLanguage
 
   onMount(() => {
     setRootColors($currentTheme, false)
     setRootFontSize($currentFontSize, false)
     void setLanguage($currentLanguage, false)
     void loadPluginStrings($currentLanguage)
-    setDocumentLanguage()
   })
 </script>
 

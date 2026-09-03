@@ -1,0 +1,16 @@
+{
+  "extends": "./node_modules/@hcengineering/platform-rig/profiles/default/tsconfig.json",
+
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "declarationDir": "./types",
+    // The rig default is ["jest"]; "node" is added only so the SHA-256 test can
+    // cross-check against node's crypto. `src/` itself stays free of node APIs —
+    // this package is bundled for the browser.
+    "types": ["node", "jest"],
+    "tsBuildInfoFile": ".build/build.tsbuildinfo"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "lib", "dist", "types", "bundle"]
+}

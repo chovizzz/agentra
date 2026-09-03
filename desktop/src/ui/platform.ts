@@ -24,6 +24,11 @@ import {
 } from '@hcengineering/platform'
 
 import { activityId } from '@hcengineering/activity'
+import { agentraCoreId } from '@hcengineering/agentra-core'
+import { crmLiteId } from '@hcengineering/crm-lite'
+import { cycleId } from '@hcengineering/cycle'
+import { requirementsId } from '@hcengineering/requirements'
+import { traceabilityId } from '@hcengineering/traceability'
 import aiBot, { aiBotId } from '@hcengineering/ai-bot'
 import { attachmentId } from '@hcengineering/attachment'
 import { bitrixId } from '@hcengineering/bitrix'
@@ -87,6 +92,11 @@ import { ratingId } from '@hcengineering/rating'
 import billingPlugin, { billingId } from '@hcengineering/billing'
 
 import '@hcengineering/activity-assets'
+import '@hcengineering/agentra-core-assets'
+import '@hcengineering/crm-lite-assets'
+import '@hcengineering/cycle-assets'
+import '@hcengineering/requirements-assets'
+import '@hcengineering/traceability-assets'
 import '@hcengineering/analytics-collector-assets'
 import '@hcengineering/attachment-assets'
 import '@hcengineering/bitrix-assets'
@@ -200,6 +210,20 @@ function configureI18n (): void {
   addStringsLoader(uploaderId, async (lang: string) => await import(`@hcengineering/uploader-assets/lang/${lang}.json`))
   addStringsLoader(recorderId, async (lang: string) => await import(`@hcengineering/recorder-assets/lang/${lang}.json`))
   addStringsLoader(activityId, async (lang: string) => await import(`@hcengineering/activity-assets/lang/${lang}.json`))
+  addStringsLoader(
+    agentraCoreId,
+    async (lang: string) => await import(`@hcengineering/agentra-core-assets/lang/${lang}.json`)
+  )
+  addStringsLoader(crmLiteId, async (lang: string) => await import(`@hcengineering/crm-lite-assets/lang/${lang}.json`))
+  addStringsLoader(cycleId, async (lang: string) => await import(`@hcengineering/cycle-assets/lang/${lang}.json`))
+  addStringsLoader(
+    requirementsId,
+    async (lang: string) => await import(`@hcengineering/requirements-assets/lang/${lang}.json`)
+  )
+  addStringsLoader(
+    traceabilityId,
+    async (lang: string) => await import(`@hcengineering/traceability-assets/lang/${lang}.json`)
+  )
   addStringsLoader(
     attachmentId,
     async (lang: string) => await import(`@hcengineering/attachment-assets/lang/${lang}.json`)
@@ -444,6 +468,11 @@ export async function configurePlatform (onWorkbenchConnect?: () => Promise<void
   addLocation(activityId, async () => await import('@hcengineering/activity-resources'))
   addLocation(settingId, async () => await import('@hcengineering/setting-resources'))
   addLocation(leadId, async () => await import('@hcengineering/lead-resources'))
+  addLocation(agentraCoreId, async () => await import('@hcengineering/agentra-core-resources'))
+  addLocation(crmLiteId, async () => await import('@hcengineering/crm-lite-resources'))
+  addLocation(cycleId, async () => await import('@hcengineering/cycle-resources'))
+  addLocation(requirementsId, async () => await import('@hcengineering/requirements-resources'))
+  addLocation(traceabilityId, async () => await import('@hcengineering/traceability-resources'))
   addLocation(telegramId, async () => await import('@hcengineering/telegram-resources'))
   addLocation(attachmentId, async () => await import('@hcengineering/attachment-resources'))
   addLocation(gmailId, async () => await import('@hcengineering/gmail-resources'))

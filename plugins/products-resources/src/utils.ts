@@ -24,9 +24,11 @@ import { getClient } from '@hcengineering/presentation'
 import { showPopup } from '@hcengineering/ui'
 import { type KeyFilter } from '@hcengineering/view'
 import documents from '@hcengineering/controlled-documents'
-import products, { ProductVersionState, type Product, type ProductVersion } from '@hcengineering/products'
+import products, { isFrozenProductVersionState, type Product, type ProductVersion } from '@hcengineering/products'
 
+import { canReleaseProductVersionState } from './release'
 import CreateProductVersion from './components/product-version/CreateProductVersion.svelte'
+import ReleaseProductVersionPopup from './components/product-version/ReleaseProductVersionPopup.svelte'
 
 export function getProductVersionVersion (doc: ProductVersion): string {
   const codename = doc.codename ?? ''
@@ -71,7 +73,11 @@ export async function canEditProductVersion (doc?: WithLookup<ProductVersion>): 
     return false
   }
 
-  if (doc.state === ProductVersionState.Released) {
+  // ⚠️ `Archived` freezes a version just as `Released` does. It is what
+  // `CreateProductVersion.svelte` now stamps on a parent when a child is forked
+  // off it (its documents have already been copied forward), so editing it
+  // would edit a line that has been superseded.
+  if (isFrozenProductVersionState(doc.state)) {
     return false
   }
 
@@ -120,7 +126,7 @@ export async function canDeleteProductVersion (doc?: ProductVersion | ProductVer
     return false
   }
 
-  if (doc.state === ProductVersionState.Released) {
+  if (isFrozenProductVersionState(doc.state)) {
     return false
   }
 
@@ -152,4 +158,57 @@ export async function productIdentifierProvider (client: Client, ref: Ref<Produc
   }
 
   return object.name
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// REL-003 / REL-004: the release action.
+// ───────────────────────────────────────────────────────────────────────────
+
+/**
+ * Whether to offer "Release version" on this document.
+ *
+ * 🔴 A VISIBILITY TEST, NOT AN AUTHORISATION CHECK. It hides an action that
+ * would certainly be refused; the gate, the state transition and the permission
+ * are all re-decided on the server, which answers `illegal-transition` or
+ * `gate-failed`. Never read a `true` here as "this release is allowed".
+ *
+ * ⚠️ Single selection only. Releasing several versions from one click would
+ * fire N independent commands whose partial failure has no sensible rendering,
+ * and each one needs its own gate report on screen.
+ *
+ * @public
+ */
+export async function canReleaseProductVersion (doc?: ProductVersion | ProductVersion[]): Promise<boolean> {
+  if (doc === null || doc === undefined || Array.isArray(doc)) {
+    return false
+  }
+  if (!canReleaseProductVersionState(doc.state)) {
+    return false
+  }
+  const product = await getClient().findOne(products.class.Product, { _id: doc.space })
+  if (product === undefined) {
+    return false
+  }
+  return await canEditProduct(product)
+}
+
+/**
+ * Open the release popup.
+ *
+ * 🔴 THE POPUP IS THE ONLY CLIENT ENTRY TO `ReleaseProductVersion`, and it is
+ * where the idempotency key is derived — from the version, so that reopening it
+ * is the same intent rather than a second one. Nothing in this package writes
+ * `ProductVersionState.Released` directly.
+ *
+ * @public
+ */
+export async function releaseProductVersionAction (doc?: ProductVersion | ProductVersion[]): Promise<void> {
+  if (doc === null || doc === undefined) {
+    return
+  }
+  const version = Array.isArray(doc) ? doc[0] : doc
+  if (version === undefined) {
+    return
+  }
+  showPopup(ReleaseProductVersionPopup, { value: version }, 'top')
 }

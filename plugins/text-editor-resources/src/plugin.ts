@@ -20,6 +20,10 @@ import { type IntlString, plugin } from '@hcengineering/platform'
 export default plugin(textEditorId, {
   string: {
     CannotConnectToCollaborationService: '' as IntlString,
+    // Shown when the collaborator rolled a document back because the platform
+    // refused the save. See `provider/contentRejected.ts`.
+    ContentChangeRejectedTitle: '' as IntlString,
+    ContentChangeRejected: '' as IntlString,
     SourceURL: '' as IntlString,
     LatestVersion: '' as IntlString
   }

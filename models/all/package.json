@@ -40,6 +40,13 @@
   },
   "dependencies": {
     "@hcengineering/model": "workspace:^0.7.17",
+    "@hcengineering/model-agentra-core": "workspace:^0.7.0",
+    "@hcengineering/model-server-agentra-core": "workspace:^0.7.0",
+    "@hcengineering/model-crm-lite": "workspace:^0.7.0",
+    "@hcengineering/model-cycle": "workspace:^0.7.0",
+    "@hcengineering/model-requirements": "workspace:^0.7.0",
+    "@hcengineering/model-traceability": "workspace:^0.7.0",
+    "@hcengineering/model-server-traceability": "workspace:^0.7.0",
     "@hcengineering/model-core": "workspace:^0.7.0",
     "@hcengineering/model-view": "workspace:^0.7.0",
     "@hcengineering/model-converter": "workspace:^0.7.0",

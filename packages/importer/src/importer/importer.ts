@@ -146,6 +146,12 @@ export interface ImportIssue extends ImportDoc {
   id?: Ref<Issue>
   class: Ref<Class<Issue>>
   status: ImportStatus
+  /**
+   * Name of the task type this issue belongs to, within its project's project type.
+   * Omitted means "the project type's first task type" — correct only when the project
+   * type has one. See {@link WorkspaceImporter.getIssueKind}.
+   */
+  taskType?: string
   priority?: string
   number?: number
   assignee?: Ref<Person>
@@ -266,6 +272,41 @@ export class WorkspaceImporter {
     for (const projectType of this.workspaceData.projectTypes) {
       const projectTypeId = await this.createProjectTypeWithTaskTypes(projectType)
       this.projectTypeByName.set(projectType.name, projectTypeId)
+      await this.cacheProjectTypeStatuses(projectTypeId)
+    }
+  }
+
+  /**
+   * Record the statuses a freshly created project type just produced, so a project can
+   * name one of them as its `defaultIssueStatus`.
+   *
+   * 🔴 WITHOUT THIS, `issueStatusByName` IS NEVER WRITTEN TO. The map is declared and
+   * read in `createProject` / `updateProject`, but nothing ever populated it, so the
+   * lookup always missed and every project silently fell back to
+   * `tracker:status:Backlog` — a status that does not even belong to a custom project
+   * type. The failure is invisible: no error, no warning, just the wrong default.
+   *
+   * The statuses cannot be collected at creation time because `createProjectType` takes
+   * them as a `factory` descriptor and mints the ids itself; they only exist once it
+   * returns, which is why this reads them back rather than capturing them above.
+   */
+  private async cacheProjectTypeStatuses (projectTypeId: Ref<ProjectType>): Promise<void> {
+    const type = await this.client.findOne(task.class.ProjectType, { _id: projectTypeId })
+    if (type === undefined) return
+
+    const taskTypes = await this.client.findAll(task.class.TaskType, { _id: { $in: type.tasks } })
+    const statusIds = taskTypes.flatMap((tt) => tt.statuses)
+    if (statusIds.length === 0) return
+
+    const statuses = await this.client.findAll(tracker.class.IssueStatus, { _id: { $in: statusIds } })
+    for (const status of statuses) {
+      // First writer wins: two task types in one project type may share a status name
+      // (e.g. both a task and a defect flow ending in "已完成"), and the project's
+      // `defaultIssueStatus` names only the string — resolving it to the first task
+      // type's status keeps the choice deterministic instead of order-dependent.
+      if (!this.issueStatusByName.has(status.name)) {
+        this.issueStatusByName.set(status.name, status._id)
+      }
     }
   }
 
@@ -568,7 +609,7 @@ export class WorkspaceImporter {
         ? { number: issue.number, identifier: `${project.identifier}-${issue.number}` }
         : await this.getNextIssueIdentifier(project, spaceId)
 
-    const kind = await this.getIssueKind(project)
+    const kind = await this.getIssueKind(project, issue.taskType)
     const rank = await this.getIssueRank(project, spaceId)
     const status = await this.findIssueStatusByName(issue.status.name)
     const priority =
@@ -635,9 +676,31 @@ export class WorkspaceImporter {
     return { number, identifier }
   }
 
-  private async getIssueKind (project: Project): Promise<TaskType> {
-    const taskKind = project?.type !== undefined ? { parent: project.type } : {}
-    const kind = await this.client.findOne(task.class.TaskType, taskKind)
+  /**
+   * Resolve the task type ("kind") for an issue.
+   *
+   * 🔴 `findOne` WITHOUT A NAME RETURNS AN ARBITRARY TASK TYPE — whichever the adapter
+   * happens to return first. That is correct only for a project type with exactly one
+   * task type. A project type modelling two flows (e.g. 任务 and 缺陷, each with its own
+   * statuses) got EVERY issue stamped with the same kind, so issues carrying the second
+   * flow's statuses ended up with a status that is not in their own kind's status list.
+   *
+   * Naming the type makes that expressible. An unmatched name is an ERROR rather than a
+   * silent fallback: falling back would reproduce exactly the bug above, and it would do
+   * so invisibly — the issue is created, it just sits in the wrong flow.
+   */
+  private async getIssueKind (project: Project, taskTypeName?: string): Promise<TaskType> {
+    const parentQuery = project?.type !== undefined ? { parent: project.type } : {}
+
+    if (taskTypeName !== undefined) {
+      const named = await this.client.findOne(task.class.TaskType, { ...parentQuery, name: taskTypeName })
+      if (named === undefined) {
+        throw new Error(`Task type '${taskTypeName}' not found in project type of: ${project.name}`)
+      }
+      return named
+    }
+
+    const kind = await this.client.findOne(task.class.TaskType, parentQuery)
     if (kind === undefined) {
       throw new Error(`Task type not found for project: ${project.name}`)
     }

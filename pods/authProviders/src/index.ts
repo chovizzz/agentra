@@ -2,6 +2,7 @@ import Koa from 'koa'
 import passport from 'koa-passport'
 import Router from 'koa-router'
 import session from 'koa-session'
+import { registerFeishu } from './feishu'
 import { registerGithub } from './github'
 import { registerGoogle } from './google'
 import { registerOpenid } from './openid'
@@ -20,7 +21,8 @@ export type AuthProvider = (
   db: Promise<AccountDB>,
   frontUrl: string,
   brandings: BrandingMap,
-  signUpDisabled?: boolean
+  signUpDisabled?: boolean,
+  serverSecret?: string
 ) => ProviderInfo | undefined
 
 export function registerProviders (
@@ -64,9 +66,9 @@ export function registerProviders (
   registerToken(ctx, passport, router, accountsUrl, db, frontUrl, brandings)
 
   const res: ProviderInfo[] = []
-  const providers: AuthProvider[] = [registerGoogle, registerGithub, registerOpenid]
+  const providers: AuthProvider[] = [registerGoogle, registerGithub, registerOpenid, registerFeishu]
   for (const provider of providers) {
-    const value = provider(ctx, passport, router, accountsUrl, db, frontUrl, brandings, signUpDisabled)
+    const value = provider(ctx, passport, router, accountsUrl, db, frontUrl, brandings, signUpDisabled, serverSecret)
     if (value !== undefined) res.push(value)
   }
 

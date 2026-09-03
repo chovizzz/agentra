@@ -81,12 +81,33 @@
         return
       }
       okProcessing = true
-      const r = okAction()
+      let r: Promise<void> | void
+      try {
+        r = okAction()
+      } catch (err) {
+        // A synchronous throw used to leave `okProcessing` latched at `true`,
+        // and the guard above reads it BEFORE `canSave` — so the button was
+        // dead for the rest of the dialog's life. Clear it, then rethrow so the
+        // error keeps reaching whatever was reporting it before.
+        okProcessing = false
+        throw err
+      }
       if (r instanceof Promise) {
-        r.then(() => {
-          okProcessing = false
-          dispatch('close')
-        })
+        r.then(
+          () => {
+            okProcessing = false
+            dispatch('close')
+          },
+          (err) => {
+            // Rejection: the dialog STAYS OPEN (no `close` is dispatched, as
+            // before) but the button is released so the user can try again.
+            // The error is re-thrown rather than swallowed, so the derived
+            // promise still rejects exactly as it did without this handler and
+            // the global `unhandledrejection` reporting is unchanged.
+            okProcessing = false
+            throw err
+          }
+        )
       } else {
         okProcessing = false
         dispatch('close')

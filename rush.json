@@ -2051,6 +2051,17 @@
       "projectFolder": "models/server-products",
       "shouldPublish": false
     },
+    // Agentra: server-side ProductVersion release enforcement (REL-003).
+    {
+      "packageName": "@hcengineering/server-products",
+      "projectFolder": "server-plugins/products",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/server-products-resources",
+      "projectFolder": "server-plugins/products-resources",
+      "shouldPublish": false
+    },
     {
       "packageName": "@hcengineering/questions",
       "projectFolder": "plugins/questions",
@@ -2275,6 +2286,21 @@
       "packageName": "@hcengineering/pod-print",
       "projectFolder": "services/print/pod-print",
       "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/pod-mcp-server",
+      "projectFolder": "services/mcp/pod-mcp-server",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@agentra-cli/client",
+      "projectFolder": "packages/agentra-client",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@agentra-cli/cli",
+      "projectFolder": "services/agentra-cli",
+      "shouldPublish": true
     },
     {
       "packageName": "@hcengineering/pod-export",
@@ -2739,6 +2765,152 @@
     {
       "packageName": "@hcengineering/pod-rating",
       "projectFolder": "services/rating",
+      "shouldPublish": false
+    },
+    // Agentra
+    {
+      "packageName": "@hcengineering/agentra-core",
+      "projectFolder": "plugins/agentra-core",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/agentra-core-assets",
+      "projectFolder": "plugins/agentra-core-assets",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/agentra-core-resources",
+      "projectFolder": "plugins/agentra-core-resources",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/model-agentra-core",
+      "projectFolder": "models/agentra-core",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/server-agentra-core",
+      "projectFolder": "server-plugins/agentra-core",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/server-agentra-core-resources",
+      "projectFolder": "server-plugins/agentra-core-resources",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/model-server-agentra-core",
+      "projectFolder": "models/server-agentra-core",
+      "shouldPublish": false
+    },
+    // Agentra traceability
+    {
+      "packageName": "@hcengineering/traceability",
+      "projectFolder": "plugins/traceability",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/traceability-assets",
+      "projectFolder": "plugins/traceability-assets",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/traceability-resources",
+      "projectFolder": "plugins/traceability-resources",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/model-traceability",
+      "projectFolder": "models/traceability",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/server-traceability",
+      "projectFolder": "server-plugins/traceability",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/server-traceability-resources",
+      "projectFolder": "server-plugins/traceability-resources",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/model-server-traceability",
+      "projectFolder": "models/server-traceability",
+      "shouldPublish": false
+    },
+    // Agentra CRM Lite
+    {
+      "packageName": "@hcengineering/crm-lite",
+      "projectFolder": "plugins/crm-lite",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/crm-lite-assets",
+      "projectFolder": "plugins/crm-lite-assets",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/crm-lite-resources",
+      "projectFolder": "plugins/crm-lite-resources",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/model-crm-lite",
+      "projectFolder": "models/crm-lite",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/server-crm-lite",
+      "projectFolder": "server-plugins/crm-lite",
+      "shouldPublish": false
+    },
+    // Agentra Test Management extensions (server side snapshot immutability)
+    {
+      "packageName": "@hcengineering/server-test-management",
+      "projectFolder": "server-plugins/test-management",
+      "shouldPublish": false
+    },
+    // Agentra Requirements
+    {
+      "packageName": "@hcengineering/requirements",
+      "projectFolder": "plugins/requirements",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/requirements-assets",
+      "projectFolder": "plugins/requirements-assets",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/requirements-resources",
+      "projectFolder": "plugins/requirements-resources",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/model-requirements",
+      "projectFolder": "models/requirements",
+      "shouldPublish": false
+    },
+    // Agentra Cycle (Tracker extension)
+    {
+      "packageName": "@hcengineering/cycle",
+      "projectFolder": "plugins/cycle",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/cycle-assets",
+      "projectFolder": "plugins/cycle-assets",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/cycle-resources",
+      "projectFolder": "plugins/cycle-resources",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/model-cycle",
+      "projectFolder": "models/cycle",
       "shouldPublish": false
     }
   ]

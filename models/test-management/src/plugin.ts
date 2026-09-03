@@ -15,7 +15,7 @@
 
 import { testManagementId } from '@hcengineering/test-management'
 import testManganement from '@hcengineering/test-management-resources/src/plugin'
-import type { Doc, Ref } from '@hcengineering/core'
+import type { Doc, Ref, Role } from '@hcengineering/core'
 import { mergeIds } from '@hcengineering/platform'
 import { type AnyComponent } from '@hcengineering/ui/src/types'
 import type { ActionCategory } from '@hcengineering/view'
@@ -52,5 +52,12 @@ export default mergeIds(testManagementId, testManganement, {
   ids: {
     ModulePermissionGroup: '' as Ref<Doc>,
     ModulePermissionGroupReadOnlyGuest: '' as Ref<Doc>
+  },
+  role: {
+    QA: '' as Ref<Role>,
+    Developer: '' as Ref<Role>,
+    ProjectManager: '' as Ref<Role>,
+    Product: '' as Ref<Role>,
+    Sales: '' as Ref<Role>
   }
 })

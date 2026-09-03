@@ -18,11 +18,15 @@
   import { AttachmentStyleBoxCollabEditor } from '@hcengineering/attachment-resources'
   import { ActionContext, createQuery, getClient } from '@hcengineering/presentation'
   import { type Class, type Ref } from '@hcengineering/core'
-  import { TestCase } from '@hcengineering/test-management'
+  import { isTestCaseContentFrozen, type TestCase } from '@hcengineering/test-management'
   import { Panel } from '@hcengineering/panel'
-  import { EditBox, Breadcrumb } from '@hcengineering/ui'
+  import { EditBox, Breadcrumb, Label } from '@hcengineering/ui'
   import { DocAttributeBar } from '@hcengineering/view-resources'
+  import { StyledTextBox } from '@hcengineering/text-editor-resources'
 
+  import StatusEditor from './StatusEditor.svelte'
+  import TestCaseTraceability from './TestCaseTraceability.svelte'
+  import TestSteps from './TestSteps.svelte'
   import testManagement from '../../plugin'
 
   export let _id: Ref<TestCase>
@@ -46,8 +50,23 @@
       ;[object] = result
     })
 
+  /**
+   * QA-T019: an `Approved` case is read-only.
+   *
+   * ⚠️ THIS IS THE EXPERIENCE, NOT THE ENFORCEMENT. Every control below is
+   * disabled while `frozen`, and this early return catches the ones that fire
+   * from a blur or a debounce after the flag flipped — but the rule that
+   * actually holds is `SnapshotGuardMiddleware`'s, because the import tool, a
+   * REST caller and a script never load this component.
+   *
+   * 🔴 THE CLIENT IS NEVER MORE PERMISSIVE THAN THE SERVER. It freezes exactly
+   * `APPROVED_TEST_CASE_FROZEN_FIELDS` (via {@link isTestCaseContentFrozen}) and
+   * it freezes `status` NOWHERE — the status control below stays live, since
+   * moving the case back to review is the only way out of the gate and a UI
+   * that greyed it out would be a dead end rather than a gate.
+   */
   async function change<K extends keyof TestCase> (field: K, value: TestCase[K]) {
-    if (object !== undefined) {
+    if (object !== undefined && !frozen) {
       await client.update(object, { [field]: value })
     }
   }
@@ -56,6 +75,12 @@
     oldLabel = object?.name
     rawLabel = object?.name
   }
+
+  $: frozen = object !== undefined && isTestCaseContentFrozen(object)
+  // `status` leaves the attribute bar while frozen because the bar is readonly
+  // as a whole and there is no per-key switch; the banner below carries the
+  // live control instead, so the escape hatch never disappears.
+  $: ignoreKeys = frozen ? ['name', 'status'] : ['name']
 
   $: descriptionKey = hierarchy.getAttribute(testManagement.class.TestCase, 'description')
 
@@ -77,8 +102,17 @@
       <Breadcrumb icon={testManagement.icon.TestCase} title={object.name} size={'large'} isCurrent />
     </svelte:fragment>
 
+    {#if frozen}
+      <div class="approved-banner flex-row-center flex-gap-2 mt-4">
+        <span class="fs-bold"><Label label={testManagement.string.ApprovedCaseReadonly} /></span>
+        <span class="content-dark-color"><Label label={testManagement.string.ApprovedCaseReadonlyHint} /></span>
+        <StatusEditor value={object.status} {object} kind={'regular'} size={'small'} />
+      </div>
+    {/if}
+
     <EditBox
       bind:value={rawLabel}
+      disabled={frozen}
       placeholder={testManagement.string.NamePlaceholder}
       kind="large-style"
       on:blur={async () => {
@@ -99,12 +133,45 @@
         key={{ key: 'description', attr: descriptionKey }}
         bind:this={descriptionBox}
         identifier={object?._id}
+        readonly={frozen}
         placeholder={testManagement.string.DescriptionPlaceholder}
       />
     </div>
 
+    <div class="w-full mt-6">
+      <span class="fs-title"><Label label={testManagement.string.Preconditions} /></span>
+      <StyledTextBox
+        alwaysEdit={!frozen}
+        readonly={frozen}
+        showButtons={false}
+        isScrollable={false}
+        content={object.preconditions ?? ''}
+        placeholder={testManagement.string.DescriptionPlaceholder}
+        on:value={(evt) => {
+          void change('preconditions', evt.detail)
+        }}
+      />
+    </div>
+
+    <div class="w-full mt-6">
+      <TestSteps {object} />
+    </div>
+
+    <div class="w-full mt-6">
+      <TestCaseTraceability {object} />
+    </div>
+
     <svelte:fragment slot="aside">
-      <DocAttributeBar {object} ignoreKeys={['name']} />
+      <DocAttributeBar {object} {ignoreKeys} readonly={frozen} />
     </svelte:fragment>
   </Panel>
 {/if}
+
+<style lang="scss">
+  .approved-banner {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--theme-divider-color);
+    border-radius: 0.375rem;
+    background-color: var(--theme-warning-color-10, var(--theme-bg-accent-color));
+  }
+</style>

@@ -81,6 +81,7 @@ export default mergeIds(contactId, contact, {
     Google: '' as IntlString,
     Telegram: '' as IntlString,
     GitHub: '' as IntlString,
+    Feishu: '' as IntlString,
     Facebook: '' as IntlString,
     TypeLabel: '' as IntlString,
     Homepage: '' as IntlString,

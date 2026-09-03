@@ -11,6 +11,16 @@
  */
 
 const { execSync, spawnSync } = require('child_process')
+
+/**
+ * Scopes this repo is allowed to publish under.
+ *
+ * An allow-list rather than "anything with shouldPublish" so a project that
+ * forgets to scope itself cannot claim a bare name on the public registry by
+ * accident. Add a scope here when the repo starts publishing one — a project
+ * outside the list is silently skipped, and the run still exits 0.
+ */
+const PUBLISH_SCOPES = ['@hcengineering', '@agentra-cli']
 const fs = require('fs')
 const path = require('path')
 const https = require('https')
@@ -83,7 +93,7 @@ function getPublishablePackages(includePattern) {
         return false
       }
 
-      return shouldPublish && project.name.startsWith('@hcengineering')
+      return shouldPublish && PUBLISH_SCOPES.some((scope) => project.name.startsWith(scope + '/'))
     })
   } catch (err) {
     console.error('Error getting package list:', err.message)

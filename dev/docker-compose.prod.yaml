@@ -1,0 +1,287 @@
+# Agentra 生产部署（Dokploy / 单机）
+#
+# 与 dev/docker-compose.yaml 的关键差别，每一条都有原因：
+#
+# 1. 镜像来自 GHCR 而不是本地构建。服务器只有 7.45 GB 内存，跑不动
+#    `rush build`（本机构建时 Docker VM 就吃了 9.7 GB）。
+# 2. 只保留核心服务。上游 dev 栈有 30 个服务，这台机器装不下：
+#    砍掉 elastic/fulltext（全文检索）、rekoni（文档解析）、preview、
+#    print、sign、love、telegram、gmail、calendar、ai-bot、process、
+#    backup、rating、hulylake、hulypulse、hulykvs、jaeger、
+#    redpanda_console、time-machine、events-processor、media、export、stream。
+#    ⚠️ 代价：全文搜索不可用、附件预览不可用。核心的项目/任务/缺陷/
+#    测试管理/飞书登录/GitHub 集成都在。
+# 3. 主机名用 SERVER_HOST 变量而不是写死 agentra.local，见下面第 4 条。
+# 4. 一个宿主端口都不映射，全部走 Traefik。云安全组只放行 22/80/443/3000，
+#    所有对外主机名都配了 Let's Encrypt 证书，浏览器侧一律 https / wss；
+#    Dokploy 自带的 Traefik 已经占着 80，所以对外访问一律收到 80 上按
+#    主机名分流：<服务>.${SERVER_HOST}。SERVER_HOST 用 sslip.io 的通配
+#    DNS（49.51.37.69.sslip.io 及其任意子域都解析到本机 IP），因此不需要
+#    真买域名。将来买了域名，把 SERVER_HOST 换成它即可，其余不用动。
+#    ⚠️ Traefik 只能路由到 dokploy-network 上的容器，所以每个对外服务都要
+#       显式声明 networks；一旦写了 networks，就不再隐式加入 default，
+#       两个网络都得列出来，否则容器间调用会断。
+#
+# 起法：
+#   docker compose --env-file .env.prod -f docker-compose.prod.yaml up -d
+
+x-common: &common
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: { max-size: '10m', max-file: '3' }
+
+services:
+  cockroach:
+    image: cockroachdb/cockroach:latest-v24.3
+    command: start-single-node --insecure
+    volumes:
+      - cockroach_db:/cockroach/cockroach-data
+    # ⚠️ 不映射 26257 到宿主：无密码的数据库绝不能对公网开放。
+    # 需要连库时用 `docker compose exec cockroach cockroach sql --insecure`。
+    <<: *common
+
+  minio:
+    image: minio/minio
+    command: server /data --address ":9000" --console-address ":9001"
+    volumes:
+      - files:/data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      retries: 10
+    <<: *common
+
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.3.6
+    command:
+      - redpanda
+      - start
+      - --kafka-addr internal://0.0.0.0:9092
+      - --advertise-kafka-addr internal://redpanda:9092
+      - --mode dev-container
+      - --smp 1
+      - --default-log-level=warn
+      # 512M 是这台机器上的实际约束，不是随手填的。
+      - --memory 512M
+    volumes:
+      - redpanda:/var/lib/redpanda/data
+    healthcheck:
+      test: ['CMD', 'rpk', 'cluster', 'info']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    <<: *common
+
+  stats:
+    image: ghcr.io/chovizzz/agentra-stats:${AGENTRA_TAG}
+    environment:
+      - PORT=4900
+      - SERVER_SECRET=${SERVER_SECRET}
+    <<: *common
+
+  datalake:
+    image: ghcr.io/chovizzz/agentra-datalake:${AGENTRA_TAG}
+    depends_on:
+      minio: { condition: service_healthy }
+    environment:
+      - PORT=4030
+      - SECRET=${SERVER_SECRET}
+      - ACCOUNTS_URL=http://account:3000
+      - STATS_URL=http://stats:4900
+      - STREAM_URL=
+      - DB_URL=${DB_URL}
+      # 格式是 `<bucket>,<location>|<url>?accessKey=&secretKey=`
+      # （services/datalake/pod-datalake/src/config.ts 的 parseBucketConfig）。
+      # 🔴 不要写成 `minio|minio?accessKey=...` —— 那是 BACKUP_STORAGE_CONFIG
+      #    的形状，用在这里会以 `Invalid bucket config` 崩溃重启。
+      # 🔴 也不要把这串放进 Dokploy 的环境变量再用 ${...} 引 ——
+      #    Compose 不对 env 值做二次插值，${MINIO_USER} 会原样传进容器。
+      #    在 compose 文件里插值才生效。
+      - BUCKETS=blobs,eu|http://minio:9000?accessKey=${MINIO_USER}&secretKey=${MINIO_PASSWORD}
+    networks: [default, dokploy-network]
+    <<: *common
+
+  account:
+    image: ghcr.io/chovizzz/agentra-account:${AGENTRA_TAG}
+    depends_on:
+      redpanda: { condition: service_healthy }
+    environment:
+      - ACCOUNT_PORT=3000
+      - SERVER_SECRET=${SERVER_SECRET}
+      - QUEUE_CONFIG=redpanda:9092
+      - DB_URL=${DB_URL}
+      - STATS_URL=http://stats:4900
+      - REGION_INFO=cockroach|CockroachDB
+      - TRANSACTOR_URL=ws://transactor:3332;wss://transactor.${SERVER_HOST};cockroach,
+      - STORAGE_CONFIG=${STORAGE_CONFIG}
+      - FRONT_URL=https://agentra.${SERVER_HOST}
+      - ACCOUNTS_URL=https://account.${SERVER_HOST}
+      - ADMIN_EMAILS=${ADMIN_EMAILS}
+      - WORKSPACE_LIMIT_PER_USER=10000
+      - MAIL_URL=
+      - LAST_NAME_FIRST=true
+      # 飞书：没有域名时留空，provider 不注册、登录页不显示按钮（这是设计好的行为）。
+      - FEISHU_CLIENT_ID
+      - FEISHU_CLIENT_SECRET
+      - FEISHU_ALLOWED_TENANT_KEYS
+      - FEISHU_DISPLAY_NAME
+      - FEISHU_REDIRECT_URL
+      - FEISHU_TENANT_WORKSPACE_MAP
+      - FEISHU_AUTO_PROVISION
+      - FEISHU_SYNC_PROFILE
+      - FEISHU_STATE_HMAC_SECRET
+    networks: [default, dokploy-network]
+    <<: *common
+
+  workspace:
+    image: ghcr.io/chovizzz/agentra-workspace:${AGENTRA_TAG}
+    depends_on:
+      redpanda: { condition: service_healthy }
+    environment:
+      - SERVER_SECRET=${SERVER_SECRET}
+      - QUEUE_CONFIG=redpanda:9092
+      - DB_URL=${DB_URL}
+      - STATS_URL=http://stats:4900
+      - ACCOUNTS_URL=http://account:3000
+      # 与 DB_URL 同一个库，但变量名不同：workspace 单独读 ACCOUNTS_DB_URL，
+      # 缺了会打印 `Please provide account db url` 后 exit(1) 并崩溃重启。
+      - ACCOUNTS_DB_URL=${DB_URL}
+      - TRANSACTOR_URL=ws://transactor:3332;wss://transactor.${SERVER_HOST};cockroach,
+      - STORAGE_CONFIG=${STORAGE_CONFIG}
+      - REGION=cockroach
+      - MODEL_ENABLED=*
+    <<: *common
+
+  transactor:
+    image: ghcr.io/chovizzz/agentra-transactor:${AGENTRA_TAG}
+    depends_on:
+      redpanda: { condition: service_healthy }
+    environment:
+      - SERVER_PORT=3332
+      - SERVER_SECRET=${SERVER_SECRET}
+      - QUEUE_CONFIG=redpanda:9092
+      - DB_URL=${DB_URL}
+      - STATS_URL=http://stats:4900
+      - ACCOUNTS_URL=http://account:3000
+      - FRONT_URL=https://agentra.${SERVER_HOST}
+      - STORAGE_CONFIG=${STORAGE_CONFIG}
+      - SERVER_CURSOR_MAXTIMEMS=30000
+      - REGION=cockroach
+      # ⚠️ 全文检索被砍掉了，这里必须留空而不是指向不存在的服务，
+      # 否则 transactor 会反复重试连接并刷日志。
+      - FULLTEXT_URL=
+    networks: [default, dokploy-network]
+    <<: *common
+
+  collaborator:
+    image: ghcr.io/chovizzz/agentra-collaborator:${AGENTRA_TAG}
+    environment:
+      - COLLABORATOR_PORT=3078
+      - SECRET=${SERVER_SECRET}
+      - ACCOUNTS_URL=http://account:3000
+      - STATS_URL=http://stats:4900
+      - STORAGE_CONFIG=${STORAGE_CONFIG}
+    networks: [default, dokploy-network]
+    <<: *common
+
+  front:
+    image: ghcr.io/chovizzz/agentra-front:${AGENTRA_TAG}
+    depends_on:
+      - account
+    environment:
+      - SERVER_PORT=8080
+      - SERVER_SECRET=${SERVER_SECRET}
+      - ACCOUNTS_URL=https://account.${SERVER_HOST}
+      - UPLOAD_URL=/files
+      - FILES_URL=https://datalake.${SERVER_HOST}/blob/:workspace/:blobId/:filename
+      - STATS_URL=http://stats:4900
+      - COLLABORATOR_URL=wss://collab.${SERVER_HOST}
+      - STORAGE_CONFIG=${STORAGE_CONFIG}
+      - GITHUB_URL=https://github.${SERVER_HOST}
+      # 供设置里的 MCP 页面显示端点与连接命令；留空则该页显示"未配置"。
+      - MCP_URL=https://mcp.${SERVER_HOST}
+      - GITHUB_APP
+      - GITHUB_CLIENTID
+      # 被砍掉的服务：留空而不是指向不存在的地址，前端会据此隐藏入口。
+      - REKONI_URL=
+      - PREVIEW_URL=
+      - GMAIL_URL=
+      - CALENDAR_URL=
+      - TELEGRAM_URL=
+      - PRINT_URL=
+      - LINK_PREVIEW_URL=
+    networks: [default, dokploy-network]
+    <<: *common
+
+  github:
+    image: ghcr.io/chovizzz/agentra-github:${AGENTRA_TAG}
+    depends_on:
+      - account
+    environment:
+      - PORT=3500
+      - SERVICE_ID=github-service
+      - SERVER_SECRET=${SERVER_SECRET}
+      - ACCOUNTS_URL=http://account:3000
+      - FRONT_URL=https://agentra.${SERVER_HOST}
+      - COLLABORATOR_URL=http://collaborator:3078
+      - STATS_URL=http://stats:4900
+      - STORAGE_CONFIG=${STORAGE_CONFIG}
+      - APP_ID
+      - CLIENT_ID
+      - CLIENT_SECRET
+      - PRIVATE_KEY
+      - WEBHOOK_SECRET
+      - BOT_NAME
+      - ALLOWED_WORKSPACES=${ALLOWED_WORKSPACES:-*}
+    networks: [default, dokploy-network]
+    <<: *common
+
+  mcp:
+    image: ghcr.io/chovizzz/agentra-mcp-server:${MCP_TAG}
+    depends_on:
+      - transactor
+      - front
+      - account
+    environment:
+      - MCP_TRANSPORT=http
+      - MCP_PORT=3100
+      # 自己的公网地址：既是 OAuth 的 issuer，也是飞书回调的基址。
+      # 🔴 必须是 HTTPS。MCP SDK 按 OAuth 2.1 强制 issuer 为 https（只对
+      #    localhost 例外），填 http 会以 `Issuer URL must be HTTPS` 崩溃重启，
+      #    而本机用 127.0.0.1 测试时不会暴露这个问题。
+      #    这个域名在 Dokploy 里配了 Let's Encrypt 证书。
+      # ⚠️ 必须与飞书应用里登记的重定向 URI 前缀一致（同为 https），
+      #    回调路径是 /auth/feishu/callback。
+      - MCP_PUBLIC_URL=https://mcp.${SERVER_HOST}
+      # ⚠️ 这里要的是**前端**地址，不是 transactor —— api-client 的 connect()
+      #    先从它拉 /config.json 才知道 account / collaborator 在哪。
+      - AGENTRA_URL=https://agentra.${SERVER_HOST}
+      - AGENTRA_WORKSPACE=agentra-main
+      - AGENTRA_WORKSPACE_UUID=${AGENTRA_WORKSPACE_UUID}
+      - ACCOUNTS_URL=http://account:3000
+      # 🔴 这是本服务唯一真正特权的地方：拿着 SERVER_SECRET 它能为任何人签
+      #    令牌。收窄它的是上游而不是这里 —— 调用方已经过了飞书租户白名单，
+      #    且社交身份来自飞书验证过的 open_id，不是用户输入。
+      #    换来的是每个 agent 以授权者本人身份操作、可归因、可过期，
+      #    比一个全员共用的静态令牌好得多。
+      - SERVER_SECRET=${SERVER_SECRET}
+      - MCP_TOKEN_TTL_SEC=28800
+      - FEISHU_CLIENT_ID
+      - FEISHU_CLIENT_SECRET
+      - FEISHU_ALLOWED_TENANT_KEYS
+    networks: [default, dokploy-network]
+    <<: *common
+
+networks:
+  # Dokploy 的 Traefik 所在网络，由 Dokploy 自己创建，这里只引用。
+  dokploy-network:
+    external: true
+
+volumes:
+  cockroach_db:
+  files:
+  redpanda:

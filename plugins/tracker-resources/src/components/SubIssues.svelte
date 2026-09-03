@@ -99,6 +99,18 @@
         identifier: `${project.identifier}-${number}`
       }
 
+      // Carry the draft's template provenance onto the created sub issue.
+      // `CreateIssue.updateTemplate` fills `template` in on every child draft
+      // it derives from `IssueTemplate.children`, so this is what lets a
+      // created sub issue name the template child it came from.
+      //
+      // ⚠️ Conditional for the same reason as the parent in
+      // `CreateIssue.svelte`: sub issues typed in by hand have no template,
+      // and an explicit `undefined` would be persisted as a key.
+      if (subIssue.template !== undefined) {
+        cvalue.template = subIssue.template
+      }
+
       if (!isEmptyMarkup(subIssue.description)) {
         const collabId = makeCollabId(tracker.class.Issue, childId, 'description')
         cvalue.description = await createMarkup(collabId, subIssue.description)

@@ -73,6 +73,11 @@ import { createStorageDataAdapter } from './blobStorage'
 import { CommunicationMiddleware, type CommunicationApiFactory } from './communication'
 
 import { RatingMiddleware } from '@hcengineering/server-rating'
+import { AgentraCommandRequestMiddleware, CommandMiddleware } from '@hcengineering/server-agentra-core-resources'
+import { TraceabilityMiddleware } from '@hcengineering/server-traceability-resources'
+import { LeadGuardMiddleware } from '@hcengineering/server-crm-lite'
+import { BlockedReasonGuardMiddleware, SnapshotGuardMiddleware } from '@hcengineering/server-test-management'
+import { ProductVersionReleaseGuardMiddleware } from '@hcengineering/server-products-resources'
 
 /**
  * @public
@@ -163,6 +168,60 @@ export function createServerPipeline (
       VersioningMiddleware.create,
       IdentifierMiddleware.create, // After ApplyTx to ensure that it pass
       RatingMiddleware.create, // Rating editing restrictions
+      // Agentra idempotent commands. Same slot as RatingMiddleware: after
+      // ApplyTxMiddleware, so TxApplyIf is already flattened and there is no
+      // need to recurse into `TxApplyIf.txes`, and before TxMiddleware, so a
+      // rejected ledger write never reaches the transaction domain.
+      CommandMiddleware.create,
+      // Agentra domain-request handlers. Both answer client->server calls the
+      // same way CommunicationMiddleware does, and both reach their data through
+      // `context.head` rather than `provideFindAll`/`provideTx`, so placement in
+      // this list does NOT determine what they can read or write: going through
+      // the head re-enters the full chain (FindSecurity, Private, SpaceSecurity,
+      // SpacePermissions, GuestPermissions) with the CALLER's session context.
+      // They sit here so the command handler is next to the CommandMiddleware
+      // whose runner it uses.
+      AgentraCommandRequestMiddleware.create,
+      // Agentra CRM lead state machine. Must sit AFTER ApplyTxMiddleware (so
+      // TxApplyIf is already flattened and the wrapped status write is visible
+      // as a plain TxUpdateDoc) and BEFORE TxMiddleware (so a refused write
+      // never reaches the transaction domain). It also has to be BELOW nothing
+      // in particular with respect to the command middlewares: the conversion
+      // command writes through `context.head`, i.e. the top of the chain, so it
+      // passes this guard wherever the guard is placed.
+      LeadGuardMiddleware.create,
+      // Agentra test case snapshot immutability. Same slot and the same two
+      // constraints as LeadGuardMiddleware: AFTER ApplyTxMiddleware (so
+      // TxApplyIf is already flattened) and BEFORE TxMiddleware (so a refused
+      // write never reaches the transaction domain).
+      //
+      // ⚠️ It also sits BELOW MarkDerivedEntryMiddleware, which is what makes
+      // `context.derived` route trigger-emitted cascade removals back through
+      // it — see SnapshotGuardMiddleware's class comment for why that is
+      // load bearing rather than incidental.
+      SnapshotGuardMiddleware.create,
+      // "A blocked test result must say why". Same slot and the same two
+      // constraints as the two guards above: AFTER ApplyTxMiddleware so a
+      // TxApplyIf is already flattened, BEFORE TxMiddleware so a refused write
+      // never reaches the transaction domain.
+      BlockedReasonGuardMiddleware.create,
+      // Agentra release gate: `ProductVersion.state` may only become
+      // `Released` by way of the `ReleaseProductVersion` command (PRD REL-003,
+      // Technical Spec §3.6). Same slot and the same two constraints as the
+      // three guards above: AFTER ApplyTxMiddleware, so the command's own
+      // compare-and-swap `TxApplyIf` arrives here already flattened into a
+      // plain TxUpdateDoc; BEFORE TxMiddleware, so a refused write never
+      // reaches the transaction domain.
+      //
+      // ℹ️ Placement relative to CommandMiddleware is NOT load bearing, and the
+      // comment that used to claim otherwise was wrong: `provideFindAll`
+      // descends all the way to the adapter from either side, so the ledger row
+      // is visible above or below, and the release command issues its writes
+      // through `context.head` — the top of the chain — so they re-enter here
+      // wherever here is. It sits below only to keep the Agentra guards
+      // together.
+      ProductVersionReleaseGuardMiddleware.create,
+      TraceabilityMiddleware.create,
       TxMiddleware.create, // Store tx into transaction domain
       ...(opt.disableTriggers === true ? [] : [TriggersMiddleware.create]),
       ...(opt.fulltextUrl !== undefined

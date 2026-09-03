@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-import { concatLink, TxOperations } from '@hcengineering/core'
+import { type AccountUuid, concatLink, TxOperations } from '@hcengineering/core'
 import {
   ClickupImporter,
   defaultDocumentPreprocessors,
@@ -22,7 +22,8 @@ import {
   FrontFileUploader,
   HulyFormatImporter,
   importNotion,
-  type Logger
+  type Logger,
+  TestManagementImporter
 } from '@hcengineering/importer'
 import { setMetadata } from '@hcengineering/platform'
 import serverClientPlugin, { createClient, getAccountClient } from '@hcengineering/server-client'
@@ -65,7 +66,7 @@ export function importTool (): void {
     user: string,
     password: string,
     workspaceUrl: string,
-    f: (client: TxOperations, uploader: FileUploader) => Promise<void>
+    f: (client: TxOperations, uploader: FileUploader, account: AccountUuid) => Promise<void>
   ): Promise<void> {
     if (workspaceUrl === '' || user === '' || password === '') {
       return
@@ -103,7 +104,7 @@ export function importTool (): void {
       selectedWs.token
     )
     try {
-      await f(client, fileUploader)
+      await f(client, fileUploader, account)
     } catch (err: any) {
       console.error(err)
     }
@@ -166,6 +167,37 @@ export function importTool (): void {
       await authorize(user, password, workspace, async (client, uploader) => {
         const importer = new HulyFormatImporter(client, uploader, new ConsoleLogger())
         await importer.importFolder(dir)
+      })
+    })
+
+  // import-testcases ./testcases.json --project 'Plaud' -u user1 -p 1234 -w ws1
+  program
+    .command('import-testcases <file>')
+    .description('import test cases into test-management from a JSON file (see TestManagementImportFile)')
+    .requiredOption('-u, --user <user>', 'user')
+    .requiredOption('-p, --password <password>', 'password')
+    .requiredOption('-w, --workspace <workspace>', 'workspace url where the test cases should be imported to')
+    .option('--project <name>', 'test project name; overrides the one in the file, created when missing')
+    .option('--root-suite <name>', "root test suite name; '' attaches the suites to the project root")
+    .option('--status <status>', 'fallback TestCase status (Draft by default)')
+    .option('--type <type>', 'fallback TestCase type (Functional by default)')
+    .option('--priority <priority>', 'fallback TestCase priority (Medium by default)')
+    .option('--limit <number>', 'import at most this many records', (v: string) => parseInt(v, 10))
+    .option('--dry-run', 'parse and report, write nothing')
+    .action(async (file: string, cmd) => {
+      const { workspace, user, password, project, rootSuite, status, type, priority, limit, dryRun } = cmd
+      await authorize(user, password, workspace, async (client, uploader, account) => {
+        const importer = new TestManagementImporter(client, uploader, new ConsoleLogger(), {
+          projectName: project,
+          rootSuiteName: rootSuite,
+          defaultStatus: status,
+          defaultType: type,
+          defaultPriority: priority,
+          limit,
+          dryRun: dryRun === true,
+          accounts: [account]
+        })
+        await importer.importFile(file)
       })
     })
 

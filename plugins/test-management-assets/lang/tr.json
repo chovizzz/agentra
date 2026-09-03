@@ -90,6 +90,11 @@
     "SelectedTestCases": "{count, plural, =0 {Test senaryosu seçilmedi} one {# test senaryosu seçildi} few {# test senaryosu seçildi} other {# test senaryosu seçildi}}",
     "DefaultAssignee": "Varsayılan atanan",
     "TestPlanTitle": "Test planı başlığı",
-    "RunAssistant": "Asistan çalıştır"
+    "RunAssistant": "Asistan çalıştır",
+    "BlockedReason": "Blocked reason",
+    "BlockedReasonRequired": "A blocked result must state why",
+    "BlockedReasonPlaceholder": "What is blocking this test?",
+    "ManageTestAssetsPermission": "Manage test assets",
+    "ManageTestAssetsDescription": "Create, edit and delete test suites, cases, plans, runs and results"
   }
 }

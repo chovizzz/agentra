@@ -14,7 +14,7 @@
 //
 import { type Asset, type IntlString } from '@hcengineering/platform'
 
-import testManagement, { TestCaseStatus, TestRunStatus } from '@hcengineering/test-management'
+import testManagement, { TestCaseStatus, TestRunStatus, testRunStatuses } from '@hcengineering/test-management'
 
 /** @public */
 export const defaultTestCaseStatuses = [
@@ -40,13 +40,16 @@ export const testCaseStatusAssets: Record<TestCaseStatus, { icon: Asset, label: 
   [TestCaseStatus.Rejected]: { icon: testManagement.icon.StatusRejected, label: testManagement.string.StatusRejected }
 }
 
-/** @public */
-export const defaultTestRunStatuses = [
-  TestRunStatus.Untested,
-  TestRunStatus.Blocked,
-  TestRunStatus.Passed,
-  TestRunStatus.Failed
-]
+/**
+ * ⚠️ This list is what the status selector renders. Adding an enum member
+ * WITHOUT adding it here compiles cleanly and silently makes the new status
+ * unreachable from the UI — which is exactly what would have happened to
+ * `Skipped`. It is now derived from the enum's own ordered list so the next
+ * append cannot be forgotten here.
+ *
+ * @public
+ */
+export const defaultTestRunStatuses = [...testRunStatuses]
 
 /** @public */
 export const testRunStatusAssets: Record<TestRunStatus, { icon: Asset, label: IntlString }> = {
@@ -65,5 +68,11 @@ export const testRunStatusAssets: Record<TestRunStatus, { icon: Asset, label: In
   [TestRunStatus.Failed]: {
     icon: testManagement.icon.StatusFailed,
     label: testManagement.string.StatusFailed
+  },
+  // `Record<TestRunStatus, ...>` makes this map the ONE consumer the compiler
+  // forces you to update when a member is appended. Keep it that way.
+  [TestRunStatus.Skipped]: {
+    icon: testManagement.icon.StatusSkipped,
+    label: testManagement.string.StatusSkipped
   }
 }

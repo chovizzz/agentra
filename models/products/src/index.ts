@@ -27,6 +27,7 @@ import type {
   Ref,
   CollectionSize,
   Markup,
+  Timestamp,
   RolesAssignment,
   Permission,
   Role,
@@ -45,6 +46,7 @@ import {
   TypeString,
   Hidden,
   TypeNumber,
+  TypeTimestamp,
   Collection,
   ArrOf,
   TypeAny,
@@ -155,6 +157,29 @@ export class TProductVersion extends TProject implements ProductVersion {
   )
   @ReadOnly()
     changeControl?: Ref<Document>
+
+  // ── REL-005: release notes. ───────────────────────────────────────────────
+  // 🔴 APPENDED AT THE END, like the enum members above. Attribute order is not
+  // persisted, but keeping the file in the same order as `plugins/products`'
+  // interface is what makes a missing `@Prop` visible in review — an interface
+  // field with no `@Prop` compiles, stores fine and is then invisible to
+  // filters, the attribute bar and full text search.
+  //
+  // ⚠️ `TypeMarkup` rather than `TypeCollaborativeDoc`: the body is small,
+  // single author (generated then corrected) and has to be readable from the
+  // command's audit path without a Y.js round trip. It is NOT a collaborative
+  // document.
+  @Prop(TypeMarkup(), products.string.ReleaseNotes)
+  @Index(IndexKind.FullText)
+    releaseNotes?: Markup
+
+  // ⚠️ `@ReadOnly` and `@Hidden`: the stamp is written by the generator only.
+  // Offering it in the attribute bar would let someone backdate the snapshot,
+  // which is the one thing it is there to state.
+  @Prop(TypeTimestamp(), products.string.ReleaseNotesGeneratedOn)
+  @ReadOnly()
+  @Hidden()
+    releaseNotesGeneratedOn?: Timestamp
 }
 
 @Mixin(products.mixin.ProductTypeData, products.class.Product)
@@ -424,6 +449,35 @@ function defineProductVersion (builder: Builder): void {
       override: [view.action.Delete]
     },
     products.action.DeleteProductVersion
+  )
+
+  // 🔴 REL-003 / REL-004: the ONLY client entry to `ReleaseProductVersion`.
+  // Before this action the command was reachable only by hand crafting a
+  // `domainRequest`, which meant the release gate, the approval, the audit
+  // record and the requirement write-back could not be triggered from the
+  // product at all.
+  //
+  // ⚠️ `input: 'focus'` rather than `'any'`. A multi-select release would fire N
+  // independent commands whose partial failure has no honest rendering, and each
+  // one needs its own gate report on screen.
+  //
+  // ⚠️ NO `override`. This action sits alongside the state editor rather than
+  // replacing anything — `Released` is absent from
+  // `userSelectableProductVersionStates`, so there is no competing entry to
+  // override.
+  createAction(
+    builder,
+    {
+      action: products.actionImpl.ReleaseProductVersion,
+      label: products.string.ReleaseProductVersion,
+      icon: products.icon.ProductVersion,
+      visibilityTester: products.function.CanReleaseProductVersion,
+      category: view.category.General,
+      input: 'focus',
+      target: products.class.ProductVersion,
+      context: { mode: ['context', 'browser'], group: 'tools' }
+    },
+    products.action.ReleaseProductVersion
   )
 }
 

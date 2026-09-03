@@ -25,17 +25,23 @@ import print from '@hcengineering/model-print'
 import tracker from '@hcengineering/model-tracker'
 import { type ViewOptionsModel } from '@hcengineering/view'
 import contact from '@hcengineering/contact'
+import traceability from '@hcengineering/traceability'
 
 import { testManagementId, type TestPlanItem, type TestResult } from '@hcengineering/test-management'
 
 import {
   DOMAIN_TEST_MANAGEMENT,
+  TBuild,
   TTypeTestCaseType,
   TTypeTestCasePriority,
   TTypeTestCaseStatus,
+  TTypeTestEnvironmentVariables,
   TTestProject,
   TTestSuite,
   TTestCase,
+  TTestCaseSnapshot,
+  TTestEnvironment,
+  TTestStep,
   TDefaultProjectTypeData,
   TTestRun,
   TTypeTestRunStatus,
@@ -46,6 +52,8 @@ import {
 
 import testManagement from './plugin'
 import { definePresenters } from './presenters'
+import { definePermissions } from './permissions'
+import { roles } from './roles'
 
 export { testManagementId } from '@hcengineering/test-management/src/index'
 
@@ -183,7 +191,12 @@ export function createModel (builder: Builder): void {
     TTypeTestRunStatus,
     TTestResult,
     TTestPlan,
-    TTestPlanItem
+    TTestPlanItem,
+    TTestStep,
+    TTestCaseSnapshot,
+    TTypeTestEnvironmentVariables,
+    TTestEnvironment,
+    TBuild
   )
 
   builder.mixin(testManagement.class.TestProject, core.class.Class, activity.mixin.ActivityDoc, {})
@@ -195,6 +208,10 @@ export function createModel (builder: Builder): void {
 
   defineTestSuite(builder)
   defineTestCase(builder)
+  defineTestStep(builder)
+  defineTestCaseSnapshot(builder)
+  defineTestEnvironment(builder)
+  defineBuild(builder)
   defineTestRun(builder)
   defineTestResult(builder)
   defineTestPlan(builder)
@@ -255,6 +272,7 @@ export function createModel (builder: Builder): void {
     ]
   })
 
+  definePermissions(builder)
   defineSpaceType(builder)
 }
 
@@ -270,7 +288,8 @@ function defineSpaceType (builder: Builder): void {
       availablePermissions: [
         core.permission.UpdateSpace,
         core.permission.ArchiveSpace,
-        core.permission.ForbidDeleteObject
+        core.permission.ForbidDeleteObject,
+        testManagement.permission.ManageTestAssets
       ]
     },
     testManagement.descriptors.ProjectType
@@ -282,11 +301,32 @@ function defineSpaceType (builder: Builder): void {
     {
       name: 'Default Test Management',
       descriptor: testManagement.descriptors.ProjectType,
-      roles: 0,
+      roles: roles.length,
       targetClass: testManagement.mixin.DefaultProjectTypeData
     },
     testManagement.spaceType.DefaultProject
   )
+
+  // 🔴 `roles` MUST STAY IN SYNC WITH `SpaceType.roles`. `Role` is an
+  // `AttachedDoc` with `collection: 'roles'`, and the space type carries the
+  // count denormalised; a mismatch makes the settings UI render the wrong
+  // number of member pickers, which is how a role silently becomes
+  // unassignable. `models/products` and `models/controlled-documents` write
+  // the same `roles.length` for the same reason.
+  for (const role of roles) {
+    builder.createDoc(
+      core.class.Role,
+      core.space.Model,
+      {
+        attachedTo: testManagement.spaceType.DefaultProject,
+        attachedToClass: core.class.SpaceType,
+        collection: 'roles',
+        name: role.name,
+        permissions: role.permissions
+      },
+      role._id
+    )
+  }
 }
 
 function defineTestSuite (builder: Builder): void {
@@ -363,6 +403,26 @@ function defineTestSuite (builder: Builder): void {
       }
     },
     testManagement.action.RunSelectedTests
+  )
+
+  // `verifies` entry point 3. `input: 'selection'` is what makes it the BULK
+  // entry; the two detail-page buttons cover the single-object case.
+  createAction(
+    builder,
+    {
+      action: testManagement.actionImpl.LinkVerifies,
+      label: traceability.string.LinkVerifies,
+      icon: traceability.icon.TraceLink,
+      category: testManagement.category.TestCase,
+      input: 'selection',
+      target: testManagement.class.TestCase,
+      context: {
+        mode: ['context'],
+        application: testManagement.app.TestManagement,
+        group: 'associate'
+      }
+    },
+    testManagement.action.LinkVerifies
   )
 
   createAction(
@@ -482,6 +542,120 @@ function defineTestCase (builder: Builder): void {
   )
 }
 
+/**
+ * Steps are edited inside the test case panel (`TestSteps.svelte`), so a step
+ * needs a presenter but no panel, no editor and no viewlet of its own.
+ */
+function defineTestStep (builder: Builder): void {
+  builder.mixin(testManagement.class.TestStep, core.class.Class, view.mixin.ObjectPresenter, {
+    presenter: testManagement.component.TestStepPresenter
+  })
+
+  builder.mixin(testManagement.class.TestStep, core.class.Class, view.mixin.IgnoreActions, {
+    actions: [
+      view.action.Open,
+      view.action.OpenInNewTab,
+      print.action.Print,
+      tracker.action.EditRelatedTargets,
+      tracker.action.NewRelatedIssue
+    ]
+  })
+}
+
+/**
+ * 🔴 A snapshot gets NO `ObjectEditor` and NO `ObjectPanel`, and every
+ * mutating action is suppressed. That is the CONVENIENCE half of immutability;
+ * the ENFORCEMENT half is `SnapshotGuardMiddleware` in
+ * `server-plugins/test-management`, which refuses the corresponding
+ * transactions no matter which client emits them.
+ */
+function defineTestCaseSnapshot (builder: Builder): void {
+  builder.mixin(testManagement.class.TestCaseSnapshot, core.class.Class, view.mixin.IgnoreActions, {
+    actions: [
+      view.action.Delete,
+      view.action.Archive,
+      view.action.Move,
+      print.action.Print,
+      tracker.action.EditRelatedTargets,
+      tracker.action.NewRelatedIssue
+    ]
+  })
+}
+
+function defineTestEnvironment (builder: Builder): void {
+  // 🔴 `TestRun.environment` is a `TypeRef`, and both `ObjectFilter` and every
+  // table cell resolve it through `getAttributePresenter`, which THROWS rather
+  // than degrading when the target class has no presenter. Registering this is
+  // what makes "filter runs by environment" work instead of crash.
+  builder.mixin(testManagement.class.TestEnvironment, core.class.Class, view.mixin.ObjectPresenter, {
+    presenter: testManagement.component.TestEnvironmentPresenter
+  })
+
+  // An `AttributePresenter` is handed the REF; an `ObjectPresenter` the DOC.
+  builder.mixin(testManagement.class.TestEnvironment, core.class.Class, view.mixin.AttributePresenter, {
+    presenter: testManagement.component.TestEnvironmentRefPresenter
+  })
+
+  builder.mixin(testManagement.class.TypeTestEnvironmentVariables, core.class.Class, view.mixin.AttributePresenter, {
+    presenter: testManagement.component.EnvironmentVariablesPresenter
+  })
+
+  builder.mixin(testManagement.class.TestEnvironment, core.class.Class, view.mixin.ClassFilters, {
+    filters: ['archived'],
+    ignoreKeys: ['createdBy', 'modifiedBy', 'createdOn', 'modifiedOn']
+  })
+
+  builder.createDoc(
+    view.class.Viewlet,
+    core.space.Model,
+    {
+      attachTo: testManagement.class.TestEnvironment,
+      descriptor: view.viewlet.Table,
+      config: ['', 'description', 'archived', 'modifiedOn'],
+      configOptions: {
+        strict: true
+      }
+    },
+    testManagement.viewlet.TableTestEnvironment
+  )
+}
+
+function defineBuild (builder: Builder): void {
+  // Same reason as `TestEnvironment` above — see the note there.
+  builder.mixin(testManagement.class.Build, core.class.Class, view.mixin.ObjectPresenter, {
+    presenter: testManagement.component.BuildPresenter
+  })
+
+  builder.mixin(testManagement.class.Build, core.class.Class, view.mixin.AttributePresenter, {
+    presenter: testManagement.component.BuildRefPresenter
+  })
+
+  builder.mixin(testManagement.class.Build, core.class.Class, view.mixin.ClassFilters, {
+    filters: ['productVersion', 'commitSha'],
+    ignoreKeys: ['createdBy', 'modifiedBy', 'createdOn', 'modifiedOn']
+  })
+
+  builder.createDoc(
+    view.class.Viewlet,
+    core.space.Model,
+    {
+      attachTo: testManagement.class.Build,
+      descriptor: view.viewlet.Table,
+      // ⚠️ `productVersion` is deliberately NOT a column. A table cell resolves
+      // through `getAttributePresenter`, which THROWS when the attribute's
+      // target class carries no `AttributePresenter` mixin — and
+      // `products.class.ProductVersion` ships only an `ObjectPresenter`
+      // (`models/products/src/index.ts`). It stays available as a FILTER,
+      // because `ObjectFilter` resolves through `getObjectPresenter` instead.
+      config: ['', 'externalKey', 'commitSha', 'createdOnCi'],
+      configOptions: {
+        strict: true
+      }
+    },
+    testManagement.viewlet.TableBuild
+  )
+}
+
 function defineTestRun (builder: Builder): void {
   builder.mixin(testManagement.class.TestRun, core.class.Class, activity.mixin.ActivityDoc, {})
 
@@ -505,6 +679,54 @@ function defineTestRun (builder: Builder): void {
   builder.mixin(testManagement.class.TestRun, core.class.Class, view.mixin.IgnoreActions, {
     actions: [print.action.Print, tracker.action.EditRelatedTargets, tracker.action.NewRelatedIssue]
   })
+
+  //
+  // 🔴 THE POINT OF THE FLAT CONTEXT FIELDS. `ClassFilters.filters` and
+  // `ViewOptionsModel.orderBy` both take ATTRIBUTE NAMES, resolved against the
+  // class's own attribute map — there is no path syntax for reaching into a
+  // nested value object. Had the context been modelled as a single
+  // `TestRunContext` attribute, none of the entries below would resolve and
+  // "filter runs by build" / "sort runs by environment" would be unbuildable.
+  //
+  // ⚠️ `cycle` is deliberately ABSENT from this list even though it is indexed
+  // and queryable. `ObjectFilter` (the component `core.class.RefTo` resolves
+  // to) calls `getPresenter` on the attribute's target class, and
+  // `getAttributePresenter` THROWS when there is none — `core.class.Doc`, which
+  // is what `cycle` points at until the cycle module is wired in, has no
+  // presenter. Add it here in the same change that narrows the ref.
+  builder.mixin(testManagement.class.TestRun, core.class.Class, view.mixin.ClassFilters, {
+    filters: ['build', 'environment', 'productVersion', 'testPlan', 'executedBy'],
+    ignoreKeys: ['createdBy', 'modifiedBy', 'createdOn', 'description']
+  })
+
+  const runViewOptions: ViewOptionsModel = {
+    groupBy: ['build', 'environment'],
+    orderBy: [
+      ['startedOn', SortingOrder.Descending],
+      ['finishedOn', SortingOrder.Descending],
+      ['modifiedOn', SortingOrder.Descending],
+      ['dueDate', SortingOrder.Ascending]
+    ],
+    other: []
+  }
+
+  builder.createDoc(
+    view.class.Viewlet,
+    core.space.Model,
+    {
+      attachTo: testManagement.class.TestRun,
+      descriptor: view.viewlet.Table,
+      // `build` and `environment` are columns because this module registers an
+      // `AttributePresenter` for each; `productVersion` is not, for the reason
+      // spelled out on the Build viewlet above.
+      config: ['', 'build', 'environment', 'executedBy', 'startedOn', 'finishedOn'],
+      configOptions: {
+        strict: true
+      },
+      viewOptions: runViewOptions
+    },
+    testManagement.viewlet.TableTestRun
+  )
 }
 
 function defineTestResult (builder: Builder): void {

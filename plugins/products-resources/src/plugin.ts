@@ -21,10 +21,6 @@ import { type AnyComponent } from '@hcengineering/ui/src/types'
 import { type KeyFilter } from '@hcengineering/view'
 
 export default mergeIds(productsId, products, {
-  component: {
-    EditProduct: '' as AnyComponent,
-    EditProductVersion: '' as AnyComponent
-  },
   completion: {
     ProductQuery: '' as Resource<ObjectSearchFactory>,
     ProductQueryCategory: '' as Ref<ObjectSearchCategory>
@@ -62,7 +58,74 @@ export default mergeIds(productsId, products, {
     Members: '' as IntlString,
     ProductVersionStateActive: '' as IntlString,
     ProductVersionStateReleased: '' as IntlString,
+    ProductVersionStatePlanning: '' as IntlString,
+    ProductVersionStateReleaseCandidate: '' as IntlString,
+    ProductVersionStateArchived: '' as IntlString,
     ChangeControl: '' as IntlString,
-    ChangeSeverity: '' as IntlString
+    ChangeSeverity: '' as IntlString,
+
+    // ── REL-003 / REL-004 / REL-006: the release command and its gate. ─────
+    ReleaseProductVersion: '' as IntlString,
+    Release: '' as IntlString,
+    ReleaseGate: '' as IntlString,
+    ReleaseGatePassed: '' as IntlString,
+    ReleaseGateFailed: '' as IntlString,
+    ReleaseGateWaived: '' as IntlString,
+    ReleaseBlockers: '' as IntlString,
+    BlockerRequirementNotReady: '' as IntlString,
+    BlockerWorkItemOpen: '' as IntlString,
+    BlockerBlockingDefect: '' as IntlString,
+    BlockerTestRunMissing: '' as IntlString,
+    BlockerTestRunNoVerdicts: '' as IntlString,
+    BlockerTestRunBelowThreshold: '' as IntlString,
+    BlockerApprovalMissing: '' as IntlString,
+    BlockerRestricted: '' as IntlString,
+    BlockerUnknown: '' as IntlString,
+    PassRate: '' as IntlString,
+    // 🔴 THREE SEPARATE STRINGS FOR ONE ABSENT NUMBER. `passRate` is omitted in
+    // two different situations and neither is "0%"; see `passRateDisplay`.
+    PassRateNoVerdicts: '' as IntlString,
+    PassRateRestricted: '' as IntlString,
+    PassRateThreshold: '' as IntlString,
+    NotEvaluated: '' as IntlString,
+    WaiverReason: '' as IntlString,
+    WaiverReasonPlaceholder: '' as IntlString,
+    ReasonVersionNotFound: '' as IntlString,
+    ReasonIllegalTransition: '' as IntlString,
+    ReasonGateFailed: '' as IntlString,
+    ReasonWaiverWithoutReason: '' as IntlString,
+    ReasonMalformedInput: '' as IntlString,
+    ReasonUnknown: '' as IntlString,
+    ReleaseInProgress: '' as IntlString,
+    ReleaseUnavailable: '' as IntlString,
+    ReleaseErrored: '' as IntlString,
+    ReleaseDone: '' as IntlString,
+    ReleaseAlreadyDone: '' as IntlString,
+    ReleaseWriteBackIncomplete: '' as IntlString,
+    // ── §7.5: the READ-ONLY gate preview. ─────────────────────────────────
+    GatePreviewLoading: '' as IntlString,
+    GatePreviewUnavailable: '' as IntlString,
+    RefreshGate: '' as IntlString,
+
+    // ── REL-005: release notes. ───────────────────────────────────────────
+    ReleaseNotes: '' as IntlString,
+    ReleaseNotesGeneratedOn: '' as IntlString,
+    GenerateReleaseNotes: '' as IntlString,
+    RegenerateReleaseNotes: '' as IntlString,
+    ReleaseNotesOverwriteTitle: '' as IntlString,
+    ReleaseNotesOverwriteConfirm: '' as IntlString,
+    ReleaseNotesReadonly: '' as IntlString,
+    ReleaseNotesEmpty: '' as IntlString,
+    ReleaseNotesRestricted: '' as IntlString,
+    SectionRequirements: '' as IntlString,
+    SectionImprovements: '' as IntlString,
+    SectionBugFixes: '' as IntlString,
+    SectionOther: '' as IntlString
+  },
+  component: {
+    EditProduct: '' as AnyComponent,
+    EditProductVersion: '' as AnyComponent,
+    ReleaseProductVersionPopup: '' as AnyComponent,
+    ReleaseNotesEditor: '' as AnyComponent
   }
 })

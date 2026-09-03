@@ -34,12 +34,16 @@ import ProductVersionsPresenter from './components/product-version/ProductVersio
 import ProductVersionStateEditor from './components/product-version/ProductVersionStateEditor.svelte'
 import ProductVersionStatePresenter from './components/product-version/ProductVersionStatePresenter.svelte'
 import ProductVersionVersionPresenter from './components/product-version/ProductVersionVersionPresenter.svelte'
+import ReleaseNotesEditor from './components/product-version/ReleaseNotesEditor.svelte'
+import ReleaseProductVersionPopup from './components/product-version/ReleaseProductVersionPopup.svelte'
 import {
   canCreateProductVersion,
   canDeleteProductVersion,
+  canReleaseProductVersion,
   createProductVersion,
   getVisibleFilters,
-  productIdentifierProvider
+  productIdentifierProvider,
+  releaseProductVersionAction
 } from './utils'
 
 const toObjectSearchResult = (e: WithLookup<Product>): ObjectSearchResult => ({
@@ -84,7 +88,9 @@ export default async (): Promise<Resources> => ({
     ProductVersionStateEditor,
     ProductVersionStatePresenter,
     ProductVersionVersionPresenter,
-    ChangeControlInlineEditor
+    ChangeControlInlineEditor,
+    ReleaseProductVersionPopup,
+    ReleaseNotesEditor
   },
   completion: {
     ProductQuery: async (client: Client, query: string, filter?: { in?: RelatedDocument[], nin?: RelatedDocument[] }) =>
@@ -94,9 +100,11 @@ export default async (): Promise<Resources> => ({
     GetVisibleFilters: getVisibleFilters,
     CanCreateProductVersion: canCreateProductVersion,
     CanDeleteProductVersion: canDeleteProductVersion,
+    CanReleaseProductVersion: canReleaseProductVersion,
     ProductIdentifierProvider: productIdentifierProvider
   },
   actionImpl: {
-    CreateProductVersion: createProductVersion
+    CreateProductVersion: createProductVersion,
+    ReleaseProductVersion: releaseProductVersionAction
   }
 })
