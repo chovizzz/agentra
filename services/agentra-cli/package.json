@@ -1,6 +1,6 @@
 {
   "name": "@agentra-cli/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Agentra CLI — read and write issues and test cases from a terminal or an agent",
   "main": "bundle/bundle.js",
   "bin": {

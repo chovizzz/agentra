@@ -20,7 +20,7 @@ import { issueCommand, projectCommand } from './commands/issue'
 import { skillsCommand } from './commands/skills'
 import { caseCommand, testProjectCommand } from './commands/testcase'
 
-const VERSION = '0.1.0'
+const VERSION = '0.1.1'
 
 function buildProgram (): Command {
   return new Command('agentra')

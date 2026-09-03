@@ -17,6 +17,7 @@ import { listProjects, openClient } from '@agentra-cli/client'
 import { Command } from 'commander'
 
 import { clearConfig, configPath, readConfig, resolveConfig, writeConfig } from '../config'
+import { DEFAULT_URL, DEFAULT_WORKSPACE } from '../defaults'
 import { emit, type OutputOptions } from '../output'
 import { globalOverrides } from './shared'
 
@@ -40,8 +41,8 @@ export function authCommand (): Command {
   auth
     .command('login')
     .description('Store the URL, workspace and token used by every other command')
-    .requiredOption('--url <url>', 'Agentra front URL, e.g. https://agentra.example.com')
-    .requiredOption('--workspace <slug>', 'Workspace slug (not a URL), e.g. agentra-main')
+    .option('--url <url>', 'Agentra front URL', DEFAULT_URL)
+    .option('--workspace <slug>', 'Workspace slug (not a URL)', DEFAULT_WORKSPACE)
     .option('--token <token>', 'API token; prefer piping it on stdin so it stays out of shell history')
     .action(async (opts: { url: string, workspace: string, token?: string }) => {
       const token = opts.token ?? (await readTokenFromStdin())
@@ -82,6 +83,7 @@ export function authCommand (): Command {
           // Never print the token itself — `auth status` is the command people
           // paste into bug reports.
           tokenSource: process.env.AGENTRA_TOKEN != null ? 'AGENTRA_TOKEN' : 'config file',
+          usingDefaultUrl: stored.url === undefined && process.env.AGENTRA_URL == null,
           configFile: configPath(),
           configFileHasToken: stored.token !== undefined,
           reachable,

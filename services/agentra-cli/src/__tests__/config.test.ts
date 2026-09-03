@@ -18,6 +18,7 @@ import { tmpdir } from 'os'
 import { join } from 'path'
 
 import { clearConfig, configPath, readConfig, resolveConfig, writeConfig } from '../config'
+import { DEFAULT_URL, DEFAULT_WORKSPACE } from '../defaults'
 import { parseLimit, requireOneOf } from '../commands/shared'
 
 describe('config', () => {
@@ -48,8 +49,25 @@ describe('config', () => {
     expect(readConfig()).toEqual({})
   })
 
-  it('reports every missing value at once, not just the first', () => {
-    expect(() => resolveConfig()).toThrow(/url.*workspace.*token/s)
+  // The token is the one value that cannot be guessed, so it is the only one
+  // whose absence is an error.
+  it('asks only for a token when nothing is configured', () => {
+    expect(() => resolveConfig()).toThrow(/Not signed in/)
+  })
+
+  it('falls back to the compiled-in url and workspace', () => {
+    const c = resolveConfig({ token: 't' })
+    expect(c.url).toBe(DEFAULT_URL)
+    expect(c.workspace).toBe(DEFAULT_WORKSPACE)
+  })
+
+  // The defaults are a convenience and must never override what the operator
+  // actually configured — otherwise a stored workspace would be silently ignored.
+  it('prefers the stored config over the defaults', () => {
+    writeConfig({ url: 'https://file', workspace: 'file-ws', token: 't' })
+    const c = resolveConfig()
+    expect(c.url).toBe('https://file')
+    expect(c.workspace).toBe('file-ws')
   })
 
   // The precedence is what a CI job relies on to point one machine at another
@@ -96,10 +114,14 @@ describe('argument guards', () => {
   // Silently succeeding on an empty update makes a typo'd flag name look like a
   // successful edit: the command exits 0 and the field is untouched.
   it('rejects an update that would change nothing', () => {
-    expect(() => { requireOneOf({ title: undefined }, ['title']) }).toThrow(/Nothing to update/)
+    expect(() => {
+      requireOneOf({ title: undefined }, ['title'])
+    }).toThrow(/Nothing to update/)
   })
 
   it('accepts an update with at least one field', () => {
-    expect(() => { requireOneOf({ title: 'x', status: undefined }, ['title', 'status']) }).not.toThrow()
+    expect(() => {
+      requireOneOf({ title: 'x', status: undefined }, ['title', 'status'])
+    }).not.toThrow()
   })
 })

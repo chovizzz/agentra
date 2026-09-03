@@ -17,12 +17,16 @@ metadata:
 
 | 项 | 来源 | 说明 |
 |---|---|---|
-| 地址 | `~/.config/agentra/config.json` → `url` | **front 的地址**，不是 transactor 的。CLI 会从它的 `/config.json` 发现其余端点 |
-| 工作区 | 同上 → `workspace` | **slug**，如 `agentra-main`；不是 http URL，也不是 uuid |
-| 凭证 | 同上 → `token` | 在 Agentra 的「设置 → API 令牌」里签发 |
+| 地址 | `~/.config/agentra/config.json` → `url` | **front 的地址**，不是 transactor 的。CLI 会从它的 `/config.json` 发现其余端点。**有内置默认值** |
+| 工作区 | 同上 → `workspace` | **slug**，如 `agentra-main`；不是 http URL，也不是 uuid。**有内置默认值** |
+| 凭证 | 同上 → `token` | 在 Agentra 的「设置 → API 令牌」里签发。**没有默认值** |
 
-配置文件权限 `600`。三个环境变量 `AGENTRA_URL` / `AGENTRA_WORKSPACE` / `AGENTRA_TOKEN`
-**覆盖**配置文件，命令行 `--url` / `--workspace` / `--token` 再覆盖环境变量。
+配置文件权限 `600`。优先级由高到低：命令行 `--url` / `--workspace` / `--token`
+→ 环境变量 `AGENTRA_URL` / `AGENTRA_WORKSPACE` / `AGENTRA_TOKEN`
+→ 配置文件 → 内置默认值。
+
+内置默认值只是省事，**永远不会覆盖**你实际配置过的东西。只有令牌没有默认值——那是唯一
+猜不出来的值，编一个只会把「没登录」变成「拿着错凭证去撞别人的工作区」。
 
 ## 快速开始
 
@@ -30,7 +34,11 @@ metadata:
 npm i -g @agentra-cli/cli
 
 # 令牌走 stdin，不要写进命令行参数 —— 那会进 shell history，也能被 ps 看到
-pbpaste | agentra auth login --url https://agentra.example.com --workspace agentra-main
+# --url / --workspace 有内置默认值，连着自家部署时不用传
+pbpaste | agentra auth login
+
+# 连别的部署时才需要传
+# pbpaste | agentra auth login --url https://other.example.com --workspace other-ws
 
 agentra auth status
 ```
@@ -66,7 +74,8 @@ CLI 与 MCP 都只提供 **create / update**。需要删除时请人在界面里
 
 | 现象 | 原因 | 处理 |
 |---|---|---|
-| `Not configured — missing ...` | 三个值有缺 | `agentra auth login`，或设环境变量 |
+| `Not signed in — no API token` | 没有令牌 | `pbpaste \| agentra auth login`，或设 `AGENTRA_TOKEN` |
+| 连上了但数据不对 | 落到内置默认的地址/工作区上了 | `agentra auth status` 看 `usingDefaultUrl` |
 | 连接超时 / `ECONNREFUSED` | `url` 填成了 transactor 或带了路径 | 填 front 的根地址 |
 | `Workspace not found` | `workspace` 填成了 URL 或 uuid | 填 slug，如 `agentra-main` |
 | `test-project list` 返回空 | **你不是任何测试项目的成员** | Huly 按 `members` 严格过滤空间。空列表 ≠ 不存在，先确认成员资格 |

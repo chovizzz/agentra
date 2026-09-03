@@ -17,6 +17,8 @@ import { chmodSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync }
 import { homedir } from 'os'
 import { dirname, join } from 'path'
 
+import { DEFAULT_URL, DEFAULT_WORKSPACE } from './defaults'
+
 export interface StoredConfig {
   url?: string
   workspace?: string
@@ -76,29 +78,32 @@ export interface ConfigOverrides {
 }
 
 /**
- * Merge the three sources, most specific first: command-line flags, then the
- * environment, then the stored config.
+ * Merge the four sources, most specific first: command-line flags, then the
+ * environment, then the stored config, then the compiled-in defaults.
  *
  * The environment beats the file so a CI job can point the same machine at a
- * different workspace without rewriting a file it does not own.
+ * different workspace without rewriting a file it does not own. The defaults
+ * come last so they are a convenience, never something that overrides what the
+ * operator actually configured.
+ *
+ * Only the token has no default: it is the one value that cannot be guessed,
+ * and inventing one would turn "not signed in" into an authentication error
+ * against someone else's workspace.
  */
 export function resolveConfig (overrides: ConfigOverrides = {}): ResolvedConfig {
   const stored = readConfig()
-  const url = overrides.url ?? envOrUndefined('AGENTRA_URL') ?? stored.url
-  const workspace = overrides.workspace ?? envOrUndefined('AGENTRA_WORKSPACE') ?? stored.workspace
+  const url = overrides.url ?? envOrUndefined('AGENTRA_URL') ?? stored.url ?? DEFAULT_URL
+  const workspace = overrides.workspace ?? envOrUndefined('AGENTRA_WORKSPACE') ?? stored.workspace ?? DEFAULT_WORKSPACE
   const token = overrides.token ?? envOrUndefined('AGENTRA_TOKEN') ?? stored.token
 
-  const missing: string[] = []
-  if (url === undefined) missing.push('url (--url / AGENTRA_URL)')
-  if (workspace === undefined) missing.push('workspace (--workspace / AGENTRA_WORKSPACE)')
-  if (token === undefined) missing.push('token (AGENTRA_TOKEN)')
-  if (missing.length > 0) {
+  if (token === undefined) {
     throw new Error(
-      `Not configured — missing ${missing.join(', ')}.\n` +
-        "Run 'agentra auth login' to store these, or set the environment variables."
+      'Not signed in — no API token.\n' +
+        'Mint one under 设置 → API 令牌, then: pbpaste | agentra auth login\n' +
+        'Or set AGENTRA_TOKEN in the environment.'
     )
   }
-  return { url: url as string, workspace: workspace as string, token: token as string }
+  return { url, workspace, token }
 }
 
 function envOrUndefined (name: string): string | undefined {

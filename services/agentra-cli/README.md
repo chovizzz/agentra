@@ -5,12 +5,16 @@ Read and write Agentra issues and test cases from a terminal — or from an agen
 ```bash
 npm i -g @agentra-cli/cli
 
-pbpaste | agentra auth login --url https://agentra.example.com --workspace agentra-main
+pbpaste | agentra auth login
 agentra auth status
 ```
 
 The token comes from **设置 → API 令牌** in Agentra. Pipe it on stdin rather than
 passing `--token`, so it stays out of your shell history.
+
+`--url` and `--workspace` default to the shipped deployment, so a token is the
+only thing you have to supply. Point the CLI elsewhere with
+`agentra auth login --url https://… --workspace other-ws`.
 
 ## Commands
 
@@ -46,7 +50,10 @@ domain skills reference it rather than repeating it.
 | Workspace slug, e.g. `agentra-main` | `workspace` | `AGENTRA_WORKSPACE` | `--workspace` |
 | API token | `token` | `AGENTRA_TOKEN` | `--token` |
 
-Flags beat the environment, which beats the config file.
+Flags beat the environment, which beats the config file, which beats the
+compiled-in defaults. Only the token has no default — it is the one value that
+cannot be guessed, and inventing one would turn "not signed in" into an
+authentication failure against someone else's workspace.
 
 ⚠️ **The token has no scopes.** It carries the full permissions of whoever minted
 it in that workspace. Use a dedicated account for agents, and revoke from the same
