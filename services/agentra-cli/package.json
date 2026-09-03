@@ -11,6 +11,9 @@
     "bundle/**/*",
     "skills/**/*"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "EPL-2.0",
   "engines": {
     "node": ">=20"
