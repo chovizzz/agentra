@@ -88,7 +88,11 @@ for entry in "${selected[@]}"; do
   name=${entry%%:*}
   arch=$(docker manifest inspect "${REGISTRY}/agentra-${name}:${TAG}" 2>/dev/null \
     | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const m=JSON.parse(s);console.log(m.architecture??(m.manifests??[]).map(x=>x.platform.architecture).join(","))}catch{console.log("?")}})')
-  if [[ "$arch" == "amd64" ]]; then
+  # buildx pushes a provenance/SBOM attestation alongside the image, and its
+  # platform is `unknown/unknown`. So the criterion is that amd64 is PRESENT,
+  # not that it is the only entry — requiring an exact match reports every
+  # correctly-built image as broken.
+  if [[ ",$arch," == *",amd64,"* ]]; then
     printf '    %-12s %s ✓\n' "$name" "$arch"
   else
     printf '    %-12s %s 🔴\n' "$name" "$arch"
