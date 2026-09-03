@@ -69,9 +69,39 @@ async function generateProjectLocation (
   }
 }
 
+/**
+ * Ids that stand for "the root of the tree" rather than a real document.
+ * `FoldersBrowser` hands one of these to `getAttachedObjectLink` when the user
+ * clicks the "all items" node above the folders.
+ */
+const ROOT_SENTINELS: Array<Ref<Doc>> = [
+  testManagement.ids.NoParent,
+  testManagement.ids.NoTestRun,
+  testManagement.ids.NoTestPlan
+]
+
 export function getAttachedObjectLink (parentDoc: Ref<Doc>): Location {
   const loc = getCurrentResolvedLocation()
-  loc.query = parentDoc === undefined ? undefined : { ...loc.query, attachedTo: parentDoc }
+  if (parentDoc === undefined) {
+    loc.query = undefined
+    return loc
+  }
+
+  const query = { ...loc.query }
+  // 🔴 The root node CLEARS the filter rather than filtering on the sentinel.
+  //
+  // The list query is `{ space, attachedTo }` with an exact match and no descendant
+  // expansion (ComponentNavigator.svelte), so filtering on the sentinel shows only
+  // documents attached *directly* to the root. Anything created by the importer is
+  // nested under a root suite, so that set is empty — and the project then reads as
+  // "no test cases here" instead of as "this filter matched nothing".
+  if (ROOT_SENTINELS.includes(parentDoc)) {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete query[PARENT_KEY]
+  } else {
+    query[PARENT_KEY] = parentDoc
+  }
+  loc.query = query
 
   return loc
 }
