@@ -2293,6 +2293,16 @@
       "shouldPublish": false
     },
     {
+      "packageName": "@agentra-cli/client",
+      "projectFolder": "packages/agentra-client",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@agentra-cli/cli",
+      "projectFolder": "services/agentra-cli",
+      "shouldPublish": true
+    },
+    {
       "packageName": "@hcengineering/pod-export",
       "projectFolder": "services/export/pod-export",
       "shouldPublish": false

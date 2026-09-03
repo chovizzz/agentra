@@ -119,7 +119,10 @@ function loadOAuth (): OAuthConfig {
 
 function parseList (raw: string | undefined): string[] {
   if (raw === undefined) return []
-  return raw.split(',').map((v) => v.trim()).filter((v) => v !== '')
+  return raw
+    .split(',')
+    .map((v) => v.trim())
+    .filter((v) => v !== '')
 }
 
 export function loadConfig (): Config {

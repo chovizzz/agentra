@@ -27,16 +27,23 @@ import { registerTestCaseTools } from './tools/testcases'
  * the agent then has nothing to correct itself with. Keeping the message in the
  * result is what makes "unknown status name, here are the valid ones" useful.
  */
+// The parameter is deliberately not called `cb`: `n/no-callback-literal` keys off
+// that name and reads this as a Node-style errback, which it is not — the return
+// value IS the tool result.
+function wrap (handler: (...a: any[]) => Promise<any>): (...a: any[]) => Promise<any> {
+  return async (...args: any[]): Promise<any> => {
+    try {
+      return await handler(...args)
+    } catch (err) {
+      return errorResult(err)
+    }
+  }
+}
+
 function withErrorHandling (server: McpServer): McpServer {
   const original = server.registerTool.bind(server)
-  ;(server as any).registerTool = (name: string, config: unknown, cb: (...a: any[]) => Promise<any>) =>
-    original(name as any, config as any, (async (...args: any[]) => {
-      try {
-        return await cb(...args)
-      } catch (err) {
-        return errorResult(err)
-      }
-    }) as any)
+  ;(server as any).registerTool = (name: string, config: unknown, handler: (...a: any[]) => Promise<any>) =>
+    original(name as any, config as any, wrap(handler) as any)
   return server
 }
 

@@ -13,8 +13,7 @@
 // limitations under the License.
 //
 
-/**
- * The connection pool now lives in `@agentra-cli/client` so the CLI shares it.
- * Re-exported here to keep this module's importers unchanged.
- */
-export { ClientPool } from '@agentra-cli/client'
+export * from './connect'
+export * from './issues'
+export * from './testcases'
+export * from './vocabulary'

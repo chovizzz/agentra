@@ -22,7 +22,14 @@ import { InvalidTokenError } from '@modelcontextprotocol/sdk/server/auth/errors.
 import type { OAuthClientInformationFull, OAuthTokens } from '@modelcontextprotocol/sdk/shared/auth.js'
 
 import { type AgentraAuth, mintUserToken, resolvePerson } from './agentra'
-import { buildAuthorizeUrl, buildSocialKey, exchangeCodeForToken, fetchProfile, isTenantAllowed, type FeishuConfig } from './feishu'
+import {
+  buildAuthorizeUrl,
+  buildSocialKey,
+  exchangeCodeForToken,
+  fetchProfile,
+  isTenantAllowed,
+  type FeishuConfig
+} from './feishu'
 
 const STATE_TTL_MS = 10 * 60 * 1000
 const CODE_TTL_MS = 60 * 1000
@@ -107,7 +114,8 @@ class StatelessClientsStore implements OAuthRegisteredClientsStore {
   getClient (clientId: string): OAuthClientInformationFull | undefined {
     try {
       const { iat, ...client } = verify(this.secret, clientId)
-      return { ...client, client_id: clientId } as OAuthClientInformationFull
+      const full: OAuthClientInformationFull = { ...client, client_id: clientId }
+      return full
     } catch {
       return undefined
     }
@@ -223,10 +231,7 @@ export class FeishuBackedProvider implements OAuthServerProvider {
     }
   }
 
-  async challengeForAuthorizationCode (
-    client: OAuthClientInformationFull,
-    authorizationCode: string
-  ): Promise<string> {
+  async challengeForAuthorizationCode (client: OAuthClientInformationFull, authorizationCode: string): Promise<string> {
     const issued = this.codes.get(authorizationCode)
     if (issued === undefined || issued.clientId !== client.client_id) {
       throw new Error('invalid authorization code')
@@ -234,10 +239,7 @@ export class FeishuBackedProvider implements OAuthServerProvider {
     return issued.codeChallenge
   }
 
-  async exchangeAuthorizationCode (
-    client: OAuthClientInformationFull,
-    authorizationCode: string
-  ): Promise<OAuthTokens> {
+  async exchangeAuthorizationCode (client: OAuthClientInformationFull, authorizationCode: string): Promise<OAuthTokens> {
     const issued = this.codes.get(authorizationCode)
     // Single use, always: deleting before any other check means a replayed code is
     // dead even if the checks below throw.
